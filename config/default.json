@@ -1,0 +1,20 @@
+{
+  "DB_SETTINGS": {
+    "host": "localhost",
+    "port": 5432,
+    "username": "postgres",
+    "password": "postgres",
+    "database": "sup3_test",
+    "logging": "all",
+    "synchronize": true
+  },
+  "APP_SETTINGS": {
+    "port": 8080
+  },
+  "GRAPHQL_SETTINGS": {
+    "playground": true,
+    "debug": true,
+    "introspection": true,
+    "installSubscriptionHandlers": true
+  }
+}
