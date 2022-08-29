@@ -80,5 +80,7 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   },
-  "release-it": {}
+  "release-it": {
+    "requireBranch": "master"
+  }
 }
