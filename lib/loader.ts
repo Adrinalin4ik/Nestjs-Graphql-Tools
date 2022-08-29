@@ -2,7 +2,7 @@ import {
   createParamDecorator,
   ExecutionContext
 } from '@nestjs/common';
-import * as DataLoader from 'dataloader';
+import DataLoader from 'dataloader';
 import { IncomingMessage } from 'http';
 import { groupBy } from 'lodash';
 import { applyFilterParameter } from './filter';

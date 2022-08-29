@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mapOneToManyRelation = exports.GraphqlLoader = exports.Loader = void 0;
 const common_1 = require("@nestjs/common");
-const DataLoader = require("dataloader");
+const dataloader_1 = require("dataloader");
 const lodash_1 = require("lodash");
 const filter_1 = require("./filter");
 exports.Loader = (0, common_1.createParamDecorator)((_data, ctx) => {
@@ -35,7 +35,7 @@ const GraphqlLoader = (options = {
                 loader.req._loader = {};
             }
             if (!loader.req._loader[loaderKey]) {
-                loader.req._loader[loaderKey] = new DataLoader(async (ids) => {
+                loader.req._loader[loaderKey] = new dataloader_1.default(async (ids) => {
                     loader.ids = ids;
                     return actualDescriptor.call(this, ...args);
                 });
@@ -60,4 +60,4 @@ function mapManyToOneRelation(entities, ids) {
     }, {});
     return ids.map(k => mappedEntities[k]);
 }
-//# sourceMappingURL=dataloader.js.map
+//# sourceMappingURL=loader.js.map

@@ -1,9 +1,8 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as config from 'config';
-
 import { IDBSettings } from './settings.types';
 
-const settings: IDBSettings = config.get('DB_SETTINGS');
+const settings: IDBSettings = config.DB_SETTINGS;
 
 export function getOrmConfig(): TypeOrmModuleOptions {
   let ormConfig: TypeOrmModuleOptions;
