@@ -1,10 +1,11 @@
 {
   "name": "nestjs-graphql-tools",
   "version": "0.0.2",
-  "description": "",
+  "description": "Nestjs Graphql automation library for building performant API",
   "author": "Alexey Panfilkin",
   "private": false,
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "main": "dist-lib/index.js",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "npm run cleanup && tsc -p lib.tsconfig.json",
