@@ -9,14 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.applyFilterParameter = exports.GraphqlFilter = exports.Filter = exports.InputMapPrefixes = exports.OperationQuery = exports.OperatorQuery = void 0;
+exports.applyFilterParameter = exports.GraphqlFilter = exports.Filter = exports.InputMapPrefixes = exports.OperationQuery = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const typeorm_1 = require("typeorm");
-var OperatorQuery;
-(function (OperatorQuery) {
-    OperatorQuery["and"] = "and";
-    OperatorQuery["or"] = "or";
-})(OperatorQuery = exports.OperatorQuery || (exports.OperatorQuery = {}));
 var OperationQuery;
 (function (OperationQuery) {
     OperationQuery["eq"] = "=";
@@ -80,8 +75,9 @@ function generateFilterInputType(classRef) {
     graphql_1.TypeMetadataStorage.compileClassMetadata([classMetadata]);
     const objectTypesMetadata = graphql_1.TypeMetadataStorage.getObjectTypesMetadata();
     const inheritedType = objectTypesMetadata.find(x => x.target.name === (classRef === null || classRef === void 0 ? void 0 : classRef.__extension__));
-    if (inheritedType && classRef.name !== inheritedType.name) {
-        return generateFilterInputType(inheritedType.target);
+    if (inheritedType) {
+        graphql_1.TypeMetadataStorage.loadClassPluginMetadata([inheritedType]);
+        graphql_1.TypeMetadataStorage.compileClassMetadata([inheritedType]);
     }
     class PartialObjectType {
     }
@@ -94,7 +90,7 @@ function generateFilterInputType(classRef) {
     if (!(classMetadata === null || classMetadata === void 0 ? void 0 : classMetadata.properties)) {
         throw new Error(`DTO ${classRef.name} hasn't been initialized yet`);
     }
-    const properties = [...classMetadata.properties, ...((inheritedType === null || inheritedType === void 0 ? void 0 : inheritedType.properties) || [])];
+    const properties = [...((inheritedType === null || inheritedType === void 0 ? void 0 : inheritedType.properties) || []), ...classMetadata.properties];
     for (const field of properties) {
         const targetClassMetadata = graphql_1.TypeMetadataStorage.getObjectTypeMetadataByTarget(field.typeFn());
         if (!targetClassMetadata) {

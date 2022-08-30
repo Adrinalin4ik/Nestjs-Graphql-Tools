@@ -2,10 +2,6 @@ interface BaseEntity extends Function {
     new (...any: any[]): any;
     [key: string]: any;
 }
-export declare enum OperatorQuery {
-    and = "and",
-    or = "or"
-}
 export declare enum OperationQuery {
     eq = "=",
     neq = "!=",
