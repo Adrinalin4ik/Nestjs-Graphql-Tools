@@ -6,6 +6,7 @@
   "private": false,
   "license": "MIT",
   "main": "dist-lib/index.js",
+  "repository": "https://github.com/Adrinalin4ik/Nestjs-Graphql-Tools",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "npm run cleanup && tsc -p lib.tsconfig.json",
