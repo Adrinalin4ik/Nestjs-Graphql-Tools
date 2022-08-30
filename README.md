@@ -19,8 +19,8 @@ The library allows to build efficient graphql API helping overcome n+1 problem a
 $ npm i nestjs-graphql-tools
 ```
 
-## Data Loader usage
-  Loader usage guide
+## Data Loader n+1 resolver
+#### Loader usage guide
   1. Decorate your resolver with `@GraphqlLoader()`
   2. Add `@Loader()` parameter as a first parameter
   3. @Loader will return you LoaderData interface which includes ids of entities and helpers for constructing sutable object for graphql
@@ -77,7 +77,7 @@ export class TaskResolver {
 }
 ```
 
-## Filters usage
+## Filters
 Filter is giving ability to filter out entities by the condition. Condition looks similar to hasura interface using operators `eq, neq, gt, gte, lt, lte, in, like, notlike, between, notbetween, null`
 
 ##### Example 1
