@@ -7,14 +7,5 @@
     "database": "nestjs_graphql_tools_development",
     "logging": "all",
     "synchronize": true
-  },
-  "APP_SETTINGS": {
-    "port": 8080
-  },
-  "GRAPHQL_SETTINGS": {
-    "playground": true,
-    "debug": true,
-    "introspection": true,
-    "installSubscriptionHandlers": true
   }
 }

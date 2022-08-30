@@ -2,7 +2,7 @@
 import { Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
-import { Filter, GraphqlFilter, GraphqlLoader, Loader, LoaderData } from '../../../lib';
+import { Filter, GraphqlFilter, GraphqlLoader, Loader, LoaderData, SelectedFields, SelectedFieldsResult } from '../../../lib';
 import { UserObjectType } from '../user/user.dto';
 import { User } from '../user/user.entity';
 import { TaskObjectType } from './task.dto';
@@ -20,8 +20,10 @@ export class TaskResolver {
   @GraphqlFilter()
   async tasks(
    @Filter(() => TaskObjectType) filter: Brackets,
+   @SelectedFields({sqlAlias: 't'}) selectedFields: SelectedFieldsResult
   ) {
-    const res = await this.taskRepository.createQueryBuilder()
+    const res = await this.taskRepository.createQueryBuilder('t')
+      .select(selectedFields.fieldsData.fieldsString)
       .where(filter)
       .getMany();
     return res;

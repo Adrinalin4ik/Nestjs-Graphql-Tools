@@ -6,11 +6,6 @@ interface BaseEntity extends Function {
   [key: string]: any;
 }
 
-export enum OperatorQuery {
-  and = 'and',
-  or = 'or',
-}
-
 export enum OperationQuery {
   eq = '=',
   neq = '!=',
@@ -82,8 +77,10 @@ function generateFilterInputType<T extends BaseEntity>(classRef: T) {
   const objectTypesMetadata = TypeMetadataStorage.getObjectTypesMetadata();
   const inheritedType = objectTypesMetadata.find(x => x.target.name === classRef?.__extension__);
   
-  if (inheritedType && classRef.name !== inheritedType.name) {
-    return generateFilterInputType(inheritedType.target as BaseEntity);
+  if (inheritedType) {
+    // Compile inherited type
+    TypeMetadataStorage.loadClassPluginMetadata([inheritedType]);
+    TypeMetadataStorage.compileClassMetadata([inheritedType]);
   }
 
   class PartialObjectType {}
@@ -100,7 +97,7 @@ function generateFilterInputType<T extends BaseEntity>(classRef: T) {
     throw new Error(`DTO ${classRef.name} hasn't been initialized yet`)
   }
   
-  const properties = [...classMetadata.properties, ...(inheritedType?.properties || [])]
+  const properties = [...(inheritedType?.properties || []), ...classMetadata.properties]
 
   for (const field of properties) {
     const targetClassMetadata = TypeMetadataStorage.getObjectTypeMetadataByTarget(field.typeFn() as BaseEntity);
@@ -137,7 +134,7 @@ export type IFilterField<T> = {
     between: T[K],
     notbetween: T[K],
     null: T[K],
-  }
+  };
 }
 
 export interface IFilter<T> {
@@ -210,7 +207,8 @@ const convertParameters = <T>(parameters: IFilter<T>) => {
           for (const op of parameters?.and) {
             const andParameters = recursivelyTransformComparators(op);
             if (andParameters) {
-              andBracketsQb.andWhere(andParameters);
+              andBracketsQb.andWhere(andParameters)
+              // if (andParameters.)
             }
           }
         })
