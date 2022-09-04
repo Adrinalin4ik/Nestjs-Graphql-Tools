@@ -413,5 +413,33 @@ input TaskObjectTypePropertyFilterType {
 
 type Query {
   users(where: whereUserObjectTypeInput = {}, task_title: String): [UserObjectType!]!
-  tasks(where: whereTaskObjectTypeInput = {}): [TaskObjectType!]!
+  tasks(where: whereTaskObjectTypeInput = {}, paginate: PaginatorArgs, sorting: [sortTaskObjectTypeInput!] = {}): [TaskObjectType!]!
+}
+
+input PaginatorArgs {
+  per_page: Float = 10
+  page: Float = 0
+}
+
+input sortTaskObjectTypeInput {
+  id: SortType
+  title: SortType
+  type_id: SortType
+  priority: SortType
+  story_points: SortType
+  status: SortType
+  assignee_id: SortType
+  task_id: SortType
+  created_at: SortType
+  updated_at: SortType
+  _name_: String = "SortingPropertyDecorator"
+}
+
+enum SortType {
+  ASC
+  DESC
+  ASC_NULLS_LAST
+  ASC_NULLS_FIRST
+  DESC_NULLS_LAST
+  DESC_NULLS_FIRST
 }

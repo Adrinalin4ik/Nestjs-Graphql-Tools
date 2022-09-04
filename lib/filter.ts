@@ -1,10 +1,6 @@
 import { Args, Field, InputType, PartialType, TypeMetadataStorage } from "@nestjs/graphql";
 import { Any, Between, Brackets, Equal, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not } from "typeorm";
-
-interface BaseEntity extends Function {
-  new (...any: any[]): any;
-  [key: string]: any;
-}
+import { BaseEntity } from "./common";
 
 export enum OperationQuery {
   eq = '=',

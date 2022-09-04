@@ -6,6 +6,7 @@ import DataLoader from 'dataloader';
 import { IncomingMessage } from 'http';
 import { groupBy } from 'lodash';
 import { applyFilterParameter } from './filter';
+import { applySortingParameter } from './sorting';
 
 /*
   Loader usage guide
@@ -89,6 +90,7 @@ export const GraphqlLoader = (
     const actualDescriptor = descriptor.value;
     descriptor.value = function(...args) {
       applyFilterParameter(args);
+      applySortingParameter(args);
       const loader = args.find(x => x?._name_ === 'LoaderPropertyDecorator') as LoaderData<any, any>;
       if (!loader || !loader.parent) {
         throw new Error('@Loader parameter decorator is not first parameter or missing');

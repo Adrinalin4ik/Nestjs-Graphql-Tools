@@ -2,7 +2,7 @@
 import { Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
-import { Filter, GraphqlFilter, GraphqlLoader, Loader, LoaderData, SelectedFields, SelectedFieldsResult } from '../../../lib';
+import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, Paginator, PaginatorArgs, SelectedFields, SelectedFieldsResult, SortArgs, Sorting } from '../../../lib';
 import { UserObjectType } from '../user/user.dto';
 import { User } from '../user/user.entity';
 import { TaskObjectType } from './task.dto';
@@ -18,15 +18,26 @@ export class TaskResolver {
 
   @Query(() => [TaskObjectType])
   @GraphqlFilter()
+  @GraphqlSorting()
   async tasks(
    @Filter(() => TaskObjectType) filter: Brackets,
-   @SelectedFields({sqlAlias: 't'}) selectedFields: SelectedFieldsResult
+   @SelectedFields({sqlAlias: 't'}) selectedFields: SelectedFieldsResult,
+   @Paginator() paginator: PaginatorArgs,
+   @Sorting(() => TaskObjectType) sorting: SortArgs<TaskObjectType>
   ) {
-    const res = await this.taskRepository.createQueryBuilder('t')
+    console.log(sorting.id);
+    const qb = this.taskRepository.createQueryBuilder('t')
       .select(selectedFields.fieldsData.fieldsString)
       .where(filter)
-      .getMany();
-    return res;
+    
+    if (paginator) {
+      qb.offset(paginator.page).limit(paginator.per_page)
+    }
+    
+    if (sorting) {
+      qb.orderBy(sorting);
+    }
+    return qb.getMany();
   }
 
   @ResolveField(() => UserObjectType)

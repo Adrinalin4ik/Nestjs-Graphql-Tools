@@ -11,7 +11,16 @@
 
 ## Description
 
-The library allows to build efficient graphql API helping overcome n+1 problem and building hasura-like search interface with the minimum dependencies. The library is ORM agnostic, so feel free to use it with any ORM.
+The library allows to build efficient graphql API helping overcome n+1 problem and building hasura-like search interface with the minimum dependencies.
+
+## Overview
+- [Loader](#data-loader-n1-resolver)
+- [Filtering](#filters)
+- [Pagination](#pagination)
+- [Sorting](#sorting)
+- [Field extraction](#field-extraction)
+- [More examples](#another-examples)
+
 
 ## Installation
 
@@ -152,9 +161,7 @@ export class UserResolver {
 ```typescript
 @Resolver(() => UserObjectType)
 export class UserResolver {
-  constructor(
-    @InjectRepository(Task) public readonly taskRepository: Repository<Task>,
-  ) {}
+  constructor(@InjectRepository(Task) public readonly taskRepository: Repository<Task>) {}
 
   @ResolveField(() => TaskObjectType)
   @GraphqlLoader() // This decorator already includes @GraphqlFilter()
@@ -175,8 +182,69 @@ export class UserResolver {
 }
 ```
 
-## How to get only requested fields
-The library allows to gather requested field from the query and provides it as an array to the parameter variable.
+## Pagination
+The library provides parameter decorator `@Paginator()` for the pagination. This decorator returns object like that
+
+```typescript
+{
+  [property]: '[ORDER] [NULLS ORDER]'
+}
+
+Example:
+{
+  title: 'ASC',
+  id: 'ASC NULLS LAST'
+}
+```
+
+##### Full example
+
+```typescript
+@Resolver(() => TaskObjectType)
+export class TaskResolver {
+  constructor(@InjectRepository(Task) public readonly taskRepository: Repository<Task>) {}
+
+  @Query(() => [TaskObjectType])
+  async tasks(
+   @Paginator() paginator: PaginatorArgs,
+  ) {
+    const qb = this.taskRepository.createQueryBuilder('t');
+    
+    if (paginator) {
+      qb.offset(paginator.page).limit(paginator.per_page)
+    }
+
+    return qb.getMany();
+  }
+}
+```
+
+## Sorting
+The library provides ability to make sorting. To make sorting works you need to decorate your resolver with `@GraphqlSorting()` or `@GraphqlLoader()`
+
+##### Example 1
+```typescript
+@Resolver(() => TaskObjectType)
+export class TaskResolver {
+  constructor(@InjectRepository(Task) public readonly taskRepository: Repository<Task>) {}
+
+  @Query(() => [TaskObjectType])
+  @GraphqlSorting()
+  async tasks(
+   @Sorting(() => TaskObjectType) sorting: SortArgs<TaskObjectType>
+  ) {
+    const qb = this.taskRepository.createQueryBuilder('t');
+    
+    if (sorting) {
+      qb.orderBy(sorting);
+    }
+    return qb.getMany();
+  }
+}
+```
+
+## Field extraction
+The library allows to gather only requested field from the query and provides it as an array to the parameter variable.
 
 ##### Example
 
@@ -218,7 +286,7 @@ SELECT "t"."id" AS "t_id", "t"."title" AS "t_title" FROM "task" "t"
 ```
 
 
-## Another examples
+## More examples
 You can find another examples in the src folder
 
 How to run it:
