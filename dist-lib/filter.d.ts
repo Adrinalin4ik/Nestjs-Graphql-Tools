@@ -1,7 +1,4 @@
-interface BaseEntity extends Function {
-    new (...any: any[]): any;
-    [key: string]: any;
-}
+import { BaseEntity } from "./common";
 export declare enum OperationQuery {
     eq = "=",
     neq = "!=",

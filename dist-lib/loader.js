@@ -5,6 +5,7 @@ const common_1 = require("@nestjs/common");
 const dataloader_1 = require("dataloader");
 const lodash_1 = require("lodash");
 const filter_1 = require("./filter");
+const sorting_1 = require("./sorting");
 exports.Loader = (0, common_1.createParamDecorator)((_data, ctx) => {
     const args = ctx.getArgs();
     const { req } = args[2];
@@ -27,6 +28,7 @@ const GraphqlLoader = (options = {
         const actualDescriptor = descriptor.value;
         descriptor.value = function (...args) {
             (0, filter_1.applyFilterParameter)(args);
+            (0, sorting_1.applySortingParameter)(args);
             const loader = args.find(x => (x === null || x === void 0 ? void 0 : x._name_) === 'LoaderPropertyDecorator');
             if (!loader || !loader.parent) {
                 throw new Error('@Loader parameter decorator is not first parameter or missing');
