@@ -19,7 +19,7 @@ The library allows to build efficient graphql API helping overcome n+1 problem a
 - [Pagination](#pagination)
 - [Sorting](#sorting)
 - [Field extraction](#field-extraction)
-- [More examples](#another-examples)
+- [More examples](#more-examples)
 
 
 ## Installation
