@@ -1,5 +1,4 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
-import { TaskObjectType } from "../task/task.dto";
 import { BaseDTO } from "../utils/base.dto";
 
 @ObjectType()
@@ -27,7 +26,4 @@ export class UserObjectType extends BaseDTO {
 
   @Field()
   is_active: boolean;
-
-  @Field(() => [TaskObjectType], { nullable: true })
-  tasks: TaskObjectType[];
 }

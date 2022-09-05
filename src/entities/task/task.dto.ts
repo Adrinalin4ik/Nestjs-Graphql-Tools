@@ -1,5 +1,4 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { UserObjectType } from '../user/user.dto';
 
 @ObjectType()
 export class TaskObjectType {
@@ -23,12 +22,10 @@ export class TaskObjectType {
   
   @Field(() => Int, {nullable: true})
   assignee_id: number;
-  
-  @Field(() => UserObjectType, {nullable: true})
-  assignee: UserObjectType;
 
   @Field(() => Int)
   task_id: number;
+  
   @Field(() => String)
   created_at: Date;
 

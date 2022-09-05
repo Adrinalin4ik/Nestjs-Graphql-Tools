@@ -30,7 +30,7 @@ export class UserResolver {
     return qb.getMany()
   }
 
-  @ResolveField(() => TaskObjectType)
+  @ResolveField(() => [TaskObjectType], { nullable: true })
   @GraphqlLoader()
   async tasks(
     @Loader() loader: LoaderData<TaskObjectType, number>,

@@ -25,7 +25,6 @@ export class TaskResolver {
    @Paginator() paginator: PaginatorArgs,
    @Sorting(() => TaskObjectType) sorting: SortArgs<TaskObjectType>
   ) {
-    console.log(sorting.id);
     const qb = this.taskRepository.createQueryBuilder('t')
       .select(selectedFields.fieldsData.fieldsString)
       .where(filter)
@@ -40,7 +39,7 @@ export class TaskResolver {
     return qb.getMany();
   }
 
-  @ResolveField(() => UserObjectType)
+  @ResolveField(() => UserObjectType, {nullable: true})
   @GraphqlLoader({
     foreignKey: 'assignee_id'
   })

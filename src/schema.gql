@@ -2,221 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type TaskObjectType {
-  id: Int!
-  title: String!
-  type_id: Int!
-  priority: Int!
-  story_points: Int!
-  status: Int!
-  assignee_id: Int
-  assignee(where: whereUserObjectTypeInput = {}): UserObjectType
-  task_id: Int!
-  created_at: String!
-  updated_at: String!
-}
-
-input whereUserObjectTypeInput {
-  id: idUserObjectTypePropertyFilterType
-  created_at: created_atUserObjectTypePropertyFilterType
-  updated_at: updated_atUserObjectTypePropertyFilterType
-  identification_number: identification_numberUserObjectTypePropertyFilterType
-  email: emailUserObjectTypePropertyFilterType
-  fname: fnameUserObjectTypePropertyFilterType
-  lname: lnameUserObjectTypePropertyFilterType
-  mname: mnameUserObjectTypePropertyFilterType
-  age: ageUserObjectTypePropertyFilterType
-  phone: phoneUserObjectTypePropertyFilterType
-  is_active: is_activeUserObjectTypePropertyFilterType
-  _name_: String = "FilterPropertyDecorator"
-  and: [UserObjectTypePropertyFilterType!]
-  or: [UserObjectTypePropertyFilterType!]
-}
-
-input idUserObjectTypePropertyFilterType {
-  eq: Int
-  neq: Int
-  gt: Int
-  gte: Int
-  lt: Int
-  lte: Int
-  in: [Int!]
-  like: Int
-  notlike: Int
-  between: [Int!]
-  notbetween: [Int!]
-  null: Boolean
-}
-
-input created_atUserObjectTypePropertyFilterType {
-  eq: DateTime
-  neq: DateTime
-  gt: DateTime
-  gte: DateTime
-  lt: DateTime
-  lte: DateTime
-  in: [DateTime!]
-  like: DateTime
-  notlike: DateTime
-  between: [DateTime!]
-  notbetween: [DateTime!]
-  null: Boolean
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-input updated_atUserObjectTypePropertyFilterType {
-  eq: DateTime
-  neq: DateTime
-  gt: DateTime
-  gte: DateTime
-  lt: DateTime
-  lte: DateTime
-  in: [DateTime!]
-  like: DateTime
-  notlike: DateTime
-  between: [DateTime!]
-  notbetween: [DateTime!]
-  null: Boolean
-}
-
-input identification_numberUserObjectTypePropertyFilterType {
-  eq: Int
-  neq: Int
-  gt: Int
-  gte: Int
-  lt: Int
-  lte: Int
-  in: [Int!]
-  like: Int
-  notlike: Int
-  between: [Int!]
-  notbetween: [Int!]
-  null: Boolean
-}
-
-input emailUserObjectTypePropertyFilterType {
-  eq: String
-  neq: String
-  gt: String
-  gte: String
-  lt: String
-  lte: String
-  in: [String!]
-  like: String
-  notlike: String
-  between: [String!]
-  notbetween: [String!]
-  null: Boolean
-}
-
-input fnameUserObjectTypePropertyFilterType {
-  eq: String
-  neq: String
-  gt: String
-  gte: String
-  lt: String
-  lte: String
-  in: [String!]
-  like: String
-  notlike: String
-  between: [String!]
-  notbetween: [String!]
-  null: Boolean
-}
-
-input lnameUserObjectTypePropertyFilterType {
-  eq: String
-  neq: String
-  gt: String
-  gte: String
-  lt: String
-  lte: String
-  in: [String!]
-  like: String
-  notlike: String
-  between: [String!]
-  notbetween: [String!]
-  null: Boolean
-}
-
-input mnameUserObjectTypePropertyFilterType {
-  eq: String
-  neq: String
-  gt: String
-  gte: String
-  lt: String
-  lte: String
-  in: [String!]
-  like: String
-  notlike: String
-  between: [String!]
-  notbetween: [String!]
-  null: Boolean
-}
-
-input ageUserObjectTypePropertyFilterType {
-  eq: Float
-  neq: Float
-  gt: Float
-  gte: Float
-  lt: Float
-  lte: Float
-  in: [Float!]
-  like: Float
-  notlike: Float
-  between: [Float!]
-  notbetween: [Float!]
-  null: Boolean
-}
-
-input phoneUserObjectTypePropertyFilterType {
-  eq: String
-  neq: String
-  gt: String
-  gte: String
-  lt: String
-  lte: String
-  in: [String!]
-  like: String
-  notlike: String
-  between: [String!]
-  notbetween: [String!]
-  null: Boolean
-}
-
-input is_activeUserObjectTypePropertyFilterType {
-  eq: Boolean
-  neq: Boolean
-  gt: Boolean
-  gte: Boolean
-  lt: Boolean
-  lte: Boolean
-  in: [Boolean!]
-  like: Boolean
-  notlike: Boolean
-  between: [Boolean!]
-  notbetween: [Boolean!]
-  null: Boolean
-}
-
-input UserObjectTypePropertyFilterType {
-  id: idUserObjectTypePropertyFilterType
-  created_at: created_atUserObjectTypePropertyFilterType
-  updated_at: updated_atUserObjectTypePropertyFilterType
-  identification_number: identification_numberUserObjectTypePropertyFilterType
-  email: emailUserObjectTypePropertyFilterType
-  fname: fnameUserObjectTypePropertyFilterType
-  lname: lnameUserObjectTypePropertyFilterType
-  mname: mnameUserObjectTypePropertyFilterType
-  age: ageUserObjectTypePropertyFilterType
-  phone: phoneUserObjectTypePropertyFilterType
-  is_active: is_activeUserObjectTypePropertyFilterType
-}
-
 type UserObjectType {
   id: Int!
   created_at: DateTime!
@@ -231,6 +16,11 @@ type UserObjectType {
   is_active: Boolean!
   tasks(where: whereTaskObjectTypeInput = {}): [TaskObjectType!]
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 input whereTaskObjectTypeInput {
   id: idTaskObjectTypePropertyFilterType
@@ -409,6 +199,216 @@ input TaskObjectTypePropertyFilterType {
   task_id: task_idTaskObjectTypePropertyFilterType
   created_at: created_atTaskObjectTypePropertyFilterType
   updated_at: updated_atTaskObjectTypePropertyFilterType
+}
+
+type TaskObjectType {
+  id: Int!
+  title: String!
+  type_id: Int!
+  priority: Int!
+  story_points: Int!
+  status: Int!
+  assignee_id: Int
+  task_id: Int!
+  created_at: String!
+  updated_at: String!
+  assignee(where: whereUserObjectTypeInput = {}): UserObjectType
+}
+
+input whereUserObjectTypeInput {
+  id: idUserObjectTypePropertyFilterType
+  created_at: created_atUserObjectTypePropertyFilterType
+  updated_at: updated_atUserObjectTypePropertyFilterType
+  identification_number: identification_numberUserObjectTypePropertyFilterType
+  email: emailUserObjectTypePropertyFilterType
+  fname: fnameUserObjectTypePropertyFilterType
+  lname: lnameUserObjectTypePropertyFilterType
+  mname: mnameUserObjectTypePropertyFilterType
+  age: ageUserObjectTypePropertyFilterType
+  phone: phoneUserObjectTypePropertyFilterType
+  is_active: is_activeUserObjectTypePropertyFilterType
+  _name_: String = "FilterPropertyDecorator"
+  and: [UserObjectTypePropertyFilterType!]
+  or: [UserObjectTypePropertyFilterType!]
+}
+
+input idUserObjectTypePropertyFilterType {
+  eq: Int
+  neq: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  in: [Int!]
+  like: Int
+  notlike: Int
+  between: [Int!]
+  notbetween: [Int!]
+  null: Boolean
+}
+
+input created_atUserObjectTypePropertyFilterType {
+  eq: DateTime
+  neq: DateTime
+  gt: DateTime
+  gte: DateTime
+  lt: DateTime
+  lte: DateTime
+  in: [DateTime!]
+  like: DateTime
+  notlike: DateTime
+  between: [DateTime!]
+  notbetween: [DateTime!]
+  null: Boolean
+}
+
+input updated_atUserObjectTypePropertyFilterType {
+  eq: DateTime
+  neq: DateTime
+  gt: DateTime
+  gte: DateTime
+  lt: DateTime
+  lte: DateTime
+  in: [DateTime!]
+  like: DateTime
+  notlike: DateTime
+  between: [DateTime!]
+  notbetween: [DateTime!]
+  null: Boolean
+}
+
+input identification_numberUserObjectTypePropertyFilterType {
+  eq: Int
+  neq: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  in: [Int!]
+  like: Int
+  notlike: Int
+  between: [Int!]
+  notbetween: [Int!]
+  null: Boolean
+}
+
+input emailUserObjectTypePropertyFilterType {
+  eq: String
+  neq: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  in: [String!]
+  like: String
+  notlike: String
+  between: [String!]
+  notbetween: [String!]
+  null: Boolean
+}
+
+input fnameUserObjectTypePropertyFilterType {
+  eq: String
+  neq: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  in: [String!]
+  like: String
+  notlike: String
+  between: [String!]
+  notbetween: [String!]
+  null: Boolean
+}
+
+input lnameUserObjectTypePropertyFilterType {
+  eq: String
+  neq: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  in: [String!]
+  like: String
+  notlike: String
+  between: [String!]
+  notbetween: [String!]
+  null: Boolean
+}
+
+input mnameUserObjectTypePropertyFilterType {
+  eq: String
+  neq: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  in: [String!]
+  like: String
+  notlike: String
+  between: [String!]
+  notbetween: [String!]
+  null: Boolean
+}
+
+input ageUserObjectTypePropertyFilterType {
+  eq: Float
+  neq: Float
+  gt: Float
+  gte: Float
+  lt: Float
+  lte: Float
+  in: [Float!]
+  like: Float
+  notlike: Float
+  between: [Float!]
+  notbetween: [Float!]
+  null: Boolean
+}
+
+input phoneUserObjectTypePropertyFilterType {
+  eq: String
+  neq: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  in: [String!]
+  like: String
+  notlike: String
+  between: [String!]
+  notbetween: [String!]
+  null: Boolean
+}
+
+input is_activeUserObjectTypePropertyFilterType {
+  eq: Boolean
+  neq: Boolean
+  gt: Boolean
+  gte: Boolean
+  lt: Boolean
+  lte: Boolean
+  in: [Boolean!]
+  like: Boolean
+  notlike: Boolean
+  between: [Boolean!]
+  notbetween: [Boolean!]
+  null: Boolean
+}
+
+input UserObjectTypePropertyFilterType {
+  id: idUserObjectTypePropertyFilterType
+  created_at: created_atUserObjectTypePropertyFilterType
+  updated_at: updated_atUserObjectTypePropertyFilterType
+  identification_number: identification_numberUserObjectTypePropertyFilterType
+  email: emailUserObjectTypePropertyFilterType
+  fname: fnameUserObjectTypePropertyFilterType
+  lname: lnameUserObjectTypePropertyFilterType
+  mname: mnameUserObjectTypePropertyFilterType
+  age: ageUserObjectTypePropertyFilterType
+  phone: phoneUserObjectTypePropertyFilterType
+  is_active: is_activeUserObjectTypePropertyFilterType
 }
 
 type Query {
