@@ -3,6 +3,8 @@ import { Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
 import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, Paginator, PaginatorArgs, SelectedFields, SelectedFieldsResult, SortArgs, Sorting } from '../../../lib';
+import { DescriptionObjectType } from '../description/description.dto';
+import { Description } from '../description/description.entity';
 import { UserObjectType } from '../user/user.dto';
 import { User } from '../user/user.entity';
 import { TaskObjectType } from './task.dto';
@@ -13,7 +15,8 @@ export class TaskResolver {
 
   constructor(
     @InjectRepository(Task) public readonly taskRepository: Repository<Task>,
-    @InjectRepository(User) public readonly userRepository: Repository<User>
+    @InjectRepository(User) public readonly userRepository: Repository<User>,
+    @InjectRepository(Description) public readonly descriptionRepository: Repository<Description>
   ) {}
 
   @Query(() => [TaskObjectType])
@@ -54,5 +57,18 @@ export class TaskResolver {
       })
     const users = await qb.getMany();
     return loader.helpers.mapManyToOneRelation(users, loader.ids);
+  }
+
+  @ResolveField(() => [DescriptionObjectType])
+  @GraphqlLoader()
+  async descriptions(
+    @Loader() loader: LoaderData<TaskObjectType, number>,
+  ) {
+    const qb = this.descriptionRepository.createQueryBuilder('d')
+      .andWhere({
+        task_id: In(loader.ids)
+      })
+    const descriptions = await qb.getMany();
+    return loader.helpers.mapOneToManyRelation(descriptions, loader.ids, 'task_id');
   }
 }

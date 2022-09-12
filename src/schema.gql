@@ -2,19 +2,14 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type UserObjectType {
+type DescriptionObjectType {
   id: Int!
   created_at: DateTime!
   updated_at: DateTime!
-  identification_number: Int!
-  email: String!
-  fname: String!
-  lname: String!
-  mname: String!
-  age: Float!
-  phone: String!
-  is_active: Boolean!
-  tasks(where: whereTaskObjectTypeInput = {}): [TaskObjectType!]
+  description_id: Int!
+  description_type: DescriptionType!
+  task_id: Int!
+  descriptionable: [DescriptionableUnion!]!
 }
 
 """
@@ -22,183 +17,34 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-input whereTaskObjectTypeInput {
-  id: idTaskObjectTypePropertyFilterType
-  title: titleTaskObjectTypePropertyFilterType
-  type_id: type_idTaskObjectTypePropertyFilterType
-  priority: priorityTaskObjectTypePropertyFilterType
-  story_points: story_pointsTaskObjectTypePropertyFilterType
-  status: statusTaskObjectTypePropertyFilterType
-  assignee_id: assignee_idTaskObjectTypePropertyFilterType
-  task_id: task_idTaskObjectTypePropertyFilterType
-  created_at: created_atTaskObjectTypePropertyFilterType
-  updated_at: updated_atTaskObjectTypePropertyFilterType
-  _name_: String = "FilterPropertyDecorator"
-  and: [TaskObjectTypePropertyFilterType!]
-  or: [TaskObjectTypePropertyFilterType!]
+enum DescriptionType {
+  Text
+  Checklist
 }
 
-input idTaskObjectTypePropertyFilterType {
-  eq: Int
-  neq: Int
-  gt: Int
-  gte: Int
-  lt: Int
-  lte: Int
-  in: [Int!]
-  like: Int
-  notlike: Int
-  between: [Int!]
-  notbetween: [Int!]
-  null: Boolean
+union DescriptionableUnion = DescriptionTextObjectType | DescriptionChecklistObjectType
+
+type DescriptionTextObjectType {
+  id: Int!
+  created_at: DateTime!
+  updated_at: DateTime!
+  text: String!
 }
 
-input titleTaskObjectTypePropertyFilterType {
-  eq: String
-  neq: String
-  gt: String
-  gte: String
-  lt: String
-  lte: String
-  in: [String!]
-  like: String
-  notlike: String
-  between: [String!]
-  notbetween: [String!]
-  null: Boolean
+type DescriptionChecklistObjectType {
+  id: Int!
+  created_at: DateTime!
+  updated_at: DateTime!
+  title: String!
+  items: [DescriptionChecklistItemObjectType!]!
 }
 
-input type_idTaskObjectTypePropertyFilterType {
-  eq: Int
-  neq: Int
-  gt: Int
-  gte: Int
-  lt: Int
-  lte: Int
-  in: [Int!]
-  like: Int
-  notlike: Int
-  between: [Int!]
-  notbetween: [Int!]
-  null: Boolean
-}
-
-input priorityTaskObjectTypePropertyFilterType {
-  eq: Int
-  neq: Int
-  gt: Int
-  gte: Int
-  lt: Int
-  lte: Int
-  in: [Int!]
-  like: Int
-  notlike: Int
-  between: [Int!]
-  notbetween: [Int!]
-  null: Boolean
-}
-
-input story_pointsTaskObjectTypePropertyFilterType {
-  eq: Int
-  neq: Int
-  gt: Int
-  gte: Int
-  lt: Int
-  lte: Int
-  in: [Int!]
-  like: Int
-  notlike: Int
-  between: [Int!]
-  notbetween: [Int!]
-  null: Boolean
-}
-
-input statusTaskObjectTypePropertyFilterType {
-  eq: Int
-  neq: Int
-  gt: Int
-  gte: Int
-  lt: Int
-  lte: Int
-  in: [Int!]
-  like: Int
-  notlike: Int
-  between: [Int!]
-  notbetween: [Int!]
-  null: Boolean
-}
-
-input assignee_idTaskObjectTypePropertyFilterType {
-  eq: Int
-  neq: Int
-  gt: Int
-  gte: Int
-  lt: Int
-  lte: Int
-  in: [Int!]
-  like: Int
-  notlike: Int
-  between: [Int!]
-  notbetween: [Int!]
-  null: Boolean
-}
-
-input task_idTaskObjectTypePropertyFilterType {
-  eq: Int
-  neq: Int
-  gt: Int
-  gte: Int
-  lt: Int
-  lte: Int
-  in: [Int!]
-  like: Int
-  notlike: Int
-  between: [Int!]
-  notbetween: [Int!]
-  null: Boolean
-}
-
-input created_atTaskObjectTypePropertyFilterType {
-  eq: String
-  neq: String
-  gt: String
-  gte: String
-  lt: String
-  lte: String
-  in: [String!]
-  like: String
-  notlike: String
-  between: [String!]
-  notbetween: [String!]
-  null: Boolean
-}
-
-input updated_atTaskObjectTypePropertyFilterType {
-  eq: String
-  neq: String
-  gt: String
-  gte: String
-  lt: String
-  lte: String
-  in: [String!]
-  like: String
-  notlike: String
-  between: [String!]
-  notbetween: [String!]
-  null: Boolean
-}
-
-input TaskObjectTypePropertyFilterType {
-  id: idTaskObjectTypePropertyFilterType
-  title: titleTaskObjectTypePropertyFilterType
-  type_id: type_idTaskObjectTypePropertyFilterType
-  priority: priorityTaskObjectTypePropertyFilterType
-  story_points: story_pointsTaskObjectTypePropertyFilterType
-  status: statusTaskObjectTypePropertyFilterType
-  assignee_id: assignee_idTaskObjectTypePropertyFilterType
-  task_id: task_idTaskObjectTypePropertyFilterType
-  created_at: created_atTaskObjectTypePropertyFilterType
-  updated_at: updated_atTaskObjectTypePropertyFilterType
+type DescriptionChecklistItemObjectType {
+  id: Int!
+  created_at: DateTime!
+  updated_at: DateTime!
+  label: String!
+  is_checked: String!
 }
 
 type TaskObjectType {
@@ -213,6 +59,7 @@ type TaskObjectType {
   created_at: String!
   updated_at: String!
   assignee(where: whereUserObjectTypeInput = {}): UserObjectType
+  descriptions: [DescriptionObjectType!]!
 }
 
 input whereUserObjectTypeInput {
@@ -409,6 +256,212 @@ input UserObjectTypePropertyFilterType {
   age: ageUserObjectTypePropertyFilterType
   phone: phoneUserObjectTypePropertyFilterType
   is_active: is_activeUserObjectTypePropertyFilterType
+}
+
+type UserObjectType {
+  id: Int!
+  created_at: DateTime!
+  updated_at: DateTime!
+  identification_number: Int!
+  email: String!
+  fname: String!
+  lname: String!
+  mname: String!
+  age: Float!
+  phone: String!
+  is_active: Boolean!
+  tasks(where: whereTaskObjectTypeInput = {}): [TaskObjectType!]
+  searchTasks: [SearchTasks!]!
+}
+
+input whereTaskObjectTypeInput {
+  id: idTaskObjectTypePropertyFilterType
+  title: titleTaskObjectTypePropertyFilterType
+  type_id: type_idTaskObjectTypePropertyFilterType
+  priority: priorityTaskObjectTypePropertyFilterType
+  story_points: story_pointsTaskObjectTypePropertyFilterType
+  status: statusTaskObjectTypePropertyFilterType
+  assignee_id: assignee_idTaskObjectTypePropertyFilterType
+  task_id: task_idTaskObjectTypePropertyFilterType
+  created_at: created_atTaskObjectTypePropertyFilterType
+  updated_at: updated_atTaskObjectTypePropertyFilterType
+  _name_: String = "FilterPropertyDecorator"
+  and: [TaskObjectTypePropertyFilterType!]
+  or: [TaskObjectTypePropertyFilterType!]
+}
+
+input idTaskObjectTypePropertyFilterType {
+  eq: Int
+  neq: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  in: [Int!]
+  like: Int
+  notlike: Int
+  between: [Int!]
+  notbetween: [Int!]
+  null: Boolean
+}
+
+input titleTaskObjectTypePropertyFilterType {
+  eq: String
+  neq: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  in: [String!]
+  like: String
+  notlike: String
+  between: [String!]
+  notbetween: [String!]
+  null: Boolean
+}
+
+input type_idTaskObjectTypePropertyFilterType {
+  eq: Int
+  neq: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  in: [Int!]
+  like: Int
+  notlike: Int
+  between: [Int!]
+  notbetween: [Int!]
+  null: Boolean
+}
+
+input priorityTaskObjectTypePropertyFilterType {
+  eq: Int
+  neq: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  in: [Int!]
+  like: Int
+  notlike: Int
+  between: [Int!]
+  notbetween: [Int!]
+  null: Boolean
+}
+
+input story_pointsTaskObjectTypePropertyFilterType {
+  eq: Int
+  neq: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  in: [Int!]
+  like: Int
+  notlike: Int
+  between: [Int!]
+  notbetween: [Int!]
+  null: Boolean
+}
+
+input statusTaskObjectTypePropertyFilterType {
+  eq: Int
+  neq: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  in: [Int!]
+  like: Int
+  notlike: Int
+  between: [Int!]
+  notbetween: [Int!]
+  null: Boolean
+}
+
+input assignee_idTaskObjectTypePropertyFilterType {
+  eq: Int
+  neq: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  in: [Int!]
+  like: Int
+  notlike: Int
+  between: [Int!]
+  notbetween: [Int!]
+  null: Boolean
+}
+
+input task_idTaskObjectTypePropertyFilterType {
+  eq: Int
+  neq: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  in: [Int!]
+  like: Int
+  notlike: Int
+  between: [Int!]
+  notbetween: [Int!]
+  null: Boolean
+}
+
+input created_atTaskObjectTypePropertyFilterType {
+  eq: String
+  neq: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  in: [String!]
+  like: String
+  notlike: String
+  between: [String!]
+  notbetween: [String!]
+  null: Boolean
+}
+
+input updated_atTaskObjectTypePropertyFilterType {
+  eq: String
+  neq: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  in: [String!]
+  like: String
+  notlike: String
+  between: [String!]
+  notbetween: [String!]
+  null: Boolean
+}
+
+input TaskObjectTypePropertyFilterType {
+  id: idTaskObjectTypePropertyFilterType
+  title: titleTaskObjectTypePropertyFilterType
+  type_id: type_idTaskObjectTypePropertyFilterType
+  priority: priorityTaskObjectTypePropertyFilterType
+  story_points: story_pointsTaskObjectTypePropertyFilterType
+  status: statusTaskObjectTypePropertyFilterType
+  assignee_id: assignee_idTaskObjectTypePropertyFilterType
+  task_id: task_idTaskObjectTypePropertyFilterType
+  created_at: created_atTaskObjectTypePropertyFilterType
+  updated_at: updated_atTaskObjectTypePropertyFilterType
+}
+
+union SearchTasks = TaskObjectType | StoryModel
+
+type StoryModel {
+  id: Int!
+  title: String!
+  description: String!
+  assignee_id: Int!
+  created_at: DateTime!
+  updated_at: DateTime!
 }
 
 type Query {

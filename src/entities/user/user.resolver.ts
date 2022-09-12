@@ -1,16 +1,18 @@
 import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
-import { Filter, GraphqlFilter, GraphqlLoader, Loader, LoaderData } from '../../../lib';
+import { Filter, GraphqlFilter, GraphqlLoader, Loader, LoaderData, SelectedUnionTypes } from '../../../lib';
+import { StoryModel } from '../story/story.entity';
 import { TaskObjectType } from '../task/task.dto';
 import { Task } from '../task/task.entity';
-import { UserObjectType } from './user.dto';
+import { SearchTasksUnion, UserObjectType } from './user.dto';
 import { User } from './user.entity';
 
 @Resolver(() => UserObjectType)
 export class UserResolver {
   constructor(
     @InjectRepository(Task) public readonly taskRepository: Repository<Task>,
+    @InjectRepository(StoryModel) public readonly storyRepository: Repository<StoryModel>,
     @InjectRepository(User) public readonly userRepository: Repository<User>
   ) {}
 
@@ -45,5 +47,32 @@ export class UserResolver {
     const tasks = await qb.getMany();
     
     return loader.helpers.mapOneToManyRelation(tasks, loader.ids, 'assignee_id');
+  }
+
+  @ResolveField(() => [SearchTasksUnion])
+  @GraphqlLoader()
+  async searchTasks(
+    @Loader() loader: LoaderData<TaskObjectType, number>,
+    @SelectedUnionTypes() types
+  ) {
+    const results = [];
+    if (types.has('StoryModel')) {
+      const sqb = await this.storyRepository.createQueryBuilder('s')
+        .where({
+          assignee_id: In(loader.ids)
+        }).getMany();
+
+        results.push(...sqb);
+    }
+
+    if (types.has('TaskObjectType')) {
+      const tqb = await this.taskRepository.createQueryBuilder('t')
+        .where({
+          assignee_id: In(loader.ids)
+        }).getMany()
+      
+      results.push(...tqb);
+    }
+    return loader.helpers.mapOneToManyRelation(results, loader.ids, 'assignee_id');
   }
 }

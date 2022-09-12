@@ -39,12 +39,13 @@ import { applySortingParameter } from './sorting';
 export interface LoaderHelper<DtoType> {
   mapOneToManyRelation: (
     entities: object[],
-    ids: number[] | string[],
+    ids: any[],
     foreignKey: string
   ) => { [key: string]: DtoType };
   mapManyToOneRelation: (
     entities: object[],
-    ids: number[] | string[]
+    ids: any[],
+    foreignKey?: string
   ) => { [key: string]: DtoType };
 }
 
@@ -56,6 +57,7 @@ export interface LoaderData<DtoType, IdType> {
   name: string,
   parent: any;
   ids: IdType[];
+  polimorphicTypes: IdType[];
   ctx: ExecutionContext;
   req: IncomingMessage & ILoaderInstance<DtoType, IdType>;
   helpers: LoaderHelper<DtoType>;
@@ -63,6 +65,10 @@ export interface LoaderData<DtoType, IdType> {
 
 export interface GraphqlLoaderOptions {
   foreignKey?: string;
+  polymorphic?: {
+    idField: string;
+    typeField: string;
+  }
 }
 
 export const Loader = createParamDecorator((_data: unknown, ctx: ExecutionContext) => {
@@ -100,12 +106,35 @@ export const GraphqlLoader = (
       }
       if (!loader.req._loader[loaderKey]) {
         loader.req._loader[loaderKey] = new DataLoader(async ids => {
-          loader.ids = ids as any[];
+          if (options.polymorphic) {
+            const gs = groupBy(ids, 'type');
+            loader.polimorphicTypes = Object.entries(gs).reduce((acc, [type, entities]) => {
+              acc.push({
+                type,
+                ids: (entities as any[]).map(x => x.id)
+              })
+              return acc;
+            }, []);
+
+            loader.ids = (ids as any[]).map(x => x.id);
+          } else {
+            loader.ids = ids as any[];
+          }
+          
           return actualDescriptor.call(this, ...args);
         });
       }
-      if (loader.parent[options.foreignKey]) {
-        return loader.req._loader[loaderKey].load(loader.parent[options.foreignKey]);
+      if (options.polymorphic) {
+        if (loader.parent[options.polymorphic.idField] && loader.parent[options.polymorphic.typeField]) {
+          return loader.req._loader[loaderKey].load({
+            id: loader.parent[options.polymorphic.idField], 
+            type: loader.parent[options.polymorphic.typeField]
+          } as any);
+        }
+      } else {
+        if (loader.parent[options.foreignKey]) {
+          return loader.req._loader[loaderKey].load(loader.parent[options.foreignKey]);
+        }
       }
     };
   };
@@ -113,7 +142,7 @@ export const GraphqlLoader = (
 
 export const mapOneToManyRelation = (
   entities: object[],
-  ids: number[] | string[],
+  ids: any[],
   foreignKey
 ) => {
   const gs = groupBy(entities, foreignKey);
@@ -121,9 +150,9 @@ export const mapOneToManyRelation = (
   return res;
 };
 
-function mapManyToOneRelation(entities: object[], ids: number[] | string[]) {
+function mapManyToOneRelation(entities: object[], ids:any[], foreignKey: string = 'id') {
   const mappedEntities = entities.reduce((acc: object, e: any) => {
-    acc[e.id] = e;
+    acc[e[foreignKey]] = e;
     return acc;
   }, {});
 

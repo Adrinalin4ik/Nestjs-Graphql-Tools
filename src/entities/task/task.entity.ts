@@ -2,8 +2,10 @@ import {
   Column, Entity,
   Index,
   JoinColumn,
-  ManyToOne
+  ManyToOne,
+  OneToMany
 } from 'typeorm';
+import { Description } from '../description/description.entity';
 import { User } from '../user/user.entity';
 import { Base } from '../utils/base.entity';
 
@@ -37,4 +39,8 @@ export class Task extends Base {
   @ManyToOne(() => User, (user) => user.tasks, { nullable: true })
   @JoinColumn({ name: 'assignee_id' })
   assignee: User;
+
+  @OneToMany(() => Description, (description) => description.task)
+  @JoinColumn()
+  descriptions: User;
 }

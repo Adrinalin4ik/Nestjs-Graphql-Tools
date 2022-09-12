@@ -1,4 +1,7 @@
-import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { createUnionType, Field, Int, ObjectType } from "@nestjs/graphql";
+import { StoryModel } from "../story/story.entity";
+import { TaskObjectType } from "../task/task.dto";
+import { Task } from "../task/task.entity";
 import { BaseDTO } from "../utils/base.dto";
 
 @ObjectType()
@@ -27,3 +30,15 @@ export class UserObjectType extends BaseDTO {
   @Field()
   is_active: boolean;
 }
+
+export const SearchTasksUnion = createUnionType({
+  name: 'SearchTasks',
+  types: () => [TaskObjectType, StoryModel] as const,
+  resolveType(value) {
+    if (value instanceof Task) {
+      return TaskObjectType;
+    } else {
+      return StoryModel;
+    }
+  },
+});
