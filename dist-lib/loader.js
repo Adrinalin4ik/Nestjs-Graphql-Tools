@@ -38,12 +38,35 @@ const GraphqlLoader = (options = {
             }
             if (!loader.req._loader[loaderKey]) {
                 loader.req._loader[loaderKey] = new dataloader_1.default(async (ids) => {
-                    loader.ids = ids;
+                    if (options.polymorphic) {
+                        const gs = (0, lodash_1.groupBy)(ids, 'type');
+                        loader.polimorphicTypes = Object.entries(gs).reduce((acc, [type, entities]) => {
+                            acc.push({
+                                type,
+                                ids: entities.map(x => x.id)
+                            });
+                            return acc;
+                        }, []);
+                        loader.ids = ids.map(x => x.id);
+                    }
+                    else {
+                        loader.ids = ids;
+                    }
                     return actualDescriptor.call(this, ...args);
                 });
             }
-            if (loader.parent[options.foreignKey]) {
-                return loader.req._loader[loaderKey].load(loader.parent[options.foreignKey]);
+            if (options.polymorphic) {
+                if (loader.parent[options.polymorphic.idField] && loader.parent[options.polymorphic.typeField]) {
+                    return loader.req._loader[loaderKey].load({
+                        id: loader.parent[options.polymorphic.idField],
+                        type: loader.parent[options.polymorphic.typeField]
+                    });
+                }
+            }
+            else {
+                if (loader.parent[options.foreignKey]) {
+                    return loader.req._loader[loaderKey].load(loader.parent[options.foreignKey]);
+                }
             }
         };
     };
@@ -55,9 +78,9 @@ const mapOneToManyRelation = (entities, ids, foreignKey) => {
     return res;
 };
 exports.mapOneToManyRelation = mapOneToManyRelation;
-function mapManyToOneRelation(entities, ids) {
+function mapManyToOneRelation(entities, ids, foreignKey = 'id') {
     const mappedEntities = entities.reduce((acc, e) => {
-        acc[e.id] = e;
+        acc[e[foreignKey]] = e;
         return acc;
     }, {});
     return ids.map(k => mappedEntities[k]);

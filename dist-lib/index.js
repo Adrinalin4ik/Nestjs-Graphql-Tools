@@ -19,4 +19,5 @@ __exportStar(require("./filter"), exports);
 __exportStar(require("./loader"), exports);
 __exportStar(require("./pagination"), exports);
 __exportStar(require("./sorting"), exports);
+__exportStar(require("./union-type-extractor"), exports);
 //# sourceMappingURL=index.js.map
