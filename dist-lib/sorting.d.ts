@@ -21,6 +21,9 @@ interface IFilterDecoratorParams {
     name?: string;
 }
 export declare const Sorting: (baseEntity: () => BaseEntity, options?: IFilterDecoratorParams) => (target: any, propertyName: any, paramIndex: any) => void;
-export declare const GraphqlSorting: () => (_target: any, _property: any, descriptor: any) => void;
-export declare const applySortingParameter: (args: any[]) => void;
+interface GraphqlSortingOptions {
+    alias?: string;
+}
+export declare const GraphqlSorting: (options?: GraphqlSortingOptions) => (_target: any, _property: any, descriptor: any) => void;
+export declare const applySortingParameter: (args: any[], alias?: string) => void;
 export {};

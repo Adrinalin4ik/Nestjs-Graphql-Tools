@@ -92,7 +92,7 @@ const Sorting = (baseEntity, options) => {
     const filterFullType = getSortFullInputType(baseEntity());
     return (target, propertyName, paramIndex) => {
         (0, graphql_1.Args)({
-            name: (options === null || options === void 0 ? void 0 : options.name) || 'sorting',
+            name: (options === null || options === void 0 ? void 0 : options.name) || 'order_by',
             nullable: true,
             defaultValue: {},
             type: () => [filterFullType],
@@ -100,27 +100,36 @@ const Sorting = (baseEntity, options) => {
     };
 };
 exports.Sorting = Sorting;
-const GraphqlSorting = () => {
+const GraphqlSorting = (options) => {
     return (_target, _property, descriptor) => {
         const actualDescriptor = descriptor.value;
         descriptor.value = function (...args) {
-            (0, exports.applySortingParameter)(args);
+            (0, exports.applySortingParameter)(args, options === null || options === void 0 ? void 0 : options.alias);
             return actualDescriptor.call(this, ...args);
         };
     };
 };
 exports.GraphqlSorting = GraphqlSorting;
-const applySortingParameter = (args) => {
+const applySortingParameter = (args, alias) => {
     const sortArgIndex = args.findIndex(x => Array.isArray(x) && (x === null || x === void 0 ? void 0 : x.some(x => x._name_ === 'SortingPropertyDecorator')));
     if (sortArgIndex != -1) {
-        args[sortArgIndex] = convertParameters(args[sortArgIndex]);
+        args[sortArgIndex] = convertParameters(args[sortArgIndex], alias);
     }
 };
 exports.applySortingParameter = applySortingParameter;
-const convertParameters = (parameters) => {
-    return parameters.reduce((acc, x) => {
+const convertParameters = (parameters, alias) => {
+    return parameters.reduce((accumulatedParams, x) => {
         delete x._name_;
-        return Object.assign(Object.assign({}, acc), x);
+        const convertedParams = Object.entries(x).reduce((acc, [k, v]) => {
+            if (alias) {
+                acc[`${alias}.${k}`] = v;
+            }
+            else {
+                acc[k] = v;
+            }
+            return acc;
+        }, {});
+        return Object.assign(Object.assign({}, accumulatedParams), convertedParams);
     }, {});
 };
 //# sourceMappingURL=sorting.js.map
