@@ -110,7 +110,7 @@ export const Sorting = (baseEntity: () => BaseEntity, options?: IFilterDecorator
   const filterFullType = getSortFullInputType(baseEntity());
   return (target, propertyName, paramIndex) => {
     Args({
-      name: options?.name || 'sorting',
+      name: options?.name || 'order_by',
       nullable: true,
       defaultValue: {},
       type: () => [filterFullType],
@@ -118,29 +118,44 @@ export const Sorting = (baseEntity: () => BaseEntity, options?: IFilterDecorator
   }
 }
 
-export const GraphqlSorting = () => {
+interface GraphqlSortingOptions {
+  alias?: string
+}
+
+export const GraphqlSorting = (options?: GraphqlSortingOptions) => {
   return (_target, _property, descriptor) => {
     const actualDescriptor = descriptor.value;
     descriptor.value = function(...args) {
-      applySortingParameter(args);
+      applySortingParameter(args, options?.alias);
       return actualDescriptor.call(this, ...args);
     };
   };
 };
 
-export const applySortingParameter = (args: any[]) => {
+export const applySortingParameter = (args: any[], alias?: string) => {
   const sortArgIndex = args.findIndex(x => Array.isArray(x) && x?.some(x => x._name_ === 'SortingPropertyDecorator'));
   if (sortArgIndex != -1) {
-    args[sortArgIndex] = convertParameters(args[sortArgIndex]);
+    args[sortArgIndex] = convertParameters(args[sortArgIndex], alias);
   }
 }
 
-const convertParameters = <T>(parameters: (SortArgs<T> & ISortingMetadata)[]) => {
-  return parameters.reduce((acc, x) => {
+const convertParameters = <T>(parameters: (SortArgs<T> & ISortingMetadata)[], alias?: string) => {
+  return parameters.reduce((accumulatedParams, x) => {
     delete x._name_;
+    
+    const convertedParams = Object.entries(x).reduce((acc, [k, v]) => {
+      if (alias) {
+        acc[`${alias}.${k}`] = v
+      } else {
+        acc[k] = v
+      }
+
+      return acc;
+    }, {});
+
     return {
-      ...acc,
-      ...x,
+      ...accumulatedParams,
+      ...convertedParams
     };
-  }, {});
+  }, {})
 }

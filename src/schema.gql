@@ -465,13 +465,8 @@ type StoryModel {
 }
 
 type Query {
-  users(where: whereUserObjectTypeInput = {}, task_title: String): [UserObjectType!]!
-  tasks(where: whereTaskObjectTypeInput = {}, paginate: PaginatorArgs, sorting: [sortTaskObjectTypeInput!] = {}): [TaskObjectType!]!
-}
-
-input PaginatorArgs {
-  per_page: Float = 10
-  page: Float = 0
+  users(where: whereUserObjectTypeInput = {}, order_by: [sortTaskObjectTypeInput!] = {}): [UserObjectType!]!
+  tasks(where: whereTaskObjectTypeInput = {}, paginate: PaginatorArgs, order_by: [sortTaskObjectTypeInput!] = {}): [TaskObjectType!]!
 }
 
 input sortTaskObjectTypeInput {
@@ -495,4 +490,9 @@ enum SortType {
   ASC_NULLS_FIRST
   DESC_NULLS_LAST
   DESC_NULLS_FIRST
+}
+
+input PaginatorArgs {
+  per_page: Float = 10
+  page: Float = 0
 }

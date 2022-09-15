@@ -1,7 +1,7 @@
-import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
-import { Filter, GraphqlFilter, GraphqlLoader, Loader, LoaderData, SelectedUnionTypes } from '../../../lib';
+import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
 import { StoryModel } from '../story/story.entity';
 import { TaskObjectType } from '../task/task.dto';
 import { Task } from '../task/task.entity';
@@ -18,15 +18,17 @@ export class UserResolver {
 
   @Query(() => [UserObjectType])
   @GraphqlFilter()
+  @GraphqlSorting({alias: 'u'})
   users(
     @Filter(() => UserObjectType) filter: Brackets,
-    @Args('task_title', {nullable: true}) taskTitle: string,
+    @Sorting(() => TaskObjectType) sorting: SortArgs<TaskObjectType>
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
       .leftJoin('task', 't', 't.assignee_id = u.id')
-      .where(filter)
-      if (taskTitle) {
-        qb.andWhere(`t.title ilike :title`, { title: `%${taskTitle}%` })
+      .where(filter);
+      
+      if (sorting) {
+        qb.orderBy(sorting)
       }
 
     return qb.getMany()
