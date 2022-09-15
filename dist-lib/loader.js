@@ -20,15 +20,15 @@ exports.Loader = (0, common_1.createParamDecorator)((_data, ctx) => {
         },
     };
 });
-const GraphqlLoader = (options = {
-    foreignKey: 'id',
-}) => {
+const GraphqlLoader = (args) => {
+    const options = Object.assign({ foreignKey: 'id' }, args);
     return (target, property, descriptor) => {
         const loaderKey = `${target.constructor.name}.${property}`;
         const actualDescriptor = descriptor.value;
         descriptor.value = function (...args) {
+            var _a;
             (0, filter_1.applyFilterParameter)(args);
-            (0, sorting_1.applySortingParameter)(args);
+            (0, sorting_1.applySortingParameter)(args, (_a = options === null || options === void 0 ? void 0 : options.sorting) === null || _a === void 0 ? void 0 : _a.alias);
             const loader = args.find(x => (x === null || x === void 0 ? void 0 : x._name_) === 'LoaderPropertyDecorator');
             if (!loader || !loader.parent) {
                 throw new Error('@Loader parameter decorator is not first parameter or missing');

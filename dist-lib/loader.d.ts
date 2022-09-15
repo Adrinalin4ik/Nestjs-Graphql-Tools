@@ -30,7 +30,10 @@ export interface GraphqlLoaderOptions {
         idField: string;
         typeField: string;
     };
+    sorting?: {
+        alias?: string;
+    };
 }
 export declare const Loader: (...dataOrPipes: unknown[]) => ParameterDecorator;
-export declare const GraphqlLoader: (options?: GraphqlLoaderOptions) => (target: any, property: any, descriptor: any) => void;
+export declare const GraphqlLoader: (args?: GraphqlLoaderOptions) => (target: any, property: any, descriptor: any) => void;
 export declare const mapOneToManyRelation: (entities: object[], ids: any[], foreignKey: any) => any[];
