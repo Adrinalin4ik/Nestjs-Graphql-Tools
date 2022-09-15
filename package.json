@@ -7,6 +7,16 @@
   "license": "MIT",
   "main": "dist-lib/index.js",
   "repository": "https://github.com/Adrinalin4ik/Nestjs-Graphql-Tools",
+  "keywords": [
+    "graphql",
+    "polymorphic",
+    "resolver",
+    "typeorm",
+    "nestjs",
+    "dataloader",
+    "query",
+    "auto"
+  ],
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "npm run cleanup && tsc -p lib.tsconfig.json",

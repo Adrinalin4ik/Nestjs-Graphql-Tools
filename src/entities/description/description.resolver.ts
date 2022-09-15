@@ -11,7 +11,6 @@ export class DescriptionResolver {
   constructor(
     @InjectRepository(DescriptionText) public readonly descriptionTextRepository: Repository<DescriptionText>,
     @InjectRepository(DescriptionChecklist) public readonly descriptionChecklistRepository: Repository<DescriptionChecklist>,
-  //   @InjectRepository(User) public readonly userRepository: Repository<User>
   ) {}
 
   @ResolveField(() => [DescriptionableUnion])

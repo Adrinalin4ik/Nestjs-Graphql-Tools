@@ -15,6 +15,7 @@ The library allows to build efficient graphql API helping overcome n+1 problem a
 
 ## Overview
 - [Loader](#data-loader-n1-resolver)
+- [Polymorphic relations](#polymorphic-relations)
 - [Filtering](#filters)
 - [Pagination](#pagination)
 - [Sorting](#sorting)
@@ -85,6 +86,88 @@ export class TaskResolver {
   }
 }
 ```
+## Polymorphic relations
+`@GraphqlLoader` decorator provides ability to preload polymorphic relations
+#### Usage
+To be able to use it you need to decorate your resolver with `@GraphqlLoader` decorator. Decorator has parameter which allows to specify fields which needs to be gathered for polymorphic relation.
+
+```typescript
+@GraphqlLoader({
+  polymorphic: {
+    idField: 'description_id', // Name of polymorphic id attribute of the parent model
+    typeField: 'description_type' // Name of polymorphic type attribute of the parent model
+  }
+})
+```
+This decorator will aggregate all types and provide ids for each type. All aggregated types will be aveilable in `@Loader` decorator. It has attribute which called `polymorphicTypes. 
+
+##### PolmorphicTypes attribute shape 
+```typescript
+[
+  {
+    type: string | number
+    ids: string[] | number[]
+  }
+]
+
+```
+
+##### Example 1
+
+```typescript
+@Resolver(() => DescriptionObjectType)
+export class DescriptionResolver {
+  constructor(
+    @InjectRepository(DescriptionText) public readonly descriptionTextRepository: Repository<DescriptionText>,
+    @InjectRepository(DescriptionChecklist) public readonly descriptionChecklistRepository: Repository<DescriptionChecklist>,
+  ) {}
+
+  @ResolveField(() => [DescriptionableUnion])
+  @GraphqlLoader({ // <-- We will load description_id field of parent model to the ids and description_type field to the type
+    polymorphic: {
+      idField: 'description_id',
+      typeField: 'description_type'
+    }
+  })
+  async descriptionable(
+    @Loader() loader: LoaderData<[DescriptionText | DescriptionChecklist], {type: DescriptionType, ids: number[]}>, // <-- It will return aggregated polymorphicTypes
+  ) {
+
+    const results = []; // <-- We need to gather all entities to the single array
+
+    for (const item of loader.polimorphicTypes) { // <-- Iterate through all gathered types
+      switch(item.type) {
+        case DescriptionType.Text:
+          const textDescriptions = await this.descriptionTextRepository.createQueryBuilder()
+          .where({
+            id: In(item.ids)
+          })
+          .getMany();
+
+          results.push(
+            ...textDescriptions
+          )
+          break;
+        case DescriptionType.Checklist:
+          const checklistDescriptions = await this.descriptionChecklistRepository.createQueryBuilder()
+          .where({
+            id: In(item.ids)
+          })
+          .getMany();
+
+          results.push(
+            ...checklistDescriptions
+          )
+          break;
+        default: break;
+      }
+    }
+    return loader.helpers.mapOneToManyRelation(results, loader.ids, 'id'); // <-- This helper will change shape of responce to the shape which is sutable for graphql
+  }
+}
+```
+You can find complete example in src/descriptions folder
+
 
 ## Filters
 Filter is giving ability to filter out entities by the condition. Condition looks similar to hasura interface using operators `eq, neq, gt, gte, lt, lte, in, like, notlike, between, notbetween, null`
