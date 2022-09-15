@@ -69,6 +69,9 @@ export interface GraphqlLoaderOptions {
     idField: string;
     typeField: string;
   }
+  sorting?: {
+    alias?: string
+  }
 }
 
 export const Loader = createParamDecorator((_data: unknown, ctx: ExecutionContext) => {
@@ -87,16 +90,19 @@ export const Loader = createParamDecorator((_data: unknown, ctx: ExecutionContex
 });
 
 export const GraphqlLoader = (
-  options: GraphqlLoaderOptions = {
-    foreignKey: 'id',
-  }
+  args?: GraphqlLoaderOptions
 ) => {
+  const options = {
+    foreignKey: 'id',
+    ...args
+  }
+  
   return (target, property, descriptor) => {
     const loaderKey = `${target.constructor.name}.${property}`;
     const actualDescriptor = descriptor.value;
     descriptor.value = function(...args) {
       applyFilterParameter(args);
-      applySortingParameter(args);
+      applySortingParameter(args, options?.sorting?.alias);
       const loader = args.find(x => x?._name_ === 'LoaderPropertyDecorator') as LoaderData<any, any>;
       if (!loader || !loader.parent) {
         throw new Error('@Loader parameter decorator is not first parameter or missing');

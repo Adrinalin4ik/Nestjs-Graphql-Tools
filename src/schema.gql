@@ -270,7 +270,7 @@ type UserObjectType {
   age: Float!
   phone: String!
   is_active: Boolean!
-  tasks(where: whereTaskObjectTypeInput = {}): [TaskObjectType!]
+  tasks(where: whereTaskObjectTypeInput = {}, order_by: [sortTaskObjectTypeInput!] = {}, user_name: String): [TaskObjectType!]
   searchTasks: [SearchTasks!]!
 }
 
@@ -453,22 +453,6 @@ input TaskObjectTypePropertyFilterType {
   updated_at: updated_atTaskObjectTypePropertyFilterType
 }
 
-union SearchTasks = TaskObjectType | StoryModel
-
-type StoryModel {
-  id: Int!
-  title: String!
-  description: String!
-  assignee_id: Int!
-  created_at: DateTime!
-  updated_at: DateTime!
-}
-
-type Query {
-  users(where: whereUserObjectTypeInput = {}, order_by: [sortTaskObjectTypeInput!] = {}): [UserObjectType!]!
-  tasks(where: whereTaskObjectTypeInput = {}, paginate: PaginatorArgs, order_by: [sortTaskObjectTypeInput!] = {}): [TaskObjectType!]!
-}
-
 input sortTaskObjectTypeInput {
   id: SortType
   title: SortType
@@ -490,6 +474,37 @@ enum SortType {
   ASC_NULLS_FIRST
   DESC_NULLS_LAST
   DESC_NULLS_FIRST
+}
+
+union SearchTasks = TaskObjectType | StoryModel
+
+type StoryModel {
+  id: Int!
+  title: String!
+  description: String!
+  assignee_id: Int!
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type Query {
+  users(where: whereUserObjectTypeInput = {}, order_by: [sortUserObjectTypeInput!] = {}): [UserObjectType!]!
+  tasks(where: whereTaskObjectTypeInput = {}, paginate: PaginatorArgs, order_by: [sortTaskObjectTypeInput!] = {}): [TaskObjectType!]!
+}
+
+input sortUserObjectTypeInput {
+  id: SortType
+  created_at: SortType
+  updated_at: SortType
+  identification_number: SortType
+  email: SortType
+  fname: SortType
+  lname: SortType
+  mname: SortType
+  age: SortType
+  phone: SortType
+  is_active: SortType
+  _name_: String = "SortingPropertyDecorator"
 }
 
 input PaginatorArgs {
