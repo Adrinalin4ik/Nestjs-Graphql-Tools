@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mapOneToManyRelation = exports.GraphqlLoader = exports.Loader = void 0;
+exports.mapOneToManyPolymorphicRelation = exports.mapOneToManyRelation = exports.GraphqlLoader = exports.Loader = void 0;
 const common_1 = require("@nestjs/common");
 const dataloader_1 = require("dataloader");
 const lodash_1 = require("lodash");
@@ -16,6 +16,7 @@ exports.Loader = (0, common_1.createParamDecorator)((_data, ctx) => {
         req,
         helpers: {
             mapOneToManyRelation: exports.mapOneToManyRelation,
+            mapOneToManyPolymorphicRelation: exports.mapOneToManyPolymorphicRelation,
             mapManyToOneRelation,
         },
     };
@@ -39,15 +40,16 @@ const GraphqlLoader = (args) => {
             if (!loader.req._loader[loaderKey]) {
                 loader.req._loader[loaderKey] = new dataloader_1.default(async (ids) => {
                     if (options.polymorphic) {
-                        const gs = (0, lodash_1.groupBy)(ids, 'type');
-                        loader.polimorphicTypes = Object.entries(gs).reduce((acc, [type, entities]) => {
+                        const polyLoader = loader;
+                        const gs = (0, lodash_1.groupBy)(ids, 'descriminator');
+                        polyLoader.polimorphicTypes = Object.entries(gs).reduce((acc, [descriminator, entities]) => {
                             acc.push({
-                                type,
+                                descriminator,
                                 ids: entities.map(x => x.id)
                             });
                             return acc;
                         }, []);
-                        loader.ids = ids.map(x => x.id);
+                        polyLoader.ids = ids;
                     }
                     else {
                         loader.ids = ids;
@@ -59,8 +61,11 @@ const GraphqlLoader = (args) => {
                 if (loader.parent[options.polymorphic.idField] && loader.parent[options.polymorphic.typeField]) {
                     return loader.req._loader[loaderKey].load({
                         id: loader.parent[options.polymorphic.idField],
-                        type: loader.parent[options.polymorphic.typeField]
+                        descriminator: loader.parent[options.polymorphic.typeField]
                     });
+                }
+                else {
+                    throw new Error(`Polymorphic relation Error: Your parent model must provide ${options.polymorphic.idField} and ${options.polymorphic.typeField}`);
                 }
             }
             else {
@@ -85,4 +90,19 @@ function mapManyToOneRelation(entities, ids, foreignKey = 'id') {
     }, {});
     return ids.map(k => mappedEntities[k]);
 }
+const mapOneToManyPolymorphicRelation = (entities, typeIds, foreignKey = 'id') => {
+    const gs = entities.reduce((acc, union) => {
+        union.entities.forEach(entity => {
+            const key = `${union.descriminator}_${entity[foreignKey]}`;
+            if (!acc[key]) {
+                acc[key] = [];
+            }
+            acc[key].push(Object.assign(Object.assign({}, entity), { '__UnionDescriminator__': union.descriminator }));
+        });
+        return acc;
+    }, {});
+    const res = typeIds.map(type => gs[`${type.descriminator}_${type.id}`] || null);
+    return res;
+};
+exports.mapOneToManyPolymorphicRelation = mapOneToManyPolymorphicRelation;
 //# sourceMappingURL=loader.js.map

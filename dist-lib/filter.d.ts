@@ -1,17 +1,18 @@
 import { BaseEntity } from "./common";
 export declare enum OperationQuery {
-    eq = "=",
-    neq = "!=",
-    gt = ">",
-    gte = ">=",
-    lt = "<",
-    lte = "<=",
-    in = "IN",
-    like = "LIKE",
-    notlike = "NOT LIKE",
-    between = "BETWEEN",
-    notbetween = "NOT BETWEEN",
-    null = "IS NULL"
+    eq = "eq",
+    neq = "neq",
+    gt = "gt",
+    gte = "gte",
+    lt = "lt",
+    lte = "lte",
+    in = "in",
+    notin = "notin",
+    like = "like",
+    notlike = "notlike",
+    between = "between",
+    notbetween = "notbetween",
+    null = "null"
 }
 export declare enum InputMapPrefixes {
     PropertyFilterType = "PropertyFilterType",
