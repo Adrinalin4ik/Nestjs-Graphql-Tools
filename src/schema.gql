@@ -9,7 +9,7 @@ type DescriptionObjectType {
   description_id: Int!
   description_type: DescriptionType!
   task_id: Int!
-  descriptionable: [DescriptionableUnion!]!
+  descriptionable: [DescriptionableUnion!]
 }
 
 """
@@ -87,6 +87,7 @@ input idUserObjectTypePropertyFilterType {
   lt: Int
   lte: Int
   in: [Int!]
+  notin: Int
   like: Int
   notlike: Int
   between: [Int!]
@@ -102,6 +103,7 @@ input created_atUserObjectTypePropertyFilterType {
   lt: DateTime
   lte: DateTime
   in: [DateTime!]
+  notin: DateTime
   like: DateTime
   notlike: DateTime
   between: [DateTime!]
@@ -117,6 +119,7 @@ input updated_atUserObjectTypePropertyFilterType {
   lt: DateTime
   lte: DateTime
   in: [DateTime!]
+  notin: DateTime
   like: DateTime
   notlike: DateTime
   between: [DateTime!]
@@ -132,6 +135,7 @@ input identification_numberUserObjectTypePropertyFilterType {
   lt: Int
   lte: Int
   in: [Int!]
+  notin: Int
   like: Int
   notlike: Int
   between: [Int!]
@@ -147,6 +151,7 @@ input emailUserObjectTypePropertyFilterType {
   lt: String
   lte: String
   in: [String!]
+  notin: String
   like: String
   notlike: String
   between: [String!]
@@ -162,6 +167,7 @@ input fnameUserObjectTypePropertyFilterType {
   lt: String
   lte: String
   in: [String!]
+  notin: String
   like: String
   notlike: String
   between: [String!]
@@ -177,6 +183,7 @@ input lnameUserObjectTypePropertyFilterType {
   lt: String
   lte: String
   in: [String!]
+  notin: String
   like: String
   notlike: String
   between: [String!]
@@ -192,6 +199,7 @@ input mnameUserObjectTypePropertyFilterType {
   lt: String
   lte: String
   in: [String!]
+  notin: String
   like: String
   notlike: String
   between: [String!]
@@ -207,6 +215,7 @@ input ageUserObjectTypePropertyFilterType {
   lt: Float
   lte: Float
   in: [Float!]
+  notin: Float
   like: Float
   notlike: Float
   between: [Float!]
@@ -222,6 +231,7 @@ input phoneUserObjectTypePropertyFilterType {
   lt: String
   lte: String
   in: [String!]
+  notin: String
   like: String
   notlike: String
   between: [String!]
@@ -237,6 +247,7 @@ input is_activeUserObjectTypePropertyFilterType {
   lt: Boolean
   lte: Boolean
   in: [Boolean!]
+  notin: Boolean
   like: Boolean
   notlike: Boolean
   between: [Boolean!]
@@ -298,6 +309,7 @@ input idTaskObjectTypePropertyFilterType {
   lt: Int
   lte: Int
   in: [Int!]
+  notin: Int
   like: Int
   notlike: Int
   between: [Int!]
@@ -313,6 +325,7 @@ input titleTaskObjectTypePropertyFilterType {
   lt: String
   lte: String
   in: [String!]
+  notin: String
   like: String
   notlike: String
   between: [String!]
@@ -328,6 +341,7 @@ input type_idTaskObjectTypePropertyFilterType {
   lt: Int
   lte: Int
   in: [Int!]
+  notin: Int
   like: Int
   notlike: Int
   between: [Int!]
@@ -343,6 +357,7 @@ input priorityTaskObjectTypePropertyFilterType {
   lt: Int
   lte: Int
   in: [Int!]
+  notin: Int
   like: Int
   notlike: Int
   between: [Int!]
@@ -358,6 +373,7 @@ input story_pointsTaskObjectTypePropertyFilterType {
   lt: Int
   lte: Int
   in: [Int!]
+  notin: Int
   like: Int
   notlike: Int
   between: [Int!]
@@ -373,6 +389,7 @@ input statusTaskObjectTypePropertyFilterType {
   lt: Int
   lte: Int
   in: [Int!]
+  notin: Int
   like: Int
   notlike: Int
   between: [Int!]
@@ -388,6 +405,7 @@ input assignee_idTaskObjectTypePropertyFilterType {
   lt: Int
   lte: Int
   in: [Int!]
+  notin: Int
   like: Int
   notlike: Int
   between: [Int!]
@@ -403,6 +421,7 @@ input task_idTaskObjectTypePropertyFilterType {
   lt: Int
   lte: Int
   in: [Int!]
+  notin: Int
   like: Int
   notlike: Int
   between: [Int!]
@@ -418,6 +437,7 @@ input created_atTaskObjectTypePropertyFilterType {
   lt: String
   lte: String
   in: [String!]
+  notin: String
   like: String
   notlike: String
   between: [String!]
@@ -433,6 +453,7 @@ input updated_atTaskObjectTypePropertyFilterType {
   lt: String
   lte: String
   in: [String!]
+  notin: String
   like: String
   notlike: String
   between: [String!]

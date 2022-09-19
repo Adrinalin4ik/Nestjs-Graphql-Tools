@@ -7,6 +7,7 @@ import { IncomingMessage } from 'http';
 import { groupBy } from 'lodash';
 import { applyFilterParameter } from './filter';
 import { applySortingParameter } from './sorting';
+import { SelectedUnionTypesResult } from './union-type-extractor';
 
 /*
   Loader usage guide
@@ -42,6 +43,11 @@ export interface LoaderHelper<DtoType> {
     ids: any[],
     foreignKey: string
   ) => { [key: string]: DtoType };
+  mapOneToManyPolymorphicRelation: (
+    entities: {descriminator: string, entities: object[]}[],
+    typeIds: {descriminator: string | any, id: any},
+    foreignKey?: string
+  ) => { [key: string]: DtoType };
   mapManyToOneRelation: (
     entities: object[],
     ids: any[],
@@ -61,6 +67,17 @@ export interface LoaderData<DtoType, IdType> {
   ctx: ExecutionContext;
   req: IncomingMessage & ILoaderInstance<DtoType, IdType>;
   helpers: LoaderHelper<DtoType>;
+}
+
+export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType> {
+  name: string,
+  parent: any;
+  ids: { descriminator: DescriminatorType, id: IdType };
+  polimorphicTypes: { descriminator: DescriminatorType, ids: IdType[] }[];
+  ctx: ExecutionContext;
+  req: IncomingMessage & ILoaderInstance<DtoType, IdType>;
+  helpers: LoaderHelper<DtoType>;
+  selectedUnions: SelectedUnionTypesResult;
 }
 
 export interface GraphqlLoaderOptions {
@@ -84,6 +101,7 @@ export const Loader = createParamDecorator((_data: unknown, ctx: ExecutionContex
     req,
     helpers: {
       mapOneToManyRelation,
+      mapOneToManyPolymorphicRelation,
       mapManyToOneRelation,
     },
   };
@@ -103,26 +121,29 @@ export const GraphqlLoader = (
     descriptor.value = function(...args) {
       applyFilterParameter(args);
       applySortingParameter(args, options?.sorting?.alias);
-      const loader = args.find(x => x?._name_ === 'LoaderPropertyDecorator') as LoaderData<any, any>;
+      const loader = args.find(x => x?._name_ === 'LoaderPropertyDecorator') as LoaderData<any, any> | PolymorphicLoaderData<any, any, any>;
       if (!loader || !loader.parent) {
         throw new Error('@Loader parameter decorator is not first parameter or missing');
       }
       if (!loader.req._loader) {
         loader.req._loader = {};
       }
+
       if (!loader.req._loader[loaderKey]) {
         loader.req._loader[loaderKey] = new DataLoader(async ids => {
           if (options.polymorphic) {
-            const gs = groupBy(ids, 'type');
-            loader.polimorphicTypes = Object.entries(gs).reduce((acc, [type, entities]) => {
+            const polyLoader = loader as PolymorphicLoaderData<any, any, any>
+            
+            const gs = groupBy(ids, 'descriminator');
+            polyLoader.polimorphicTypes = Object.entries(gs).reduce((acc, [descriminator, entities]) => {
               acc.push({
-                type,
+                descriminator,
                 ids: (entities as any[]).map(x => x.id)
               })
               return acc;
             }, []);
 
-            loader.ids = (ids as any[]).map(x => x.id);
+            polyLoader.ids = ids as any;
           } else {
             loader.ids = ids as any[];
           }
@@ -134,8 +155,10 @@ export const GraphqlLoader = (
         if (loader.parent[options.polymorphic.idField] && loader.parent[options.polymorphic.typeField]) {
           return loader.req._loader[loaderKey].load({
             id: loader.parent[options.polymorphic.idField], 
-            type: loader.parent[options.polymorphic.typeField]
+            descriminator: loader.parent[options.polymorphic.typeField]
           } as any);
+        } else {
+          throw new Error(`Polymorphic relation Error: Your parent model must provide ${options.polymorphic.idField} and ${options.polymorphic.typeField}`);
         }
       } else {
         if (loader.parent[options.foreignKey]) {
@@ -164,3 +187,27 @@ function mapManyToOneRelation(entities: object[], ids:any[], foreignKey: string 
 
   return ids.map(k => mappedEntities[k]);
 }
+
+export const mapOneToManyPolymorphicRelation = (
+  entities: {descriminator: string, entities: object[]}[],
+  typeIds: {descriminator: string | any, id: any}[],
+  foreignKey = 'id'
+) => {
+  const gs = entities.reduce((acc, union) => {
+    union.entities.forEach(entity => {
+      const key = `${union.descriminator}_${entity[foreignKey]}`
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push({
+        ...entity,
+        '__UnionDescriminator__': union.descriminator
+      })
+    })
+    
+    return acc;
+  }, {})
+
+  const res = typeIds.map(type => gs[`${type.descriminator}_${type.id}`] || null);
+  return res;
+};

@@ -1,19 +1,17 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { FragmentDefinitionNode, SelectionNode } from 'graphql';
 import { BaseEntity } from './common';
-
-const GraphqlFieldMetadataKey = 'graphql:fieldsData';
+import { extractFieldsData } from './field-extractor';
 
 interface SelectedFieldsDecoratorParams {
   sqlAlias?: string;
+  nestedPolymorphicResolverName?: string;
 }
 
-interface SelectedFieldsResult {
-  ctx: ExecutionContext;
-  fieldsData: {
-    rowFieldsData: Set<string>;
-    fieldsString: string[];
-  };
+export interface SelectedUnionTypesResult {
+  has: (key) => boolean;
+  getFields: (key) => string[];
+  types: Map<any, any[]>
 }
 
 export const SelectedUnionTypes = createParamDecorator(
@@ -21,84 +19,109 @@ export const SelectedUnionTypes = createParamDecorator(
     const args = ctx.getArgs();
     const info = args[3];
 
-    const returnObj = {
-      ctx,
-      has(entity: BaseEntity | string) {
-        if (typeof entity === 'string') {
-          return this['typesSet'].has(entity);
-        } else {
-          return this['typesSet'].has((entity as BaseEntity).name);
-        }
-      }
-    };
-
-    // To avoid multiple calls when using dataloader define getter field to be able to compute only once inside the loader function
-    Object.defineProperty(returnObj, 'typesSet', {
-      get: () => {
-        const rowFieldsData = extractFieldsData(
-          info.fieldNodes,
-          info.fieldName,
-          info.fragments
-        );
-
-        return rowFieldsData;
-      },
-    });
-
-    return returnObj;
+    return getSelectedUnionTypes(info, data);
   }
 );
 
-function extractFieldsData(
+export function getSelectedUnionTypes(info, options?: SelectedFieldsDecoratorParams) {
+  const returnObj: SelectedUnionTypesResult = {
+    has(entity: BaseEntity | string) {
+      if (typeof entity === 'string') {
+        return this['types'].has(entity);
+      } else {
+        return this['types'].has((entity as BaseEntity).name);
+      }
+    },
+    getFields(entity: BaseEntity | string) {
+      let fields = [];
+      if (typeof entity === 'string') {
+        fields = this['types'].get(entity);
+      } else {
+        fields = this['types'].get((entity as BaseEntity).name);
+      }
+
+      return fields.map(field => options?.sqlAlias ? `${options?.sqlAlias}.${field}` : field)
+    },
+    types: null
+  };
+
+  // To avoid multiple calls when using dataloader define getter field to be able to compute only once inside the loader function
+  Object.defineProperty(returnObj, 'types', {
+    get: () => {
+      const rowFieldsData = extractUnionsData(
+        info.fieldNodes,
+        options?.nestedPolymorphicResolverName || info.fieldName,
+        info.fragments
+      );
+
+      return rowFieldsData;
+    },
+  });
+
+  return returnObj;
+}
+
+export function extractUnionsData(
   resolvers: ReadonlyArray<SelectionNode>,
   field: string,
   fragments: { [key: string]: FragmentDefinitionNode },
-): Set<string> {
-  let results = new Set([]);
-  for (const resolver of resolvers) {
-    if (resolver.kind === 'Field' && resolver.selectionSet) {
-      const unifiedName = resolver.name.value;
-      if (unifiedName === field) {
-        resolver.selectionSet.selections.forEach((item) => {
-          if (item.kind === 'Field') {
-            return;
-          } else if (item.kind === 'FragmentSpread') {
-            const fragment = fragments[item.name.value];
+) {
+  let results = new Map([]);
 
-            if (fragment?.selectionSet) {
-              results = new Set([
-                ...results,
-                ...extractFieldsData(
+  function process(
+    resolvers: ReadonlyArray<SelectionNode>,
+    field: string,
+    fragments: { [key: string]: FragmentDefinitionNode },
+  ) {
+    for (const resolver of resolvers) {
+      if (resolver.kind === 'Field' && resolver.selectionSet) {
+        const unifiedName = resolver.name.value;
+        if (unifiedName === field) {
+          resolver.selectionSet.selections.forEach((item) => {
+            if (item.kind === 'Field') {
+              return;
+            } else if (item.kind === 'FragmentSpread') {
+              const fragment = fragments[item.name.value];
+              
+              if (fragment?.selectionSet) {
+                process(
                   fragment.selectionSet.selections,
                   field,
                   fragments,
-                ),
-              ]);
-            }
-          } else if (item.kind === 'InlineFragment') {
-            results.add(item.typeCondition.name.value);
+                )
+              }
+            } else if (item.kind === 'InlineFragment') {
+              const data = extractFieldsData(
+                item.selectionSet.selections,
+                item.typeCondition.name.value,
+                fragments,
+                true
+              );
 
-            results = new Set([
-              ...results,
-              ...extractFieldsData(
+              results.set(item.typeCondition.name.value, [...data]);
+                
+              process(
                 item.selectionSet.selections,
                 field,
                 fragments,
               )
-            ])
-          }
-        });
-
-        return results;
-      } else {
-        return extractFieldsData(
-          resolver.selectionSet.selections,
-          field,
-          fragments,
-        );
+            }
+          });
+  
+          return results;
+        } else {
+          return process(
+            resolver.selectionSet.selections,
+            field,
+            fragments,
+          );
+        }
       }
     }
+    return results;
   }
+
+  process(resolvers, field, fragments);
 
   return results;
 }

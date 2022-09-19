@@ -52,7 +52,7 @@ export const SelectedFields = createParamDecorator(
   }
 );
 
-function extractFieldsData(
+export function extractFieldsData(
   resolvers: ReadonlyArray<SelectionNode>,
   field: string,
   fragments: { [key: string]: FragmentDefinitionNode },

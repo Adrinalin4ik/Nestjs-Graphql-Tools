@@ -2,7 +2,6 @@ import { createUnionType, Field, Int, ObjectType, registerEnumType } from "@nest
 import { BaseDTO } from "../utils/base.dto";
 import { DescriptionChecklistObjectType } from "./description-types/description-checklist/description-checklist.dto";
 import { DescriptionTextObjectType } from "./description-types/description-text/description-text.dto";
-import { DescriptionText } from "./description-types/description-text/description-text.entity";
 
 export enum DescriptionType {
   Text = 'Text',
@@ -29,7 +28,7 @@ export const DescriptionableUnion = createUnionType({
   name: 'DescriptionableUnion',
   types: () => [DescriptionTextObjectType, DescriptionChecklistObjectType] as const,
   resolveType(value) {
-    if (value instanceof DescriptionText) {
+    if (value['__UnionDescriminator__'] === DescriptionType.Text) {
       return DescriptionTextObjectType;
     } else {
       return DescriptionChecklistObjectType;

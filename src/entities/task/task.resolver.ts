@@ -2,8 +2,10 @@
 import { Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
-import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, Paginator, PaginatorArgs, SelectedFields, SelectedFieldsResult, SortArgs, Sorting } from '../../../lib';
-import { DescriptionObjectType } from '../description/description.dto';
+import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, Paginator, PaginatorArgs, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SelectedUnionTypesResult, SortArgs, Sorting } from '../../../lib';
+import { DescriptionChecklistObjectType } from '../description/description-types/description-checklist/description-checklist.dto';
+import { DescriptionTextObjectType } from '../description/description-types/description-text/description-text.dto';
+import { DescriptionObjectType, DescriptionType } from '../description/description.dto';
 import { Description } from '../description/description.entity';
 import { UserObjectType } from '../user/user.dto';
 import { User } from '../user/user.entity';
@@ -63,11 +65,25 @@ export class TaskResolver {
   @GraphqlLoader()
   async descriptions(
     @Loader() loader: LoaderData<TaskObjectType, number>,
+    @SelectedUnionTypes({
+      nestedPolymorphicResolverName: 'descriptionable',
+    }) selectedUnions: SelectedUnionTypesResult
   ) {
+    const selectedTypes = Array.from(selectedUnions.types.keys()).map(type => {
+      switch (type) {
+        case DescriptionTextObjectType.name:
+          return DescriptionType.Text;
+        case DescriptionChecklistObjectType.name:
+          return DescriptionType.Checklist;
+      }
+    });
+
     const qb = this.descriptionRepository.createQueryBuilder('d')
       .andWhere({
-        task_id: In(loader.ids)
+        task_id: In(loader.ids),
+        description_type: In(selectedTypes)
       })
+    
     const descriptions = await qb.getMany();
     return loader.helpers.mapOneToManyRelation(descriptions, loader.ids, 'task_id');
   }

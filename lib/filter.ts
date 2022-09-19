@@ -2,19 +2,22 @@ import { Args, Field, InputType, PartialType, TypeMetadataStorage } from "@nestj
 import { Any, Between, Brackets, Equal, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not } from "typeorm";
 import { BaseEntity } from "./common";
 
+const FILTER_OPERATION_PREFIX = process.env.FILTER_OPERATION_PREFIX || undefined;
+
 export enum OperationQuery {
-  eq = '=',
-  neq = '!=',
-  gt = '>',
-  gte = '>=',
-  lt = '<',
-  lte = '<=',
-  in = 'IN',
-  like = 'LIKE',
-  notlike = 'NOT LIKE',
-  between = 'BETWEEN',
-  notbetween = 'NOT BETWEEN',
-  null = 'IS NULL',
+  eq = 'eq',
+  neq = 'neq',
+  gt = 'gt',
+  gte = 'gte',
+  lt = 'lt',
+  lte = 'lte',
+  in = 'in',
+  notin = 'notin',
+  like = 'like',
+  notlike = 'notlike',
+  between = 'between',
+  notbetween = 'notbetween',
+  null = 'null',
 }
 
 const arrayLikeOperations = new Set([OperationQuery.between, OperationQuery.notbetween, OperationQuery.in]);
@@ -49,7 +52,7 @@ const generateFilterPropertyType = (field, parentName: string) => {
         return field.typeFn();
       }
     }
-    , {...field.options, nullable: true})(PropertyFilter.prototype, operationName);
+    , {...field.options, nullable: true})(PropertyFilter.prototype, FILTER_OPERATION_PREFIX ? `${FILTER_OPERATION_PREFIX}${operationName}` : operationName);
   })
 
   Object.defineProperty(PropertyFilter, 'name', {
@@ -248,31 +251,34 @@ const recursivelyTransformComparators = (object: Record<string, any>) => {
         throw new Error('Inside filter statement should be only one condition operator for each attribute');
       }
       for (const [innerKey, innerValue] of operators) {
-        if (innerKey === "eq") {
+        const operatorKey = innerKey.replace(FILTER_OPERATION_PREFIX, '');
+        if (operatorKey === OperationQuery.eq) {
           typeormWhereQuery[key] = Equal(innerValue);
-        } else if (innerKey === "neq") {
+        } else if (operatorKey === OperationQuery.neq) {
           typeormWhereQuery[key] = Not(innerValue);
-        } else if (innerKey === "lt") {
+        } else if (operatorKey === OperationQuery.lt) {
           typeormWhereQuery[key] = LessThan(innerValue);
-        } else if (innerKey === "lte") {
+        } else if (operatorKey === OperationQuery.lte) {
           typeormWhereQuery[key] = LessThanOrEqual(innerValue);
-        } else if (innerKey === "gt") {
+        } else if (operatorKey === OperationQuery.gt) {
           typeormWhereQuery[key] = MoreThan(innerValue);
-        } else if (innerKey === "gte") {
+        } else if (operatorKey === OperationQuery.gte) {
           typeormWhereQuery[key] = MoreThanOrEqual(innerValue);
-        } else if (innerKey === "like") {
+        } else if (operatorKey === OperationQuery.like) {
           typeormWhereQuery[key] = Like(innerValue);
-        } else if (innerKey === "notlike") {
+        } else if (operatorKey === OperationQuery.notlike) {
           typeormWhereQuery[key] = Not(Like(innerValue));
-        } else if (innerKey === "between") {
+        } else if (operatorKey === OperationQuery.between) {
           typeormWhereQuery[key] = Between(innerValue[0], innerValue[1]);
-        } else if (innerKey === "notbetween") {
+        } else if (operatorKey === OperationQuery.notbetween) {
           typeormWhereQuery[key] = Not(Between(innerValue[0], innerValue[1]));
-        } else if (innerKey === "in") {
+        } else if (operatorKey === OperationQuery.in) {
           typeormWhereQuery[key] = In(innerValue);
-        } else if (innerKey === "any") {
+        } else if (operatorKey === OperationQuery.notin) {
+          typeormWhereQuery[key] = Not(In(innerValue));
+        } else if (operatorKey === "any") {
           typeormWhereQuery[key] = Any(innerValue);
-        } else if (innerKey === "null") {
+        } else if (operatorKey === OperationQuery.null) {
           if (innerValue === 'true') {
             typeormWhereQuery[key] = IsNull();
           } else {

@@ -115,14 +115,55 @@ This decorator will aggregate all types and provide ids for each type. All aggre
 ##### Example 1
 
 ```typescript
+// Parent class
+// task.resolver.ts
+@Resolver(() => TaskObjectType)
+export class TaskResolver {
+  constructor(
+    @InjectRepository(Task) public readonly taskRepository: Repository<Task>,
+    @InjectRepository(Description) public readonly descriptionRepository: Repository<Description>
+  ) {}
+
+  @ResolveField(() => [DescriptionObjectType])
+  @GraphqlLoader()
+  async descriptions(
+    @Loader() loader: LoaderData<TaskObjectType, number>,
+    @SelectedUnionTypes({ 
+      nestedPolymorphicResolverName: 'descriptionable',
+    }) selectedUnions: SelectedUnionTypesResult // <-- This decorator will gather and provide selected union types. NestedPolymorphicResolverName argument allows to specify where specifically it should gather the fields
+  ) {
+    // Mapping graphql types to the database types
+    const selectedTypes = Array.from(selectedUnions.types.keys()).map(type => { 
+      switch (type) {
+        case DescriptionTextObjectType.name:
+          return DescriptionType.Text;
+        case DescriptionChecklistObjectType.name:
+          return DescriptionType.Checklist;
+      }
+    });
+
+    const qb = this.descriptionRepository.createQueryBuilder('d')
+      .andWhere({
+        task_id: In(loader.ids),
+        description_type: In(selectedTypes) // finding only selected types
+      })
+    
+    const descriptions = await qb.getMany();
+    return loader.helpers.mapOneToManyRelation(descriptions, loader.ids, 'task_id');
+  }
+}
+
+
+// Polymorphic resolver
+// description.resolver.ts
 @Resolver(() => DescriptionObjectType)
 export class DescriptionResolver {
   constructor(
     @InjectRepository(DescriptionText) public readonly descriptionTextRepository: Repository<DescriptionText>,
     @InjectRepository(DescriptionChecklist) public readonly descriptionChecklistRepository: Repository<DescriptionChecklist>,
   ) {}
-
-  @ResolveField(() => [DescriptionableUnion])
+  
+  @ResolveField(() => [DescriptionableUnion], { nullable: true })
   @GraphqlLoader({ // <-- We will load description_id field of parent model to the ids and description_type field to the type
     polymorphic: {
       idField: 'description_id',
@@ -130,39 +171,39 @@ export class DescriptionResolver {
     }
   })
   async descriptionable(
-    @Loader() loader: LoaderData<[DescriptionText | DescriptionChecklist], {type: DescriptionType, ids: number[]}>, // <-- It will return aggregated polymorphicTypes
+    @Loader() loader: PolymorphicLoaderData<[DescriptionText | DescriptionChecklist], number, DescriptionType>, // <-- It will return aggregated polymorphicTypes
+    @SelectedUnionTypes() types: SelectedUnionTypesResult // <-- It will extract from the query and return selected union types
   ) {
-
     const results = []; // <-- We need to gather all entities to the single array
 
-    for (const item of loader.polimorphicTypes) { // <-- Iterate through all gathered types
-      switch(item.type) {
+    for (const item of loader.polimorphicTypes) {
+      switch(item.descriminator) {
         case DescriptionType.Text:
           const textDescriptions = await this.descriptionTextRepository.createQueryBuilder()
+          .select(types.getFields(DescriptionTextObjectType))
           .where({
             id: In(item.ids)
           })
-          .getMany();
+          .getRawMany();
 
-          results.push(
-            ...textDescriptions
-          )
+          results.push({ descriminator: DescriptionType.Text, entities: textDescriptions })
+
           break;
         case DescriptionType.Checklist:
           const checklistDescriptions = await this.descriptionChecklistRepository.createQueryBuilder()
+          .select(types.getFields(DescriptionChecklistObjectType))
           .where({
             id: In(item.ids)
           })
-          .getMany();
+          .getRawMany();
 
-          results.push(
-            ...checklistDescriptions
-          )
+          results.push({ descriminator: DescriptionType.Checklist, entities: checklistDescriptions })
+          
           break;
         default: break;
       }
     }
-    return loader.helpers.mapOneToManyRelation(results, loader.ids, 'id'); // <-- This helper will change shape of responce to the shape which is sutable for graphql
+    return loader.helpers.mapOneToManyPolymorphicRelation(results, loader.ids); // <-- This helper will change shape of responce to the shape which is sutable for graphql
   }
 }
 ```
