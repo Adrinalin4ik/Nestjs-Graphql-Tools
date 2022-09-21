@@ -409,6 +409,10 @@ The query will generate typeorm request with only requested fields
 SELECT "t"."id" AS "t_id", "t"."title" AS "t_title" FROM "task" "t"
 ```
 
+## Options
+Options is an ENV variables that you can provide to configurate the lib
+- FILTER_OPERATION_PREFIX - Operation prefix. You can make hasura-like prefix for where operators like _eq, _neq, etc. Example FILTER_OPERATION_PREFIX=\_
+
 
 ## More examples
 You can find another examples in the src folder
