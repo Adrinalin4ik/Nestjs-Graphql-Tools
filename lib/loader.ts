@@ -2,12 +2,12 @@ import {
   createParamDecorator,
   ExecutionContext
 } from '@nestjs/common';
-import DataLoader from 'dataloader';
 import { IncomingMessage } from 'http';
 import { groupBy } from 'lodash';
 import { applyFilterParameter } from './filter';
 import { applySortingParameter } from './sorting';
 import { SelectedUnionTypesResult } from './union-type-extractor';
+const DataLoader = require('dataloader');
 
 /*
   Loader usage guide
@@ -56,7 +56,7 @@ export interface LoaderHelper<DtoType> {
 }
 
 export interface ILoaderInstance<DtoType, IdType> {
-  _loader: { [key: string]: DataLoader<DtoType[], IdType[]> };
+  _loader: { [key: string]: any};
 }
 
 export interface LoaderData<DtoType, IdType> {
