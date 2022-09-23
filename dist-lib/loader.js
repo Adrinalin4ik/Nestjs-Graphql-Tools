@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mapOneToManyPolymorphicRelation = exports.mapOneToManyRelation = exports.GraphqlLoader = exports.Loader = void 0;
 const common_1 = require("@nestjs/common");
-const dataloader_1 = require("dataloader");
 const lodash_1 = require("lodash");
 const filter_1 = require("./filter");
 const sorting_1 = require("./sorting");
+const DataLoader = require('dataloader');
 exports.Loader = (0, common_1.createParamDecorator)((_data, ctx) => {
     const args = ctx.getArgs();
     const { req } = args[2];
@@ -38,7 +38,7 @@ const GraphqlLoader = (args) => {
                 loader.req._loader = {};
             }
             if (!loader.req._loader[loaderKey]) {
-                loader.req._loader[loaderKey] = new dataloader_1.default(async (ids) => {
+                loader.req._loader[loaderKey] = new DataLoader(async (ids) => {
                     if (options.polymorphic) {
                         const polyLoader = loader;
                         const gs = (0, lodash_1.groupBy)(ids, 'descriminator');

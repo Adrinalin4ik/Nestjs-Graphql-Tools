@@ -1,6 +1,5 @@
 /// <reference types="node" />
 import { ExecutionContext } from '@nestjs/common';
-import DataLoader from 'dataloader';
 import { IncomingMessage } from 'http';
 import { SelectedUnionTypesResult } from './union-type-extractor';
 export interface LoaderHelper<DtoType> {
@@ -22,7 +21,7 @@ export interface LoaderHelper<DtoType> {
 }
 export interface ILoaderInstance<DtoType, IdType> {
     _loader: {
-        [key: string]: DataLoader<DtoType[], IdType[]>;
+        [key: string]: any;
     };
 }
 export interface LoaderData<DtoType, IdType> {
