@@ -1,16 +1,8 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-
-const Inherit = () => {
-  return (target) => {
-    Object.defineProperty(target, '__extension__', {
-      value: target.name
-    });
-    return target;
-  }
-}
+import { InheritedModel } from '../../../lib/inheritance';
 
 @ObjectType()
-@Inherit()
+@InheritedModel()
 export class BaseDTO {
   @Field(() => Int)
   id: number;
