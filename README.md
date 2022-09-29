@@ -20,6 +20,7 @@ The library allows to build efficient graphql API helping overcome n+1 problem a
 - [Pagination](#pagination)
 - [Sorting](#sorting)
 - [Field extraction](#field-extraction)
+- [Base models and inheritance](#base-models-and-inheritance)
 - [More examples](#more-examples)
 
 
@@ -407,6 +408,26 @@ export class TaskResolver {
 The query will generate typeorm request with only requested fields
 ```sql
 SELECT "t"."id" AS "t_id", "t"."title" AS "t_title" FROM "task" "t"
+```
+
+## Base models and inheritance
+In order to make base model with common attributes it is required to decorate base model with the `@InheritedModel()` decorator. You can find usage of it in base.dto.ts file inside src folder.
+
+##### Example
+```typescript
+@ObjectType()
+@InheritedModel() // <-- Make inheritance possible. If you not decorate object with this decorator, you will not see these properties in "where" and sorting statements
+export class BaseDTO {
+  @Field(() => Int)
+  id: number;
+
+  // Timestamps
+  @Field(() => Date)
+  created_at: Date;
+
+  @Field(() => Date)
+  updated_at: Date;
+}
 ```
 
 ## Options
