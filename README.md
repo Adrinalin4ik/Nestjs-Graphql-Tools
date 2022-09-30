@@ -336,7 +336,7 @@ export class TaskResolver {
     const qb = this.taskRepository.createQueryBuilder('t');
     
     if (paginator) {
-      qb.offset(paginator.page).limit(paginator.per_page)
+      qb.offset(paginator.page * paginator.per_page).limit(paginator.per_page)
     }
 
     return qb.getMany();

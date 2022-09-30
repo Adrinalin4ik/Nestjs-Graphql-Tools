@@ -35,7 +35,7 @@ export class TaskResolver {
       .where(filter)
     
     if (paginator) {
-      qb.offset(paginator.page).limit(paginator.per_page)
+      qb.offset(paginator.page * paginator.per_page).limit(paginator.per_page)
     }
     
     if (sorting) {
