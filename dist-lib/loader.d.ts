@@ -2,6 +2,7 @@
 import { ExecutionContext } from '@nestjs/common';
 import { IncomingMessage } from 'http';
 import { SelectedUnionTypesResult } from './union-type-extractor';
+export declare const LOADER_DECORATOR_NAME_METADATA_KEY = "LoaderPropertyDecorator";
 export interface LoaderHelper<DtoType> {
     mapOneToManyRelation: (entities: object[], ids: any[], foreignKey: string) => {
         [key: string]: DtoType;

@@ -9,9 +9,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.applyFilterParameter = exports.GraphqlFilter = exports.Filter = exports.InputMapPrefixes = exports.OperationQuery = void 0;
+exports.applyFilterParameter = exports.GraphqlFilter = exports.Filter = exports.InputMapPrefixes = exports.OperationQuery = exports.FILTER_DECORATOR_NAME_METADATA_KEY = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const typeorm_1 = require("typeorm");
+exports.FILTER_DECORATOR_NAME_METADATA_KEY = 'FilterPropertyDecorator';
 const FILTER_OPERATION_PREFIX = process.env.FILTER_OPERATION_PREFIX || undefined;
 var OperationQuery;
 (function (OperationQuery) {
@@ -116,7 +117,7 @@ const getFilterFullInputType = (classRef) => {
     let EntityWhereInput = class EntityWhereInput extends FilterInputType {
     };
     __decorate([
-        (0, graphql_1.Field)({ defaultValue: 'FilterPropertyDecorator' }),
+        (0, graphql_1.Field)({ defaultValue: exports.FILTER_DECORATOR_NAME_METADATA_KEY }),
         __metadata("design:type", String)
     ], EntityWhereInput.prototype, "_name_", void 0);
     __decorate([
@@ -156,7 +157,7 @@ const GraphqlFilter = () => {
 };
 exports.GraphqlFilter = GraphqlFilter;
 const applyFilterParameter = (args) => {
-    const filterArgIndex = args.findIndex(x => (x === null || x === void 0 ? void 0 : x._name_) === 'FilterPropertyDecorator');
+    const filterArgIndex = args.findIndex(x => (x === null || x === void 0 ? void 0 : x._name_) === exports.FILTER_DECORATOR_NAME_METADATA_KEY);
     if (filterArgIndex != -1) {
         args[filterArgIndex] = convertParameters(args[filterArgIndex]);
     }

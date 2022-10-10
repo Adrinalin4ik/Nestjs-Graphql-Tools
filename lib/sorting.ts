@@ -1,6 +1,8 @@
 import { Args, Field, InputType, PartialType, registerEnumType, TypeMetadataStorage } from "@nestjs/graphql";
 import { BaseEntity } from "./common";
 
+export const SORTING_DECORATOR_NAME_METADATA_KEY = 'SortingPropertyDecorator';
+
 export enum SortType {
   ASC = 'ASC',
   DESC = 'DESC',
@@ -95,7 +97,7 @@ const getSortFullInputType = (classRef: BaseEntity) => {
   const FilterInputType = generateSortInputType(classRef);
   @InputType(key)
   class EntityWhereInput extends FilterInputType {
-    @Field({defaultValue: 'SortingPropertyDecorator'})
+    @Field({defaultValue: SORTING_DECORATOR_NAME_METADATA_KEY})
     _name_: string;
   }
   sortFullTypes.set(key, EntityWhereInput);
@@ -133,7 +135,7 @@ export const GraphqlSorting = (options?: GraphqlSortingOptions) => {
 };
 
 export const applySortingParameter = (args: any[], alias?: string) => {
-  const sortArgIndex = args.findIndex(x => Array.isArray(x) && x?.some(x => x._name_ === 'SortingPropertyDecorator'));
+  const sortArgIndex = args.findIndex(x => Array.isArray(x) && x?.some(x => x._name_ === SORTING_DECORATOR_NAME_METADATA_KEY));
   if (sortArgIndex != -1) {
     args[sortArgIndex] = convertParameters(args[sortArgIndex], alias);
   }

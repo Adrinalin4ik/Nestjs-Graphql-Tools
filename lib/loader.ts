@@ -9,6 +9,8 @@ import { applySortingParameter } from './sorting';
 import { SelectedUnionTypesResult } from './union-type-extractor';
 const DataLoader = require('dataloader');
 
+export const LOADER_DECORATOR_NAME_METADATA_KEY = 'LoaderPropertyDecorator';
+
 /*
   Loader usage guide
   1. Decorate your resolver with @GraphqlLoader()
@@ -95,7 +97,7 @@ export const Loader = createParamDecorator((_data: unknown, ctx: ExecutionContex
   const args = ctx.getArgs();
   const { req } = args[2];
   return {
-    _name_: 'LoaderPropertyDecorator',
+    _name_: LOADER_DECORATOR_NAME_METADATA_KEY,
     parent: args[0],
     ctx,
     req,
@@ -121,7 +123,7 @@ export const GraphqlLoader = (
     descriptor.value = function(...args) {
       applyFilterParameter(args);
       applySortingParameter(args, options?.sorting?.alias);
-      const loader = args.find(x => x?._name_ === 'LoaderPropertyDecorator') as LoaderData<any, any> | PolymorphicLoaderData<any, any, any>;
+      const loader = args.find(x => x?._name_ === LOADER_DECORATOR_NAME_METADATA_KEY) as LoaderData<any, any> | PolymorphicLoaderData<any, any, any>;
       if (!loader || !loader.parent) {
         throw new Error('@Loader parameter decorator is not first parameter or missing');
       }

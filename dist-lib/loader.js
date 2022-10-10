@@ -1,16 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mapOneToManyPolymorphicRelation = exports.mapOneToManyRelation = exports.GraphqlLoader = exports.Loader = void 0;
+exports.mapOneToManyPolymorphicRelation = exports.mapOneToManyRelation = exports.GraphqlLoader = exports.Loader = exports.LOADER_DECORATOR_NAME_METADATA_KEY = void 0;
 const common_1 = require("@nestjs/common");
 const lodash_1 = require("lodash");
 const filter_1 = require("./filter");
 const sorting_1 = require("./sorting");
 const DataLoader = require('dataloader');
+exports.LOADER_DECORATOR_NAME_METADATA_KEY = 'LoaderPropertyDecorator';
 exports.Loader = (0, common_1.createParamDecorator)((_data, ctx) => {
     const args = ctx.getArgs();
     const { req } = args[2];
     return {
-        _name_: 'LoaderPropertyDecorator',
+        _name_: exports.LOADER_DECORATOR_NAME_METADATA_KEY,
         parent: args[0],
         ctx,
         req,
@@ -30,7 +31,7 @@ const GraphqlLoader = (args) => {
             var _a;
             (0, filter_1.applyFilterParameter)(args);
             (0, sorting_1.applySortingParameter)(args, (_a = options === null || options === void 0 ? void 0 : options.sorting) === null || _a === void 0 ? void 0 : _a.alias);
-            const loader = args.find(x => (x === null || x === void 0 ? void 0 : x._name_) === 'LoaderPropertyDecorator');
+            const loader = args.find(x => (x === null || x === void 0 ? void 0 : x._name_) === exports.LOADER_DECORATOR_NAME_METADATA_KEY);
             if (!loader || !loader.parent) {
                 throw new Error('@Loader parameter decorator is not first parameter or missing');
             }

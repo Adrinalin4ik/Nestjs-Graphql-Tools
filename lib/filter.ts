@@ -2,6 +2,7 @@ import { Args, Field, InputType, PartialType, TypeMetadataStorage } from "@nestj
 import { Any, Between, Brackets, Equal, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not } from "typeorm";
 import { BaseEntity } from "./common";
 
+export const FILTER_DECORATOR_NAME_METADATA_KEY = 'FilterPropertyDecorator';
 const FILTER_OPERATION_PREFIX = process.env.FILTER_OPERATION_PREFIX || undefined;
 
 export enum OperationQuery {
@@ -150,7 +151,7 @@ const getFilterFullInputType = (classRef: BaseEntity) => {
   const FilterInputType = generateFilterInputType(classRef);
   @InputType(key)
   class EntityWhereInput extends FilterInputType {
-    @Field({defaultValue: 'FilterPropertyDecorator'})
+    @Field({defaultValue: FILTER_DECORATOR_NAME_METADATA_KEY})
     _name_: string;
     @Field(() => [FilterInputType], {nullable: true})
     and: BaseEntity[];
@@ -188,7 +189,7 @@ export const GraphqlFilter = () => {
 };
 
 export const applyFilterParameter = (args: any[]) => {
-  const filterArgIndex = args.findIndex(x => x?._name_ === 'FilterPropertyDecorator');
+  const filterArgIndex = args.findIndex(x => x?._name_ === FILTER_DECORATOR_NAME_METADATA_KEY);
   if (filterArgIndex != -1) {
     args[filterArgIndex] = convertParameters(args[filterArgIndex]);
   }

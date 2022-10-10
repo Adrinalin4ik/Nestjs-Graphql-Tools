@@ -1,4 +1,5 @@
 import { BaseEntity } from "./common";
+export declare const FILTER_DECORATOR_NAME_METADATA_KEY = "FilterPropertyDecorator";
 export declare enum OperationQuery {
     eq = "eq",
     neq = "neq",

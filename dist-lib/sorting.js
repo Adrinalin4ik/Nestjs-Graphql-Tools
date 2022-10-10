@@ -9,8 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.applySortingParameter = exports.GraphqlSorting = exports.Sorting = exports.SortInputMapPrefixes = exports.SortType = void 0;
+exports.applySortingParameter = exports.GraphqlSorting = exports.Sorting = exports.SortInputMapPrefixes = exports.SortType = exports.SORTING_DECORATOR_NAME_METADATA_KEY = void 0;
 const graphql_1 = require("@nestjs/graphql");
+exports.SORTING_DECORATOR_NAME_METADATA_KEY = 'SortingPropertyDecorator';
 var SortType;
 (function (SortType) {
     SortType["ASC"] = "ASC";
@@ -79,7 +80,7 @@ const getSortFullInputType = (classRef) => {
     let EntityWhereInput = class EntityWhereInput extends FilterInputType {
     };
     __decorate([
-        (0, graphql_1.Field)({ defaultValue: 'SortingPropertyDecorator' }),
+        (0, graphql_1.Field)({ defaultValue: exports.SORTING_DECORATOR_NAME_METADATA_KEY }),
         __metadata("design:type", String)
     ], EntityWhereInput.prototype, "_name_", void 0);
     EntityWhereInput = __decorate([
@@ -111,7 +112,7 @@ const GraphqlSorting = (options) => {
 };
 exports.GraphqlSorting = GraphqlSorting;
 const applySortingParameter = (args, alias) => {
-    const sortArgIndex = args.findIndex(x => Array.isArray(x) && (x === null || x === void 0 ? void 0 : x.some(x => x._name_ === 'SortingPropertyDecorator')));
+    const sortArgIndex = args.findIndex(x => Array.isArray(x) && (x === null || x === void 0 ? void 0 : x.some(x => x._name_ === exports.SORTING_DECORATOR_NAME_METADATA_KEY)));
     if (sortArgIndex != -1) {
         args[sortArgIndex] = convertParameters(args[sortArgIndex], alias);
     }

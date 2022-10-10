@@ -1,4 +1,5 @@
 import { BaseEntity } from "./common";
+export declare const SORTING_DECORATOR_NAME_METADATA_KEY = "SortingPropertyDecorator";
 export declare enum SortType {
     ASC = "ASC",
     DESC = "DESC",
