@@ -1,13 +1,14 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/nestjs-graphql-tools" target="blank"><img src="https://raw.githubusercontent.com/Adrinalin4ik/Nestjs-Graphql-Tools/master/images/svg.svg" width="200" alt="NestJS Graphql tools Logo" /></a>
 </p>
-
+<h1 align="center">NestJS graphql Tools</h1>
 <p align="center"><a href="http://nestjs.com/" target="_blank">NestJS</a> Graphql automation library for building performant API</p>
 <p align="center">
   <a href="https://www.npmjs.com/package/nestjs-graphql-tools" target="_blank"><img src="https://img.shields.io/npm/v/nestjs-graphql-tools.svg" alt="NPM Version" /></a>
   <a href="https://www.npmjs.com/package/nestjs-graphql-tools" target="_blank"><img src="https://img.shields.io/npm/l/nestjs-graphql-tools.svg" alt="Package License" /></a>
   <a href="https://www.npmjs.com/package/nestjs-graphql-tools" target="_blank"><img src="https://img.shields.io/npm/dm/nestjs-graphql-tools.svg" alt="NPM Downloads" /></a>
 </p>
+
 
 ## Description
 
