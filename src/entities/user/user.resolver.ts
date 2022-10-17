@@ -63,6 +63,12 @@ export class UserResolver {
 
     const tasks = await qb.getMany();
     
+    // this.taskRepository.find({
+    //   where: [
+        
+    //   ]
+    // })
+
     return loader.helpers.mapOneToManyRelation(tasks, loader.ids, 'assignee_id');
   }
 

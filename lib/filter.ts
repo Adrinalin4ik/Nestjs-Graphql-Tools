@@ -178,20 +178,28 @@ export const Filter = (baseEntity: () => BaseEntity, options?: IFilterDecoratorP
   }
 }
 
-export const GraphqlFilter = () => {
+export interface GraphqlFilterOptions {
+  experementalPlainWhereStatement?: boolean
+}
+
+export const GraphqlFilter = (options?: GraphqlFilterOptions) => {
   return (_target, _property, descriptor) => {
     const actualDescriptor = descriptor.value;
     descriptor.value = function(...args) {
-      applyFilterParameter(args);
+      applyFilterParameter(args, options);
       return actualDescriptor.call(this, ...args);
     };
   };
 };
 
-export const applyFilterParameter = (args: any[]) => {
+export const applyFilterParameter = (args: any[], options: GraphqlFilterOptions) => {
   const filterArgIndex = args.findIndex(x => x?._name_ === FILTER_DECORATOR_NAME_METADATA_KEY);
   if (filterArgIndex != -1) {
-    args[filterArgIndex] = convertParameters(args[filterArgIndex]);
+    if (options?.experementalPlainWhereStatement) {
+      args[filterArgIndex] = convertParametersToPlainWhereObject(args[filterArgIndex]);
+    } else {
+      args[filterArgIndex] = convertParameters(args[filterArgIndex]);
+    }
   }
 }
 
@@ -236,6 +244,40 @@ const convertParameters = <T>(parameters: IFilter<T>) => {
       )
     }
   });
+  
+  return obj;
+}
+
+const convertParametersToPlainWhereObject = <T>(parameters: IFilter<T>) => {
+  const obj = [];
+  const clonnedParams = {...parameters};
+  delete clonnedParams.and;
+  delete clonnedParams.or;
+  delete clonnedParams._name_;
+
+  if (parameters?.and) {
+    let andObj = {};
+    for (const op of parameters?.and) {
+      const andParameters = recursivelyTransformComparators(op);
+      if (andParameters) {
+        andObj = {...andObj, ...andParameters }
+        // if (andParameters.)
+      }
+    }
+  }
+  if (parameters?.or) {
+    for (const op of parameters?.or) {
+      const orParameters = recursivelyTransformComparators(op);
+      if (orParameters) {
+        obj.push(orParameters)
+      }
+    }
+  }
+  const basicParameters = recursivelyTransformComparators(clonnedParams);
+
+  if (basicParameters) {
+    obj.push(basicParameters);
+  }
   
   return obj;
 }

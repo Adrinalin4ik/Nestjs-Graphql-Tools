@@ -41,6 +41,7 @@ export class TaskResolver {
     if (sorting) {
       qb.orderBy(sorting);
     }
+
     return qb.getMany();
   }
 

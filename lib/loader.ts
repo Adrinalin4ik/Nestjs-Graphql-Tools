@@ -4,7 +4,7 @@ import {
 } from '@nestjs/common';
 import { IncomingMessage } from 'http';
 import { groupBy } from 'lodash';
-import { applyFilterParameter } from './filter';
+import { applyFilterParameter, GraphqlFilterOptions } from './filter';
 import { applySortingParameter } from './sorting';
 import { SelectedUnionTypesResult } from './union-type-extractor';
 const DataLoader = require('dataloader');
@@ -91,6 +91,7 @@ export interface GraphqlLoaderOptions {
   sorting?: {
     alias?: string
   }
+  filtering?: GraphqlFilterOptions
 }
 
 export const Loader = createParamDecorator((_data: unknown, ctx: ExecutionContext) => {
@@ -121,7 +122,7 @@ export const GraphqlLoader = (
     const loaderKey = `${target.constructor.name}.${property}`;
     const actualDescriptor = descriptor.value;
     descriptor.value = function(...args) {
-      applyFilterParameter(args);
+      applyFilterParameter(args, options?.filtering);
       applySortingParameter(args, options?.sorting?.alias);
       const loader = args.find(x => x?._name_ === LOADER_DECORATOR_NAME_METADATA_KEY) as LoaderData<any, any> | PolymorphicLoaderData<any, any, any>;
       if (!loader || !loader.parent) {
