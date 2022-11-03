@@ -508,8 +508,14 @@ type StoryModel {
   updated_at: DateTime!
 }
 
+type UserAggregationType {
+  count: Float!
+  identification_avg: Float!
+}
+
 type Query {
   users(where: whereUserObjectTypeInput = {}, order_by: [sortUserObjectTypeInput!] = {}): [UserObjectType!]!
+  userAggregate: UserAggregationType!
   tasks(where: whereTaskObjectTypeInput = {}, paginate: PaginatorArgs, order_by: [sortTaskObjectTypeInput!] = {}): [TaskObjectType!]!
 }
 

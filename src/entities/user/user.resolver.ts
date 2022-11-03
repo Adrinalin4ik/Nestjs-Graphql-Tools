@@ -1,11 +1,11 @@
 import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
-import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
+import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
 import { StoryModel } from '../story/story.entity';
 import { TaskObjectType } from '../task/task.dto';
 import { Task } from '../task/task.entity';
-import { SearchTasksUnion, UserObjectType } from './user.dto';
+import { SearchTasksUnion, UserAggregationType, UserObjectType } from './user.dto';
 import { User } from './user.entity';
 
 @Resolver(() => UserObjectType)
@@ -91,5 +91,26 @@ export class UserResolver {
       results.push(...tqb);
     }
     return loader.helpers.mapOneToManyRelation(results, loader.ids, 'assignee_id');
+  }
+
+  @Query(() => UserAggregationType)
+  async userAggregate(
+    @SelectedFields() fields: SelectedFieldsResult
+  ) {
+    const qb = this.userRepository.createQueryBuilder('u')
+      .select([])
+
+    for (const field of fields.fieldsData.fieldsString) {
+      switch(field) {
+        case 'identification_avg':
+          qb.addSelect('avg(u.identification_number) as identification_avg')
+          break;
+        case 'count':
+          qb.addSelect('count(u.id) as count')
+          break;
+      }
+    }
+
+    return qb.getRawOne();
   }
 }

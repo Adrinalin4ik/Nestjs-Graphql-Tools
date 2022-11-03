@@ -31,6 +31,15 @@ export class UserObjectType extends BaseDTO {
   is_active: boolean;
 }
 
+@ObjectType()
+export class UserAggregationType {
+  @Field(() => Number)
+  count?: number
+
+  @Field(() => Number)
+  identification_avg: number;
+}
+
 export const SearchTasksUnion = createUnionType({
   name: 'SearchTasks',
   types: () => [TaskObjectType, StoryModel] as const,
