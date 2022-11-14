@@ -2,6 +2,7 @@ import {
   createParamDecorator,
   ExecutionContext
 } from '@nestjs/common';
+import { GraphQLResolveInfo } from 'graphql';
 import { IncomingMessage } from 'http';
 import { groupBy } from 'lodash';
 import { applyFilterParameter } from './filter';
@@ -66,8 +67,9 @@ export interface LoaderData<DtoType, IdType> {
   parent: any;
   ids: IdType[];
   polimorphicTypes: IdType[];
-  ctx: ExecutionContext;
-  req: IncomingMessage & ILoaderInstance<DtoType, IdType>;
+  ctx: ExecutionContext & ILoaderInstance<DtoType, IdType>;
+  info: GraphQLResolveInfo;
+  req: IncomingMessage;
   helpers: LoaderHelper<DtoType>;
 }
 
@@ -76,8 +78,9 @@ export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType> {
   parent: any;
   ids: { descriminator: DescriminatorType, id: IdType };
   polimorphicTypes: { descriminator: DescriminatorType, ids: IdType[] }[];
-  ctx: ExecutionContext;
-  req: IncomingMessage & ILoaderInstance<DtoType, IdType>;
+  ctx: ExecutionContext & ILoaderInstance<DtoType, IdType>;
+  info: GraphQLResolveInfo;
+  req: IncomingMessage;
   helpers: LoaderHelper<DtoType>;
   selectedUnions: SelectedUnionTypesResult;
 }
@@ -96,10 +99,12 @@ export interface GraphqlLoaderOptions {
 export const Loader = createParamDecorator((_data: unknown, ctx: ExecutionContext) => {
   const args = ctx.getArgs();
   const { req } = args[2];
+  const info = args[3];
   return {
     _name_: LOADER_DECORATOR_NAME_METADATA_KEY,
     parent: args[0],
     ctx,
+    info,
     req,
     helpers: {
       mapOneToManyRelation,
@@ -118,21 +123,21 @@ export const GraphqlLoader = (
   }
   
   return (target, property, descriptor) => {
-    const loaderKey = `${target.constructor.name}.${property}`;
     const actualDescriptor = descriptor.value;
     descriptor.value = function(...args) {
       applyFilterParameter(args);
       applySortingParameter(args, options?.sorting?.alias);
       const loader = args.find(x => x?._name_ === LOADER_DECORATOR_NAME_METADATA_KEY) as LoaderData<any, any> | PolymorphicLoaderData<any, any, any>;
+      const loaderKey = `${concatPath(loader.info.path)}.${target.constructor.name}.${property}`;
       if (!loader || !loader.parent) {
         throw new Error('@Loader parameter decorator is not first parameter or missing');
       }
-      if (!loader.req._loader) {
-        loader.req._loader = {};
+      if (!loader.ctx._loader) {
+        loader.ctx._loader = {};
       }
 
-      if (!loader.req._loader[loaderKey]) {
-        loader.req._loader[loaderKey] = new DataLoader(async ids => {
+      if (!loader.ctx._loader[loaderKey]) {
+        loader.ctx._loader[loaderKey] = new DataLoader(async ids => {
           if (options.polymorphic) {
             const polyLoader = loader as PolymorphicLoaderData<any, any, any>
             
@@ -155,7 +160,7 @@ export const GraphqlLoader = (
       }
       if (options.polymorphic) {
         if (loader.parent[options.polymorphic.idField] && loader.parent[options.polymorphic.typeField]) {
-          return loader.req._loader[loaderKey].load({
+          return loader.ctx._loader[loaderKey].load({
             id: loader.parent[options.polymorphic.idField], 
             descriminator: loader.parent[options.polymorphic.typeField]
           } as any);
@@ -164,7 +169,7 @@ export const GraphqlLoader = (
         }
       } else {
         if (loader.parent[options.foreignKey]) {
-          return loader.req._loader[loaderKey].load(loader.parent[options.foreignKey]);
+          return loader.ctx._loader[loaderKey].load(loader.parent[options.foreignKey]);
         }
       }
     };
@@ -213,3 +218,15 @@ export const mapOneToManyPolymorphicRelation = (
   const res = typeIds.map(type => gs[`${type.descriminator}_${type.id}`] || null);
   return res;
 };
+
+const concatPath = (path: any, acc?: string) => {
+  if (path.typename !== 'Query' && path.typename !== 'Subscription' && path.typename !== 'Mutation') {
+    if (typeof path.key === 'number') {
+      return concatPath(path.prev, acc);
+    } else {
+      return concatPath(path.prev, path.key + (acc ? '.' + acc : ''));
+    }
+  } else {
+    return acc;
+  }
+}
