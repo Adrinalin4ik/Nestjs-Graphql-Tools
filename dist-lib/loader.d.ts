@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import { ExecutionContext } from '@nestjs/common';
+import { GraphQLResolveInfo } from 'graphql';
 import { IncomingMessage } from 'http';
 import { SelectedUnionTypesResult } from './union-type-extractor';
 export declare const LOADER_DECORATOR_NAME_METADATA_KEY = "LoaderPropertyDecorator";
@@ -30,8 +31,9 @@ export interface LoaderData<DtoType, IdType> {
     parent: any;
     ids: IdType[];
     polimorphicTypes: IdType[];
-    ctx: ExecutionContext;
-    req: IncomingMessage & ILoaderInstance<DtoType, IdType>;
+    ctx: ExecutionContext & ILoaderInstance<DtoType, IdType>;
+    info: GraphQLResolveInfo;
+    req: IncomingMessage;
     helpers: LoaderHelper<DtoType>;
 }
 export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType> {
@@ -45,8 +47,9 @@ export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType> {
         descriminator: DescriminatorType;
         ids: IdType[];
     }[];
-    ctx: ExecutionContext;
-    req: IncomingMessage & ILoaderInstance<DtoType, IdType>;
+    ctx: ExecutionContext & ILoaderInstance<DtoType, IdType>;
+    info: GraphQLResolveInfo;
+    req: IncomingMessage;
     helpers: LoaderHelper<DtoType>;
     selectedUnions: SelectedUnionTypesResult;
 }

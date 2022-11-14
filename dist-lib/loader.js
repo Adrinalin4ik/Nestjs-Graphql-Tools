@@ -10,10 +10,12 @@ exports.LOADER_DECORATOR_NAME_METADATA_KEY = 'LoaderPropertyDecorator';
 exports.Loader = (0, common_1.createParamDecorator)((_data, ctx) => {
     const args = ctx.getArgs();
     const { req } = args[2];
+    const info = args[3];
     return {
         _name_: exports.LOADER_DECORATOR_NAME_METADATA_KEY,
         parent: args[0],
         ctx,
+        info,
         req,
         helpers: {
             mapOneToManyRelation: exports.mapOneToManyRelation,
@@ -25,21 +27,21 @@ exports.Loader = (0, common_1.createParamDecorator)((_data, ctx) => {
 const GraphqlLoader = (args) => {
     const options = Object.assign({ foreignKey: 'id' }, args);
     return (target, property, descriptor) => {
-        const loaderKey = `${target.constructor.name}.${property}`;
         const actualDescriptor = descriptor.value;
         descriptor.value = function (...args) {
             var _a;
             (0, filter_1.applyFilterParameter)(args);
             (0, sorting_1.applySortingParameter)(args, (_a = options === null || options === void 0 ? void 0 : options.sorting) === null || _a === void 0 ? void 0 : _a.alias);
             const loader = args.find(x => (x === null || x === void 0 ? void 0 : x._name_) === exports.LOADER_DECORATOR_NAME_METADATA_KEY);
+            const loaderKey = `${concatPath(loader.info.path)}.${target.constructor.name}.${property}`;
             if (!loader || !loader.parent) {
                 throw new Error('@Loader parameter decorator is not first parameter or missing');
             }
-            if (!loader.req._loader) {
-                loader.req._loader = {};
+            if (!loader.ctx._loader) {
+                loader.ctx._loader = {};
             }
-            if (!loader.req._loader[loaderKey]) {
-                loader.req._loader[loaderKey] = new DataLoader(async (ids) => {
+            if (!loader.ctx._loader[loaderKey]) {
+                loader.ctx._loader[loaderKey] = new DataLoader(async (ids) => {
                     if (options.polymorphic) {
                         const polyLoader = loader;
                         const gs = (0, lodash_1.groupBy)(ids, 'descriminator');
@@ -60,7 +62,7 @@ const GraphqlLoader = (args) => {
             }
             if (options.polymorphic) {
                 if (loader.parent[options.polymorphic.idField] && loader.parent[options.polymorphic.typeField]) {
-                    return loader.req._loader[loaderKey].load({
+                    return loader.ctx._loader[loaderKey].load({
                         id: loader.parent[options.polymorphic.idField],
                         descriminator: loader.parent[options.polymorphic.typeField]
                     });
@@ -71,7 +73,7 @@ const GraphqlLoader = (args) => {
             }
             else {
                 if (loader.parent[options.foreignKey]) {
-                    return loader.req._loader[loaderKey].load(loader.parent[options.foreignKey]);
+                    return loader.ctx._loader[loaderKey].load(loader.parent[options.foreignKey]);
                 }
             }
         };
@@ -106,4 +108,17 @@ const mapOneToManyPolymorphicRelation = (entities, typeIds, foreignKey = 'id') =
     return res;
 };
 exports.mapOneToManyPolymorphicRelation = mapOneToManyPolymorphicRelation;
+const concatPath = (path, acc) => {
+    if (path.typename !== 'Query' && path.typename !== 'Subscription' && path.typename !== 'Mutation') {
+        if (typeof path.key === 'number') {
+            return concatPath(path.prev, acc);
+        }
+        else {
+            return concatPath(path.prev, path.key + (acc ? '.' + acc : ''));
+        }
+    }
+    else {
+        return acc;
+    }
+};
 //# sourceMappingURL=loader.js.map
