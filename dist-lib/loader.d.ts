@@ -31,9 +31,9 @@ export interface LoaderData<DtoType, IdType> {
     parent: any;
     ids: IdType[];
     polimorphicTypes: IdType[];
-    ctx: ExecutionContext & ILoaderInstance<DtoType, IdType>;
+    ctx: ExecutionContext;
     info: GraphQLResolveInfo;
-    req: IncomingMessage;
+    req: IncomingMessage & ILoaderInstance<DtoType, IdType>;
     helpers: LoaderHelper<DtoType>;
 }
 export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType> {
@@ -47,9 +47,9 @@ export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType> {
         descriminator: DescriminatorType;
         ids: IdType[];
     }[];
-    ctx: ExecutionContext & ILoaderInstance<DtoType, IdType>;
+    ctx: ExecutionContext;
     info: GraphQLResolveInfo;
-    req: IncomingMessage;
+    req: IncomingMessage & ILoaderInstance<DtoType, IdType>;
     helpers: LoaderHelper<DtoType>;
     selectedUnions: SelectedUnionTypesResult;
 }
