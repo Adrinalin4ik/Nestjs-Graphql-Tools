@@ -67,9 +67,9 @@ export interface LoaderData<DtoType, IdType> {
   parent: any;
   ids: IdType[];
   polimorphicTypes: IdType[];
-  ctx: ExecutionContext & ILoaderInstance<DtoType, IdType>;
+  ctx: ExecutionContext;
   info: GraphQLResolveInfo;
-  req: IncomingMessage;
+  req: IncomingMessage & ILoaderInstance<DtoType, IdType>;
   helpers: LoaderHelper<DtoType>;
 }
 
@@ -78,9 +78,9 @@ export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType> {
   parent: any;
   ids: { descriminator: DescriminatorType, id: IdType };
   polimorphicTypes: { descriminator: DescriminatorType, ids: IdType[] }[];
-  ctx: ExecutionContext & ILoaderInstance<DtoType, IdType>;
+  ctx: ExecutionContext;
   info: GraphQLResolveInfo;
-  req: IncomingMessage;
+  req: IncomingMessage & ILoaderInstance<DtoType, IdType>;
   helpers: LoaderHelper<DtoType>;
   selectedUnions: SelectedUnionTypesResult;
 }
@@ -132,12 +132,17 @@ export const GraphqlLoader = (
       if (!loader || !loader.parent) {
         throw new Error('@Loader parameter decorator is not first parameter or missing');
       }
-      if (!loader.ctx._loader) {
-        loader.ctx._loader = {};
+
+      if (!loader.req) {
+        loader.req = {} as IncomingMessage & ILoaderInstance<any, any>;
       }
 
-      if (!loader.ctx._loader[loaderKey]) {
-        loader.ctx._loader[loaderKey] = new DataLoader(async ids => {
+      if (!loader.req._loader) {
+        loader.req._loader = {};
+      }
+
+      if (!loader.req._loader[loaderKey]) {
+        loader.req._loader[loaderKey] = new DataLoader(async ids => {
           if (options.polymorphic) {
             const polyLoader = loader as PolymorphicLoaderData<any, any, any>
             
@@ -160,7 +165,7 @@ export const GraphqlLoader = (
       }
       if (options.polymorphic) {
         if (loader.parent[options.polymorphic.idField] && loader.parent[options.polymorphic.typeField]) {
-          return loader.ctx._loader[loaderKey].load({
+          return loader.req._loader[loaderKey].load({
             id: loader.parent[options.polymorphic.idField], 
             descriminator: loader.parent[options.polymorphic.typeField]
           } as any);
@@ -169,7 +174,7 @@ export const GraphqlLoader = (
         }
       } else {
         if (loader.parent[options.foreignKey]) {
-          return loader.ctx._loader[loaderKey].load(loader.parent[options.foreignKey]);
+          return loader.req._loader[loaderKey].load(loader.parent[options.foreignKey]);
         }
       }
     };
