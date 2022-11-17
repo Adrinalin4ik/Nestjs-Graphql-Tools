@@ -63,7 +63,7 @@ export function extractFieldsData(
   if (from_fragment) {
     for (const resolver of resolvers) {
       if (resolver.kind === 'Field' && resolver?.name.value === '__typename') {
-        return;
+        continue;
       }
       if (resolver.kind === 'Field' && !resolver.selectionSet) {
         results.add(resolver.name.value);
