@@ -33,7 +33,7 @@ function extractFieldsData(resolvers, field, fragments, from_fragment = false) {
     if (from_fragment) {
         for (const resolver of resolvers) {
             if (resolver.kind === 'Field' && (resolver === null || resolver === void 0 ? void 0 : resolver.name.value) === '__typename') {
-                return;
+                continue;
             }
             if (resolver.kind === 'Field' && !resolver.selectionSet) {
                 results.add(resolver.name.value);
