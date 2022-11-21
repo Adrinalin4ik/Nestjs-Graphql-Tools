@@ -100,11 +100,11 @@ export function extractUnionsData(
 
               results.set(item.typeCondition.name.value, [...data]);
                 
-              process(
-                item.selectionSet.selections,
-                field,
-                fragments,
-              )
+              // process(
+              //   item.selectionSet.selections,
+              //   field,
+              //   fragments,
+              // )
             }
           });
   
