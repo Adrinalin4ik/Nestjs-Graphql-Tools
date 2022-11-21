@@ -59,7 +59,6 @@ function extractUnionsData(resolvers, field, fragments) {
                         else if (item.kind === 'InlineFragment') {
                             const data = (0, field_extractor_1.extractFieldsData)(item.selectionSet.selections, item.typeCondition.name.value, fragments, true);
                             results.set(item.typeCondition.name.value, [...data]);
-                            process(item.selectionSet.selections, field, fragments);
                         }
                     });
                     return results;
