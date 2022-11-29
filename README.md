@@ -31,7 +31,7 @@ The library allows to build efficient graphql API helping overcome n+1 problem a
 $ npm i nestjs-graphql-tools
 ```
 
-## Data Loader n+1 resolver
+## Data Loader n+1 problem solver
 #### Loader usage guide
   1. Decorate your resolver with `@GraphqlLoader()`
   2. Add `@Loader()` parameter as a first parameter
