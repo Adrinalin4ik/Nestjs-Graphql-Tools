@@ -1,0 +1,24 @@
+@import "{{ site.theme }}";
+
+#header nav ul li a {
+  background: #ea2845;
+  border: 2px solid #ea2845;
+  color: #fff;
+}
+
+a {
+  color: #ea2845;
+}
+
+blockquote {
+  border-left: 3px solid rgba(8,148,226,.038);
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  color: rgb(64, 64, 64);
+}
+
+pre {
+  color:rgb(247, 247, 247);
+  background: rgb(29, 29, 29);
+}
