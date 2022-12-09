@@ -213,7 +213,8 @@ You can find complete example in src/descriptions folder
 
 
 ## Filters
-Filter is giving ability to filter out entities by the condition. Condition looks similar to hasura interface using operators `eq, neq, gt, gte, lt, lte, in, like, notlike, between, notbetween, null`
+Filter is giving ability to filter out entities by the condition. Condition looks similar to hasura interface using operators `eq, neq, gt, gte, lt, lte, in, like, notlike, between, notbetween, null`.
+By default it generates filter based on provided model. It supports only first level of the tables hierachy. If you need to search in depth you can declare custom filters (example 3).
 
 ##### Example 1
 
@@ -307,6 +308,45 @@ export class UserResolver {
   }
 }
 ```
+##### Example 3. Custom filters
+
+```typescript
+@Resolver(() => UserObjectType)
+export class UserResolver {
+  constructor(
+    @InjectRepository(Task) public readonly taskRepository: Repository<Task>,
+    @InjectRepository(StoryModel) public readonly storyRepository: Repository<StoryModel>,
+    @InjectRepository(User) public readonly userRepository: Repository<User>
+  ) {}
+
+  @Query(() => [UserObjectType])
+  @GraphqlFilter()
+  users(
+    @Filter(() => UserObjectType, {
+      customFilters: { // <- Here
+        disableDefaultFilters: false // <- Optional parameter. Allows to remove filter which were automatically created based on model. Default value is false. Custom and non custom filters extending togather.
+        fields: [ 
+          /* 
+          Array of defined fields. 
+          Name is name of the field which will be used in API.
+          TypeFn is the Graphql type function.
+          SqlExp is the left side in conditional statement. For example full name filter will build query `where concat(u.fname, ' ', u.lname) <operator> :args`
+          */
+          {name: 'task_title', typeFn: () => String, sqlExp: 't.title'},
+          {name: 'task_story_points', typeFn: () => Int, sqlExp: 't.story_points'},
+          {name: 'full_name', typeFn: () => Int, sqlExp: 'concat(u.fname, \' \', u.lname)'},
+        ]
+      }
+    }) filter: Brackets,
+  ) {
+    const qb = this.userRepository.createQueryBuilder('u')
+      .leftJoin('task', 't', 't.assignee_id = u.id') // <- Joining necessary for the filtering model with specific alias
+      .where(filter);
+      
+    return qb.getMany()
+  }
+}
+```
 
 ## Pagination
 The library provides parameter decorator `@Paginator()` for the pagination. This decorator returns object like that
@@ -357,7 +397,8 @@ export class TaskResolver {
   @Query(() => [TaskObjectType])
   @GraphqlSorting()
   async tasks(
-   @Sorting(() => TaskObjectType) sorting: SortArgs<TaskObjectType>
+    /* SqlAlias is an ptional argument. Allows to provide alias in case if you have many tables joined. In current case it doesn't required */
+    @Sorting(() => TaskObjectType, { sqlAlias: 't' }) sorting: SortArgs<TaskObjectType>
   ) {
     const qb = this.taskRepository.createQueryBuilder('t');
     
