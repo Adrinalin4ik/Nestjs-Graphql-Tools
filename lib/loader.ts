@@ -86,13 +86,11 @@ export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType> {
 }
 
 export interface GraphqlLoaderOptions {
+  /** Parent ID. It works pretty straight forward. It takes parent[foreignKey] and accumulates in loader.ids */
   foreignKey?: string;
   polymorphic?: {
     idField: string;
     typeField: string;
-  }
-  sorting?: {
-    alias?: string
   }
 }
 
@@ -126,7 +124,7 @@ export const GraphqlLoader = (
     const actualDescriptor = descriptor.value;
     descriptor.value = function(...args) {
       applyFilterParameter(args, target, property);
-      applySortingParameter(args, options?.sorting?.alias);
+      applySortingParameter(args, target, property);
       const loader = args.find(x => x?._name_ === LOADER_DECORATOR_NAME_METADATA_KEY) as LoaderData<any, any> | PolymorphicLoaderData<any, any, any>;
       const loaderKey = `${concatPath(loader.info.path)}.${target.constructor.name}.${property}`;
       if (!loader || !loader.parent) {

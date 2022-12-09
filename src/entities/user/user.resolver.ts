@@ -18,7 +18,7 @@ export class UserResolver {
 
   @Query(() => [UserObjectType])
   @GraphqlFilter()
-  @GraphqlSorting({alias: 'u'})
+  @GraphqlSorting()
   users(
     @Filter(() => UserObjectType, {
       customFilters: {
@@ -29,7 +29,7 @@ export class UserResolver {
         ]
       }
     }) filter: Brackets,
-    @Sorting(() => UserObjectType) sorting: SortArgs<UserObjectType>
+    @Sorting(() => UserObjectType, { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
       .leftJoin('task', 't', 't.assignee_id = u.id')
@@ -43,7 +43,7 @@ export class UserResolver {
   }
 
   @ResolveField(() => [TaskObjectType], { nullable: true })
-  @GraphqlLoader({ sorting: { alias: 't'}})
+  @GraphqlLoader()
   async tasks(
     @Loader() loader: LoaderData<TaskObjectType, number>,
     @Filter(() => TaskObjectType, {
@@ -53,7 +53,7 @@ export class UserResolver {
         ]
       }
     }) filter: Brackets,
-    @Sorting((() => TaskObjectType)) sorting: SortArgs<TaskObjectType>,
+    @Sorting(() => TaskObjectType, { sqlAlias: 't' }) sorting: SortArgs<TaskObjectType>,
     @Args('user_name', {nullable: true}) user_name: string
   ) {
     const qb = this.taskRepository.createQueryBuilder('t')

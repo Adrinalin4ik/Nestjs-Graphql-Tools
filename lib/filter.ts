@@ -220,10 +220,10 @@ export const GraphqlFilter = () => {
   };
 };
 
-export const applyFilterParameter = (args: any[], target, property) => {
-  const options: IFilterDecoratorParams = Reflect.getMetadata(FILTER_DECORATOR_OPTIONS_METADATA_KEY, target, property) as IFilterDecoratorParams;
+export const applyFilterParameter = (args: any[], target, property: string) => {
   const filterArgIndex = args.findIndex(x => x?._name_ === FILTER_DECORATOR_NAME_METADATA_KEY);
   if (filterArgIndex != -1) {
+    const options: IFilterDecoratorParams = Reflect.getMetadata(FILTER_DECORATOR_OPTIONS_METADATA_KEY, target, property) as IFilterDecoratorParams;
     args[filterArgIndex] = convertParameters(args[filterArgIndex], options?.customFilters);
   }
 }

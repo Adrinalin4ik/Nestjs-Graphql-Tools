@@ -2,6 +2,7 @@ import { Args, Field, InputType, PartialType, registerEnumType, TypeMetadataStor
 import { BaseEntity } from "./common";
 
 export const SORTING_DECORATOR_NAME_METADATA_KEY = 'SortingPropertyDecorator';
+export const SORTING_DECORATOR_OPTIONS_METADATA_KEY = 'SortingPropertyDecoratorOptions';
 
 export enum SortType {
   ASC = 'ASC',
@@ -106,11 +107,13 @@ const getSortFullInputType = (classRef: BaseEntity) => {
 
 interface IFilterDecoratorParams {
   name?: string;
+  sqlAlias?: string;
 }
 
 export const Sorting = (baseEntity: () => BaseEntity, options?: IFilterDecoratorParams) => {
   const filterFullType = getSortFullInputType(baseEntity());
   return (target, propertyName, paramIndex) => {
+    Reflect.defineMetadata(SORTING_DECORATOR_OPTIONS_METADATA_KEY, options, target, propertyName);
     Args({
       name: options?.name || 'order_by',
       nullable: true,
@@ -120,24 +123,21 @@ export const Sorting = (baseEntity: () => BaseEntity, options?: IFilterDecorator
   }
 }
 
-interface GraphqlSortingOptions {
-  alias?: string
-}
-
-export const GraphqlSorting = (options?: GraphqlSortingOptions) => {
-  return (_target, _property, descriptor) => {
+export const GraphqlSorting = () => {
+  return (target, property, descriptor) => {
     const actualDescriptor = descriptor.value;
     descriptor.value = function(...args) {
-      applySortingParameter(args, options?.alias);
+      applySortingParameter(args, target, property);
       return actualDescriptor.call(this, ...args);
     };
   };
 };
 
-export const applySortingParameter = (args: any[], alias?: string) => {
+export const applySortingParameter = (args: any[], target, property: string) => {
   const sortArgIndex = args.findIndex(x => Array.isArray(x) && x?.some(x => x._name_ === SORTING_DECORATOR_NAME_METADATA_KEY));
   if (sortArgIndex != -1) {
-    args[sortArgIndex] = convertParameters(args[sortArgIndex], alias);
+    const options: IFilterDecoratorParams = Reflect.getMetadata(SORTING_DECORATOR_OPTIONS_METADATA_KEY, target, property) as IFilterDecoratorParams;
+    args[sortArgIndex] = convertParameters(args[sortArgIndex], options?.sqlAlias);
   }
 }
 
