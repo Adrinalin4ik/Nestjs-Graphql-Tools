@@ -323,7 +323,7 @@ export class UserResolver {
   @GraphqlFilter()
   users(
     @Filter(() => UserObjectType, {
-      customFilters: { // <- Here
+      customFilters: {
         disableDefaultFilters: false // <- Optional parameter. Allows to remove filter which were automatically created based on model. Default value is false. Custom and non custom filters extending togather.
         fields: [ 
           /* 
