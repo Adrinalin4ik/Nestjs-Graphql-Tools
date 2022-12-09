@@ -44,6 +44,7 @@ export class UserResolver {
 
   @ResolveField(() => [TaskObjectType], { nullable: true })
   @GraphqlLoader()
+  @GraphqlFilter()
   async tasks(
     @Loader() loader: LoaderData<TaskObjectType, number>,
     @Filter(() => TaskObjectType, {

@@ -1,6 +1,7 @@
 import { Args, Field, InputType, PartialType, registerEnumType, TypeMetadataStorage } from "@nestjs/graphql";
 import { BaseEntity } from "./common";
 
+export const GRAPHQL_SORTING_DECORATOR_METADATA_KEY = 'GraphqlSortingDecorator';
 export const SORTING_DECORATOR_NAME_METADATA_KEY = 'SortingPropertyDecorator';
 export const SORTING_DECORATOR_OPTIONS_METADATA_KEY = 'SortingPropertyDecoratorOptions';
 
@@ -130,6 +131,7 @@ export const GraphqlSorting = () => {
       applySortingParameter(args, target, property);
       return actualDescriptor.call(this, ...args);
     };
+    Reflect.defineMetadata(GRAPHQL_SORTING_DECORATOR_METADATA_KEY, '', target, property);
   };
 };
 

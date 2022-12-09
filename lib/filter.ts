@@ -2,6 +2,7 @@ import { Args, Field, InputType, PartialType, ReturnTypeFunc, TypeMetadataStorag
 import { Any, Between, Brackets, Equal, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not } from "typeorm";
 import { BaseEntity } from "./common";
 
+export const GRAPHQL_FILTER_DECORATOR_METADATA_KEY = 'GraphqlFilterDecorator';
 export const FILTER_DECORATOR_NAME_METADATA_KEY = 'FilterPropertyDecorator';
 export const FILTER_DECORATOR_OPTIONS_METADATA_KEY = 'FilterPropertyDecoratorOptions';
 const FILTER_OPERATION_PREFIX = process.env.FILTER_OPERATION_PREFIX || undefined;
@@ -217,6 +218,7 @@ export const GraphqlFilter = () => {
       applyFilterParameter(args, target, property);
       return actualDescriptor.call(this, ...args);
     };
+    Reflect.defineMetadata(GRAPHQL_FILTER_DECORATOR_METADATA_KEY, '', target, property);
   };
 };
 
