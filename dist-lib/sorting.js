@@ -9,9 +9,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.applySortingParameter = exports.GraphqlSorting = exports.Sorting = exports.SortInputMapPrefixes = exports.SortType = exports.SORTING_DECORATOR_NAME_METADATA_KEY = void 0;
+exports.applySortingParameter = exports.GraphqlSorting = exports.Sorting = exports.SortInputMapPrefixes = exports.SortType = exports.SORTING_DECORATOR_OPTIONS_METADATA_KEY = exports.SORTING_DECORATOR_NAME_METADATA_KEY = exports.GRAPHQL_SORTING_DECORATOR_METADATA_KEY = void 0;
 const graphql_1 = require("@nestjs/graphql");
+exports.GRAPHQL_SORTING_DECORATOR_METADATA_KEY = 'GraphqlSortingDecorator';
 exports.SORTING_DECORATOR_NAME_METADATA_KEY = 'SortingPropertyDecorator';
+exports.SORTING_DECORATOR_OPTIONS_METADATA_KEY = 'SortingPropertyDecoratorOptions';
 var SortType;
 (function (SortType) {
     SortType["ASC"] = "ASC";
@@ -92,6 +94,7 @@ const getSortFullInputType = (classRef) => {
 const Sorting = (baseEntity, options) => {
     const filterFullType = getSortFullInputType(baseEntity());
     return (target, propertyName, paramIndex) => {
+        Reflect.defineMetadata(exports.SORTING_DECORATOR_OPTIONS_METADATA_KEY, options, target, propertyName);
         (0, graphql_1.Args)({
             name: (options === null || options === void 0 ? void 0 : options.name) || 'order_by',
             nullable: true,
@@ -101,20 +104,22 @@ const Sorting = (baseEntity, options) => {
     };
 };
 exports.Sorting = Sorting;
-const GraphqlSorting = (options) => {
-    return (_target, _property, descriptor) => {
+const GraphqlSorting = () => {
+    return (target, property, descriptor) => {
         const actualDescriptor = descriptor.value;
         descriptor.value = function (...args) {
-            (0, exports.applySortingParameter)(args, options === null || options === void 0 ? void 0 : options.alias);
+            (0, exports.applySortingParameter)(args, target, property);
             return actualDescriptor.call(this, ...args);
         };
+        Reflect.defineMetadata(exports.GRAPHQL_SORTING_DECORATOR_METADATA_KEY, '', target, property);
     };
 };
 exports.GraphqlSorting = GraphqlSorting;
-const applySortingParameter = (args, alias) => {
+const applySortingParameter = (args, target, property) => {
     const sortArgIndex = args.findIndex(x => Array.isArray(x) && (x === null || x === void 0 ? void 0 : x.some(x => x._name_ === exports.SORTING_DECORATOR_NAME_METADATA_KEY)));
     if (sortArgIndex != -1) {
-        args[sortArgIndex] = convertParameters(args[sortArgIndex], alias);
+        const options = Reflect.getMetadata(exports.SORTING_DECORATOR_OPTIONS_METADATA_KEY, target, property);
+        args[sortArgIndex] = convertParameters(args[sortArgIndex], options === null || options === void 0 ? void 0 : options.sqlAlias);
     }
 };
 exports.applySortingParameter = applySortingParameter;

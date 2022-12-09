@@ -1,5 +1,8 @@
+import { ReturnTypeFunc } from "@nestjs/graphql";
 import { BaseEntity } from "./common";
+export declare const GRAPHQL_FILTER_DECORATOR_METADATA_KEY = "GraphqlFilterDecorator";
 export declare const FILTER_DECORATOR_NAME_METADATA_KEY = "FilterPropertyDecorator";
+export declare const FILTER_DECORATOR_OPTIONS_METADATA_KEY = "FilterPropertyDecoratorOptions";
 export declare enum OperationQuery {
     eq = "eq",
     neq = "neq",
@@ -18,6 +21,21 @@ export declare enum OperationQuery {
 export declare enum InputMapPrefixes {
     PropertyFilterType = "PropertyFilterType",
     FilterInputType = "FilterInputType"
+}
+export interface FilterFieldDefinition {
+    name: string;
+    typeFn: ReturnTypeFunc;
+}
+export interface CustomFilterFieldDefinition extends FilterFieldDefinition {
+    sqlExp: string;
+}
+export interface CustomFilters {
+    disableDefaultFilters?: boolean;
+    fields: CustomFilterFieldDefinition[];
+}
+export interface IFilterDecoratorParams {
+    name?: string;
+    customFilters?: CustomFilters;
 }
 export declare type IFilterField<T> = {
     [K in keyof T]: {
@@ -40,10 +58,6 @@ export interface IFilter<T> {
     or: IFilterField<T>[];
     _name_: string;
 }
-interface IFilterDecoratorParams {
-    name?: string;
-}
 export declare const Filter: (baseEntity: () => BaseEntity, options?: IFilterDecoratorParams) => (target: any, propertyName: any, paramIndex: any) => void;
-export declare const GraphqlFilter: () => (_target: any, _property: any, descriptor: any) => void;
-export declare const applyFilterParameter: (args: any[]) => void;
-export {};
+export declare const GraphqlFilter: () => (target: any, property: any, descriptor: any) => void;
+export declare const applyFilterParameter: (args: any[], target: any, property: string) => void;

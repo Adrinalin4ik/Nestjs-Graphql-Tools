@@ -29,9 +29,12 @@ const GraphqlLoader = (args) => {
     return (target, property, descriptor) => {
         const actualDescriptor = descriptor.value;
         descriptor.value = function (...args) {
-            var _a;
-            (0, filter_1.applyFilterParameter)(args);
-            (0, sorting_1.applySortingParameter)(args, (_a = options === null || options === void 0 ? void 0 : options.sorting) === null || _a === void 0 ? void 0 : _a.alias);
+            if (!Reflect.hasMetadata(filter_1.GRAPHQL_FILTER_DECORATOR_METADATA_KEY, target, property)) {
+                (0, filter_1.applyFilterParameter)(args, target, property);
+            }
+            if (!Reflect.hasMetadata(sorting_1.GRAPHQL_SORTING_DECORATOR_METADATA_KEY, target, property)) {
+                (0, sorting_1.applySortingParameter)(args, target, property);
+            }
             const loader = args.find(x => (x === null || x === void 0 ? void 0 : x._name_) === exports.LOADER_DECORATOR_NAME_METADATA_KEY);
             const loaderKey = `${concatPath(loader.info.path)}.${target.constructor.name}.${property}`;
             if (!loader || !loader.parent) {

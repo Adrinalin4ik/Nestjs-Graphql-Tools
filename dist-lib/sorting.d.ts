@@ -1,5 +1,7 @@
 import { BaseEntity } from "./common";
+export declare const GRAPHQL_SORTING_DECORATOR_METADATA_KEY = "GraphqlSortingDecorator";
 export declare const SORTING_DECORATOR_NAME_METADATA_KEY = "SortingPropertyDecorator";
+export declare const SORTING_DECORATOR_OPTIONS_METADATA_KEY = "SortingPropertyDecoratorOptions";
 export declare enum SortType {
     ASC = "ASC",
     DESC = "DESC",
@@ -20,11 +22,9 @@ export declare type SortArgs<T> = {
 };
 interface IFilterDecoratorParams {
     name?: string;
+    sqlAlias?: string;
 }
 export declare const Sorting: (baseEntity: () => BaseEntity, options?: IFilterDecoratorParams) => (target: any, propertyName: any, paramIndex: any) => void;
-interface GraphqlSortingOptions {
-    alias?: string;
-}
-export declare const GraphqlSorting: (options?: GraphqlSortingOptions) => (_target: any, _property: any, descriptor: any) => void;
-export declare const applySortingParameter: (args: any[], alias?: string) => void;
+export declare const GraphqlSorting: () => (target: any, property: any, descriptor: any) => void;
+export declare const applySortingParameter: (args: any[], target: any, property: string) => void;
 export {};
