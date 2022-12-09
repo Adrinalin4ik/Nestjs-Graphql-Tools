@@ -125,7 +125,7 @@ export const GraphqlLoader = (
   return (target, property, descriptor) => {
     const actualDescriptor = descriptor.value;
     descriptor.value = function(...args) {
-      applyFilterParameter(args);
+      applyFilterParameter(args, target, property);
       applySortingParameter(args, options?.sorting?.alias);
       const loader = args.find(x => x?._name_ === LOADER_DECORATOR_NAME_METADATA_KEY) as LoaderData<any, any> | PolymorphicLoaderData<any, any, any>;
       const loaderKey = `${concatPath(loader.info.path)}.${target.constructor.name}.${property}`;

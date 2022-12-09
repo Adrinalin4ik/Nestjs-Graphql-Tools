@@ -1,4 +1,4 @@
-import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Int, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
 import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
@@ -20,7 +20,15 @@ export class UserResolver {
   @GraphqlFilter()
   @GraphqlSorting({alias: 'u'})
   users(
-    @Filter(() => UserObjectType) filter: Brackets,
+    @Filter(() => UserObjectType, {
+      customFilters: {
+        fields: [
+          {name: 'task_title', typeFn: () => String, sqlExp: 't.title'},
+          {name: 'task_story_points', typeFn: () => Int, sqlExp: 't.story_points'},
+          {name: 'fname', typeFn: () => Int, sqlExp: 'u.fname'},
+        ]
+      }
+    }) filter: Brackets,
     @Sorting(() => UserObjectType) sorting: SortArgs<UserObjectType>
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
@@ -35,14 +43,16 @@ export class UserResolver {
   }
 
   @ResolveField(() => [TaskObjectType], { nullable: true })
-  @GraphqlLoader({
-    sorting: {
-      alias: 't'
-    }
-  })
+  @GraphqlLoader({ sorting: { alias: 't'}})
   async tasks(
     @Loader() loader: LoaderData<TaskObjectType, number>,
-    @Filter(() => TaskObjectType) filter: Brackets,
+    @Filter(() => TaskObjectType, {
+      customFilters: {
+        fields: [
+          {name: 'user_full_name', typeFn: () => String, sqlExp: 'concat(u.fname, \' \', u.lname)'}
+        ]
+      }
+    }) filter: Brackets,
     @Sorting((() => TaskObjectType)) sorting: SortArgs<TaskObjectType>,
     @Args('user_name', {nullable: true}) user_name: string
   ) {

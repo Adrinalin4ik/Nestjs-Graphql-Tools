@@ -74,6 +74,8 @@ input whereUserObjectTypeInput {
   age: ageUserObjectTypePropertyFilterType
   phone: phoneUserObjectTypePropertyFilterType
   is_active: is_activeUserObjectTypePropertyFilterType
+
+  """Don't touch this field. Reserved for nestjs-graphql-toos purposes."""
   _name_: String = "FilterPropertyDecorator"
   and: [UserObjectTypePropertyFilterType!]
   or: [UserObjectTypePropertyFilterType!]
@@ -279,13 +281,13 @@ type UserObjectType {
   lname: String!
   mname: String!
   age: Float!
-  phone: String!
+  phone: String
   is_active: Boolean!
-  tasks(where: whereTaskObjectTypeInput = {}, order_by: [sortTaskObjectTypeInput!] = {}, user_name: String): [TaskObjectType!]
+  tasks(where: whereTaskObjectType1489141Input = {}, order_by: [sortTaskObjectTypeInput!] = {}, user_name: String): [TaskObjectType!]
   searchTasks: [SearchTasks!]!
 }
 
-input whereTaskObjectTypeInput {
+input whereTaskObjectType1489141Input {
   id: idTaskObjectTypePropertyFilterType
   title: titleTaskObjectTypePropertyFilterType
   type_id: type_idTaskObjectTypePropertyFilterType
@@ -296,9 +298,12 @@ input whereTaskObjectTypeInput {
   task_id: task_idTaskObjectTypePropertyFilterType
   created_at: created_atTaskObjectTypePropertyFilterType
   updated_at: updated_atTaskObjectTypePropertyFilterType
+  user_full_name: user_full_nameTaskObjectTypePropertyFilterType
+
+  """Don't touch this field. Reserved for nestjs-graphql-toos purposes."""
   _name_: String = "FilterPropertyDecorator"
-  and: [TaskObjectTypePropertyFilterType!]
-  or: [TaskObjectTypePropertyFilterType!]
+  and: [TaskObjectType1489141PropertyFilterType!]
+  or: [TaskObjectType1489141PropertyFilterType!]
 }
 
 input idTaskObjectTypePropertyFilterType {
@@ -461,7 +466,23 @@ input updated_atTaskObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input TaskObjectTypePropertyFilterType {
+input user_full_nameTaskObjectTypePropertyFilterType {
+  eq: String
+  neq: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  in: [String!]
+  notin: String
+  like: String
+  notlike: String
+  between: [String!]
+  notbetween: [String!]
+  null: Boolean
+}
+
+input TaskObjectType1489141PropertyFilterType {
   id: idTaskObjectTypePropertyFilterType
   title: titleTaskObjectTypePropertyFilterType
   type_id: type_idTaskObjectTypePropertyFilterType
@@ -472,6 +493,7 @@ input TaskObjectTypePropertyFilterType {
   task_id: task_idTaskObjectTypePropertyFilterType
   created_at: created_atTaskObjectTypePropertyFilterType
   updated_at: updated_atTaskObjectTypePropertyFilterType
+  user_full_name: user_full_nameTaskObjectTypePropertyFilterType
 }
 
 input sortTaskObjectTypeInput {
@@ -514,9 +536,78 @@ type UserAggregationType {
 }
 
 type Query {
-  users(where: whereUserObjectTypeInput = {}, order_by: [sortUserObjectTypeInput!] = {}): [UserObjectType!]!
+  users(where: whereUserObjectType3466323Input = {}, order_by: [sortUserObjectTypeInput!] = {}): [UserObjectType!]!
   userAggregate: UserAggregationType!
   tasks(where: whereTaskObjectTypeInput = {}, paginate: PaginatorArgs, order_by: [sortTaskObjectTypeInput!] = {}): [TaskObjectType!]!
+}
+
+input whereUserObjectType3466323Input {
+  id: idUserObjectTypePropertyFilterType
+  created_at: created_atUserObjectTypePropertyFilterType
+  updated_at: updated_atUserObjectTypePropertyFilterType
+  identification_number: identification_numberUserObjectTypePropertyFilterType
+  email: emailUserObjectTypePropertyFilterType
+  fname: fnameUserObjectTypePropertyFilterType
+  lname: lnameUserObjectTypePropertyFilterType
+  mname: mnameUserObjectTypePropertyFilterType
+  age: ageUserObjectTypePropertyFilterType
+  phone: phoneUserObjectTypePropertyFilterType
+  is_active: is_activeUserObjectTypePropertyFilterType
+  task_title: task_titleUserObjectTypePropertyFilterType
+  task_story_points: task_story_pointsUserObjectTypePropertyFilterType
+
+  """Don't touch this field. Reserved for nestjs-graphql-toos purposes."""
+  _name_: String = "FilterPropertyDecorator"
+  and: [UserObjectType3466323PropertyFilterType!]
+  or: [UserObjectType3466323PropertyFilterType!]
+}
+
+input task_titleUserObjectTypePropertyFilterType {
+  eq: String
+  neq: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  in: [String!]
+  notin: String
+  like: String
+  notlike: String
+  between: [String!]
+  notbetween: [String!]
+  null: Boolean
+}
+
+input task_story_pointsUserObjectTypePropertyFilterType {
+  eq: Int
+  neq: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  in: [Int!]
+  notin: Int
+  like: Int
+  notlike: Int
+  between: [Int!]
+  notbetween: [Int!]
+  null: Boolean
+}
+
+input UserObjectType3466323PropertyFilterType {
+  id: idUserObjectTypePropertyFilterType
+  created_at: created_atUserObjectTypePropertyFilterType
+  updated_at: updated_atUserObjectTypePropertyFilterType
+  identification_number: identification_numberUserObjectTypePropertyFilterType
+  email: emailUserObjectTypePropertyFilterType
+  fname: fnameUserObjectTypePropertyFilterType
+  lname: lnameUserObjectTypePropertyFilterType
+  mname: mnameUserObjectTypePropertyFilterType
+  age: ageUserObjectTypePropertyFilterType
+  phone: phoneUserObjectTypePropertyFilterType
+  is_active: is_activeUserObjectTypePropertyFilterType
+  task_title: task_titleUserObjectTypePropertyFilterType
+  task_story_points: task_story_pointsUserObjectTypePropertyFilterType
 }
 
 input sortUserObjectTypeInput {
@@ -532,6 +623,37 @@ input sortUserObjectTypeInput {
   phone: SortType
   is_active: SortType
   _name_: String = "SortingPropertyDecorator"
+}
+
+input whereTaskObjectTypeInput {
+  id: idTaskObjectTypePropertyFilterType
+  title: titleTaskObjectTypePropertyFilterType
+  type_id: type_idTaskObjectTypePropertyFilterType
+  priority: priorityTaskObjectTypePropertyFilterType
+  story_points: story_pointsTaskObjectTypePropertyFilterType
+  status: statusTaskObjectTypePropertyFilterType
+  assignee_id: assignee_idTaskObjectTypePropertyFilterType
+  task_id: task_idTaskObjectTypePropertyFilterType
+  created_at: created_atTaskObjectTypePropertyFilterType
+  updated_at: updated_atTaskObjectTypePropertyFilterType
+
+  """Don't touch this field. Reserved for nestjs-graphql-toos purposes."""
+  _name_: String = "FilterPropertyDecorator"
+  and: [TaskObjectTypePropertyFilterType!]
+  or: [TaskObjectTypePropertyFilterType!]
+}
+
+input TaskObjectTypePropertyFilterType {
+  id: idTaskObjectTypePropertyFilterType
+  title: titleTaskObjectTypePropertyFilterType
+  type_id: type_idTaskObjectTypePropertyFilterType
+  priority: priorityTaskObjectTypePropertyFilterType
+  story_points: story_pointsTaskObjectTypePropertyFilterType
+  status: statusTaskObjectTypePropertyFilterType
+  assignee_id: assignee_idTaskObjectTypePropertyFilterType
+  task_id: task_idTaskObjectTypePropertyFilterType
+  created_at: created_atTaskObjectTypePropertyFilterType
+  updated_at: updated_atTaskObjectTypePropertyFilterType
 }
 
 input PaginatorArgs {

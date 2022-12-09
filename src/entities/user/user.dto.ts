@@ -24,7 +24,7 @@ export class UserObjectType extends BaseDTO {
   @Field()
   age: number;
 
-  @Field()
+  @Field(() => String, { nullable: true })
   phone: string;
 
   @Field()
