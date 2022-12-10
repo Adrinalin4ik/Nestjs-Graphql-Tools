@@ -1,10 +1,11 @@
-import { Args, Int, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
 import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
 import { StoryModel } from '../story/story.entity';
 import { TaskObjectType } from '../task/task.dto';
 import { Task } from '../task/task.entity';
+import { TaskFilterInputType, UserFilterInputType } from './fillter.dto';
 import { SearchTasksUnion, UserAggregationType, UserObjectType } from './user.dto';
 import { User } from './user.entity';
 
@@ -20,15 +21,7 @@ export class UserResolver {
   @GraphqlFilter()
   @GraphqlSorting()
   users(
-    @Filter(() => UserObjectType, {
-      customFilters: {
-        fields: [
-          {name: 'task_title', typeFn: () => String, sqlExp: 't.title'},
-          {name: 'task_story_points', typeFn: () => Int, sqlExp: 't.story_points'},
-          {name: 'fname', typeFn: () => Int, sqlExp: 'u.fname'},
-        ]
-      }
-    }) filter: Brackets,
+    @Filter(() => [UserObjectType, UserFilterInputType]) filter: Brackets,
     @Sorting(() => UserObjectType, { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
@@ -47,27 +40,15 @@ export class UserResolver {
   @GraphqlFilter()
   async tasks(
     @Loader() loader: LoaderData<TaskObjectType, number>,
-    @Filter(() => TaskObjectType, {
-      customFilters: {
-        fields: [
-          {name: 'user_full_name', typeFn: () => String, sqlExp: 'concat(u.fname, \' \', u.lname)'}
-        ]
-      }
-    }) filter: Brackets,
+    @Filter(() => TaskFilterInputType) filter: Brackets,
     @Sorting(() => TaskObjectType, { sqlAlias: 't' }) sorting: SortArgs<TaskObjectType>,
-    @Args('user_name', {nullable: true}) user_name: string
   ) {
     const qb = this.taskRepository.createQueryBuilder('t')
-    .leftJoin('user', 'u', 'u.id = t.assignee_id')
     .where(filter)
     .andWhere({
       assignee_id: In<number>(loader.ids)
     });
     
-    if (user_name) {
-      qb.andWhere('u.fname = :fname', { fname: user_name })
-    }
-
     if (sorting) {
       qb.orderBy(sorting)
     }

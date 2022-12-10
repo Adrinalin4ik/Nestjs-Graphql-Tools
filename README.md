@@ -311,6 +311,20 @@ export class UserResolver {
 ##### Example 3. Custom filters
 
 ```typescript
+// Declare filters model
+@FilterInputType()
+export class UserFilterInputType {
+  @FilterField(() => String, { sqlExp: 't.title'})
+  task_title: string;
+
+  @FilterField(() => String, { sqlExp: 't.story_points'})
+  task_story_points: number;
+  
+  @FilterField(() => String, { sqlExp: 'concat(u.fname, \' \', u.lname)'})
+  full_name: string;
+}
+
+// Resolver
 @Resolver(() => UserObjectType)
 export class UserResolver {
   constructor(
@@ -321,28 +335,19 @@ export class UserResolver {
 
   @Query(() => [UserObjectType])
   @GraphqlFilter()
+  @GraphqlSorting()
   users(
-    @Filter(() => UserObjectType, {
-      customFilters: {
-        disableDefaultFilters: false // <- Optional parameter. Allows to remove filter which were automatically created based on model. Default value is false. Custom and non custom filters extending togather.
-        fields: [ 
-          /* 
-          Array of defined fields. 
-          Name is name of the field which will be used in API.
-          TypeFn is the Graphql type function.
-          SqlExp is the left side in conditional statement. For example full name filter will build query `where concat(u.fname, ' ', u.lname) <operator> :args`
-          */
-          {name: 'task_title', typeFn: () => String, sqlExp: 't.title'},
-          {name: 'task_story_points', typeFn: () => Int, sqlExp: 't.story_points'},
-          {name: 'full_name', typeFn: () => Int, sqlExp: 'concat(u.fname, \' \', u.lname)'},
-        ]
-      }
-    }) filter: Brackets,
+    @Filter(() => [UserObjectType, UserFilterInputType]) filter: Brackets, // <-- Object model and Filter model. It is possible to provide only one model or more that 2.
+    @Sorting(() => UserObjectType, { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
-      .leftJoin('task', 't', 't.assignee_id = u.id') // <- Joining necessary for the filtering model with specific alias
+      .leftJoin('task', 't', 't.assignee_id = u.id')
       .where(filter);
       
+      if (sorting) {
+        qb.orderBy(sorting)
+      }
+
     return qb.getMany()
   }
 }
