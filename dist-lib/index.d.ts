@@ -1,5 +1,5 @@
 export * from './field-extractor';
-export * from './filter';
+export * from './filters';
 export * from './inheritance';
 export * from './loader';
 export * from './pagination';
