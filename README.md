@@ -358,14 +358,10 @@ The library provides parameter decorator `@Paginator()` for the pagination. This
 
 ```typescript
 {
-  [property]: '[ORDER] [NULLS ORDER]'
+  page: number,
+  per_page: number
 }
 
-Example:
-{
-  title: 'ASC',
-  id: 'ASC NULLS LAST'
-}
 ```
 
 ##### Full example
@@ -391,9 +387,22 @@ export class TaskResolver {
 ```
 
 ## Sorting
-The library provides ability to make sorting. To make sorting works you need to decorate your resolver with `@GraphqlSorting()` or `@GraphqlLoader()`
+The library provides ability to make sorting. To make sorting works you need to decorate your resolver with `@GraphqlSorting()` or `@GraphqlLoader()`. It supports all types of sorting
+`[ASC/DESC] [NULLS FIRST/LAST]`
 
 ##### Example 1
+
+```graphql
+{
+  users(
+    order_by: {
+      id: ASC_NULLS_LAST
+    }
+  ) {
+    id
+  }
+}
+```
 ```typescript
 @Resolver(() => TaskObjectType)
 export class TaskResolver {
