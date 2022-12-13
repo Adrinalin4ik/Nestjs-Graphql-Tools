@@ -1,8 +1,7 @@
-import { Args, Field, InputType, PartialType, ReturnTypeFunc, TypeMetadataStorage } from "@nestjs/graphql";
+import { Field, InputType, PartialType, ReturnTypeFunc, TypeMetadataStorage } from "@nestjs/graphql";
 import { BaseEntity } from "../common";
 import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, FILTER_DECORATOR_NAME_METADATA_KEY, FILTER_OPERATION_PREFIX } from "./constants";
-import { CUSTOM_FILTER_INPUT_TYPE_DECORATOR_NAME, FilterInputTypeDecoratorMetadata, FilterInputTypeFieldMetadata } from "./filter.input-type";
-import { convertArrayOfStringIntoStringNumber } from "./utils";
+import { GraphqlFilterTypeDecoratorMetadata } from "./decorators/field.decorator";
 
 export enum OperationQuery {
   eq = 'eq',
@@ -34,18 +33,13 @@ export interface FilterFieldDefinition {
   typeFn: ReturnTypeFunc;
 } 
 
-export interface CustomFilterFieldDefinition extends FilterFieldDefinition {
-  /** Left side of conditional sql expression. 
-   * Examples: 
-   * 1. Select * from task t where t.title ilike '%test%'. Statement t.title is the left side of a statement 
-   * 2. Select * from user u where concat(u.fname, ' ', u.lname) ilike %alex%. Statement concat(u.fname, ' ', u.lname) is the left side of the conditional statement*/
-  sqlExp: string;
-} 
-
-export interface IFilterDecoratorParams {
-  name?: string;
-}
-
+// export interface CustomFilterFieldDefinition extends FilterFieldDefinition {
+//   /** Left side of conditional sql expression. 
+//    * Examples: 
+//    * 1. Select * from task t where t.title ilike '%test%'. Statement t.title is the left side of a statement 
+//    * 2. Select * from user u where concat(u.fname, ' ', u.lname) ilike %alex%. Statement concat(u.fname, ' ', u.lname) is the left side of the conditional statement*/
+//   sqlExp: string;
+// }
 
 const filterFullTypes = new Map();
 const filterTypes = new Map();
@@ -101,13 +95,13 @@ function generateFilterInputType<T extends BaseEntity>(classes: T[]) {
   const properties: FilterFieldDefinition[] = [];
 
   for (const typeFn of classes) {
-    const customFilterData: FilterInputTypeDecoratorMetadata = Reflect.getMetadata(CUSTOM_FILTER_INPUT_TYPE_DECORATOR_NAME, typeFn.prototype)
+    const customFilterData: GraphqlFilterTypeDecoratorMetadata = Reflect.getMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, typeFn.prototype)
     if (customFilterData) {
-      const props = customFilterData.fields.map(x => ({name: x.name, typeFn: x.typeFn, qlExp: x.options.sqlExp}));
-      properties.push(...props);
-    } else {
+      properties.push(...customFilterData.fields.values());
+    }
+    const classMetadata = TypeMetadataStorage.getObjectTypeMetadataByTarget(typeFn);
+    if (classMetadata) {
       PartialType(typeFn, InputType); // cast to input type
-      const classMetadata = TypeMetadataStorage.getObjectTypeMetadataByTarget(typeFn);
       TypeMetadataStorage.loadClassPluginMetadata([classMetadata]);
       TypeMetadataStorage.compileClassMetadata([classMetadata]);
 
@@ -130,7 +124,7 @@ function generateFilterInputType<T extends BaseEntity>(classes: T[]) {
   }
 
   for (const field of properties) {
-    const targetClassMetadata = TypeMetadataStorage.getObjectTypeMetadataByTarget(field.typeFn() as BaseEntity);
+    const targetClassMetadata = TypeMetadataStorage.getObjectTypeMetadataByTarget(field.typeFn && field.typeFn() as BaseEntity);
     if (!targetClassMetadata) {
       if (typeof field.typeFn === 'function') {
         field.typeFn();
@@ -173,7 +167,7 @@ export interface IFilter<T> {
   _name_: string;
 }
 
-const getFilterFullInputType = (classes: BaseEntity[]) => {
+export const getFilterFullInputType = (classes: BaseEntity[]) => {
   
   const concatinatedClassName = classes.map(x => x.name).join('')
 
@@ -193,45 +187,4 @@ const getFilterFullInputType = (classes: BaseEntity[]) => {
   }
   filterFullTypes.set(key, EntityWhereInput);
   return EntityWhereInput;
-}
-
-export const Filter = (baseEntity: () => BaseEntity | BaseEntity[], options?: IFilterDecoratorParams) => {
-  // convert params to array
-  const extractedResults = baseEntity();
-  let typeFunctions = extractedResults as BaseEntity[];
-  if (!Array.isArray(extractedResults)) {
-    typeFunctions = [extractedResults];
-  }
-  const filterFullType = getFilterFullInputType(typeFunctions);
-
-  const customFields = typeFunctions.reduce((acc, x) => {
-    if (x.prototype.filterInputType) {
-      const fields = x.prototype.getFields() as FilterInputTypeFieldMetadata[];
-      for (const field of fields) {
-        acc.push({
-          name: field.name,
-          typeFn: field.typeFn,
-          sqlExp: field.options.sqlExp
-        })
-      }
-    }
-    return acc;
-  }, [] as CustomFilterFieldDefinition[]);
-
-  return (target, propertyName, paramIndex) => {
-    Reflect.defineMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, customFields, target, propertyName);
-    Args({
-      name: options?.name || 'where',
-      nullable: true,
-      defaultValue: {},
-      type: () => filterFullType,
-    })(target, propertyName, paramIndex);
-  }
-}
-
-
-const compressFieldsName = (fields: CustomFilterFieldDefinition[]) => {
-  if (!fields?.length) return '';
-  
-  return convertArrayOfStringIntoStringNumber(fields.map(x => x.name));
 }

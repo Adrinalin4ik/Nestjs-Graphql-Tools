@@ -6,6 +6,7 @@ import { StoryModel } from '../story/story.entity';
 import { TaskObjectType } from '../task/task.dto';
 import { Task } from '../task/task.entity';
 import { TaskFilterInputType, UserFilterInputType } from './fillter.dto';
+import { TaskSortingInputType, UserSortingInputType } from './sorting.dto';
 import { SearchTasksUnion, UserAggregationType, UserObjectType } from './user.dto';
 import { User } from './user.entity';
 
@@ -21,8 +22,8 @@ export class UserResolver {
   @GraphqlFilter()
   @GraphqlSorting()
   users(
-    @Filter(() => [UserObjectType, UserFilterInputType]) filter: Brackets,
-    @Sorting(() => UserObjectType, { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
+    @Filter(() => [UserObjectType, UserFilterInputType], {sqlAlias: 'u'}) filter: Brackets,
+    @Sorting(() => [UserObjectType, UserSortingInputType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
       .leftJoin('task', 't', 't.assignee_id = u.id')
@@ -40,10 +41,11 @@ export class UserResolver {
   @GraphqlFilter()
   async tasks(
     @Loader() loader: LoaderData<TaskObjectType, number>,
-    @Filter(() => TaskFilterInputType) filter: Brackets,
-    @Sorting(() => TaskObjectType, { sqlAlias: 't' }) sorting: SortArgs<TaskObjectType>,
+    @Filter(() => TaskFilterInputType, {sqlAlias: 't'}) filter: Brackets,
+    @Sorting(() => TaskSortingInputType, { sqlAlias: 't' }) sorting: SortArgs<TaskObjectType>,
   ) {
     const qb = this.taskRepository.createQueryBuilder('t')
+    .leftJoin('user', 'u', 'u.id = t.assignee_id')
     .where(filter)
     .andWhere({
       assignee_id: In<number>(loader.ids)

@@ -387,7 +387,7 @@ export class TaskResolver {
 ```
 
 ## Sorting
-The library provides ability to make sorting. To make sorting works you need to decorate your resolver with `@GraphqlSorting()` or `@GraphqlLoader()`. It supports all types of sorting
+The library provides ability to make sorting. To make sorting works you need to decorate your resolver with `@GraphqlSorting()` or `@GraphqlLoader()`. It supports all types of sorting.
 `[ASC/DESC] [NULLS FIRST/LAST]`
 
 ##### Example 1
@@ -420,6 +420,43 @@ export class TaskResolver {
       qb.orderBy(sorting);
     }
     return qb.getMany();
+  }
+}
+```
+
+##### Example 2. Sorting by custom fields
+```typescript
+// sorting.dto.ts
+export class UserSortingInputType {
+  @SortingField({sqlExp: 't.story_points'})
+  task_story_points: number;
+}
+
+// user.resolver.ts
+@Resolver(() => UserObjectType)
+export class UserResolver {
+  constructor(
+    @InjectRepository(Task) public readonly taskRepository: Repository<Task>,
+    @InjectRepository(StoryModel) public readonly storyRepository: Repository<StoryModel>,
+    @InjectRepository(User) public readonly userRepository: Repository<User>
+  ) {}
+
+  @Query(() => [UserObjectType])
+  @GraphqlSorting()
+  users(
+    /* SqlAlias is an optional argument. You can provide alias in case if you have many tables joined.
+    Object model and Sorting model. Ability to provide 1+ model. It accepts both Object and Sorting models. Next model in array extends previous model overriding fields with the same names.
+    */
+    @Sorting(() => [UserObjectType, UserSortingInputType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
+  ) {
+    const qb = this.userRepository.createQueryBuilder('u')
+      .leftJoin('task', 't', 't.assignee_id = u.id');
+      
+      if (sorting) {
+        qb.orderBy(sorting)
+      }
+
+    return qb.getMany()
   }
 }
 ```

@@ -283,7 +283,7 @@ type UserObjectType {
   age: Float!
   phone: String
   is_active: Boolean!
-  tasks(where: whereTaskFilterInputTypeInput = {}, order_by: [sortTaskObjectTypeInput!] = {}): [TaskObjectType!]
+  tasks(where: whereTaskFilterInputTypeInput = {}, order_by: [sortingTaskSortingInputTypeInput!] = {}): [TaskObjectType!]
   searchTasks: [SearchTasks!]!
 }
 
@@ -334,17 +334,9 @@ input TaskFilterInputTypePropertyFilterType {
   user_full_name: user_full_nameTaskFilterInputTypePropertyFilterType
 }
 
-input sortTaskObjectTypeInput {
+input sortingTaskSortingInputTypeInput {
   id: SortType
-  title: SortType
-  type_id: SortType
-  priority: SortType
-  story_points: SortType
-  status: SortType
-  assignee_id: SortType
-  task_id: SortType
-  created_at: SortType
-  updated_at: SortType
+  user_full_name: SortType
   _name_: String = "SortingPropertyDecorator"
 }
 
@@ -374,9 +366,9 @@ type UserAggregationType {
 }
 
 type Query {
-  users(where: whereUserObjectTypeUserFilterInputTypeInput = {}, order_by: [sortUserObjectTypeInput!] = {}): [UserObjectType!]!
+  users(where: whereUserObjectTypeUserFilterInputTypeInput = {}, order_by: [sortingUserObjectTypeUserSortingInputTypeInput!] = {}): [UserObjectType!]!
   userAggregate: UserAggregationType!
-  tasks(where: whereTaskObjectTypeInput = {}, paginate: PaginatorArgs, order_by: [sortTaskObjectTypeInput!] = {}): [TaskObjectType!]!
+  tasks(where: whereTaskObjectTypeInput = {}, paginate: PaginatorArgs, order_by: [sortingTaskObjectTypeInput!] = {}): [TaskObjectType!]!
 }
 
 input whereUserObjectTypeUserFilterInputTypeInput {
@@ -391,9 +383,9 @@ input whereUserObjectTypeUserFilterInputTypeInput {
   age: ageUserObjectTypeUserFilterInputTypePropertyFilterType
   phone: phoneUserObjectTypeUserFilterInputTypePropertyFilterType
   is_active: is_activeUserObjectTypeUserFilterInputTypePropertyFilterType
-  task_title: task_titleUserObjectTypeUserFilterInputTypePropertyFilterType
   task_story_points: task_story_pointsUserObjectTypeUserFilterInputTypePropertyFilterType
   full_name: full_nameUserObjectTypeUserFilterInputTypePropertyFilterType
+  task_title: task_titleUserObjectTypeUserFilterInputTypePropertyFilterType
 
   """Don't touch this field. Reserved for nestjs-graphql-toos purposes."""
   _name_: String = "FilterPropertyDecorator"
@@ -577,22 +569,6 @@ input is_activeUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input task_titleUserObjectTypeUserFilterInputTypePropertyFilterType {
-  eq: String
-  neq: String
-  gt: String
-  gte: String
-  lt: String
-  lte: String
-  in: [String!]
-  notin: String
-  like: String
-  notlike: String
-  between: [String!]
-  notbetween: [String!]
-  null: Boolean
-}
-
 input task_story_pointsUserObjectTypeUserFilterInputTypePropertyFilterType {
   eq: String
   neq: String
@@ -625,6 +601,22 @@ input full_nameUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
+input task_titleUserObjectTypeUserFilterInputTypePropertyFilterType {
+  eq: String
+  neq: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  in: [String!]
+  notin: String
+  like: String
+  notlike: String
+  between: [String!]
+  notbetween: [String!]
+  null: Boolean
+}
+
 input UserObjectTypeUserFilterInputTypePropertyFilterType {
   id: idUserObjectTypeUserFilterInputTypePropertyFilterType
   created_at: created_atUserObjectTypeUserFilterInputTypePropertyFilterType
@@ -637,12 +629,12 @@ input UserObjectTypeUserFilterInputTypePropertyFilterType {
   age: ageUserObjectTypeUserFilterInputTypePropertyFilterType
   phone: phoneUserObjectTypeUserFilterInputTypePropertyFilterType
   is_active: is_activeUserObjectTypeUserFilterInputTypePropertyFilterType
-  task_title: task_titleUserObjectTypeUserFilterInputTypePropertyFilterType
   task_story_points: task_story_pointsUserObjectTypeUserFilterInputTypePropertyFilterType
   full_name: full_nameUserObjectTypeUserFilterInputTypePropertyFilterType
+  task_title: task_titleUserObjectTypeUserFilterInputTypePropertyFilterType
 }
 
-input sortUserObjectTypeInput {
+input sortingUserObjectTypeUserSortingInputTypeInput {
   id: SortType
   created_at: SortType
   updated_at: SortType
@@ -654,6 +646,8 @@ input sortUserObjectTypeInput {
   age: SortType
   phone: SortType
   is_active: SortType
+  task_story_points: SortType
+  full_name: SortType
   _name_: String = "SortingPropertyDecorator"
 }
 
@@ -851,4 +845,18 @@ input TaskObjectTypePropertyFilterType {
 input PaginatorArgs {
   per_page: Float = 10
   page: Float = 0
+}
+
+input sortingTaskObjectTypeInput {
+  id: SortType
+  title: SortType
+  type_id: SortType
+  priority: SortType
+  story_points: SortType
+  status: SortType
+  assignee_id: SortType
+  task_id: SortType
+  created_at: SortType
+  updated_at: SortType
+  _name_: String = "SortingPropertyDecorator"
 }

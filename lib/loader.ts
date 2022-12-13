@@ -5,8 +5,7 @@ import {
 import { GraphQLResolveInfo } from 'graphql';
 import { IncomingMessage } from 'http';
 import { groupBy } from 'lodash';
-import { GRAPHQL_FILTER_DECORATOR_METADATA_KEY } from './filters';
-import { applyFilterParameter } from './filters/graphql-filter';
+import { applyFilterParameter, GRAPHQL_FILTER_DECORATOR_METADATA_KEY } from './filters';
 import { applySortingParameter, GRAPHQL_SORTING_DECORATOR_METADATA_KEY } from './sorting';
 import { SelectedUnionTypesResult } from './union-type-extractor';
 const DataLoader = require('dataloader');
