@@ -9,11 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Filter = exports.InputMapPrefixes = exports.OperationQuery = void 0;
+exports.getFilterFullInputType = exports.InputMapPrefixes = exports.OperationQuery = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const constants_1 = require("./constants");
-const filter_input_type_1 = require("./filter.input-type");
-const utils_1 = require("./utils");
 var OperationQuery;
 (function (OperationQuery) {
     OperationQuery["eq"] = "eq";
@@ -82,14 +80,13 @@ function generateFilterInputType(classes) {
     filterTypes.set(key, PartialObjectType);
     const properties = [];
     for (const typeFn of classes) {
-        const customFilterData = Reflect.getMetadata(filter_input_type_1.CUSTOM_FILTER_INPUT_TYPE_DECORATOR_NAME, typeFn.prototype);
+        const customFilterData = Reflect.getMetadata(constants_1.FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, typeFn.prototype);
         if (customFilterData) {
-            const props = customFilterData.fields.map(x => ({ name: x.name, typeFn: x.typeFn, qlExp: x.options.sqlExp }));
-            properties.push(...props);
+            properties.push(...customFilterData.fields.values());
         }
-        else {
+        const classMetadata = graphql_1.TypeMetadataStorage.getObjectTypeMetadataByTarget(typeFn);
+        if (classMetadata) {
             (0, graphql_1.PartialType)(typeFn, graphql_1.InputType);
-            const classMetadata = graphql_1.TypeMetadataStorage.getObjectTypeMetadataByTarget(typeFn);
             graphql_1.TypeMetadataStorage.loadClassPluginMetadata([classMetadata]);
             graphql_1.TypeMetadataStorage.compileClassMetadata([classMetadata]);
             const objectTypesMetadata = graphql_1.TypeMetadataStorage.getObjectTypesMetadata();
@@ -105,7 +102,7 @@ function generateFilterInputType(classes) {
         }
     }
     for (const field of properties) {
-        const targetClassMetadata = graphql_1.TypeMetadataStorage.getObjectTypeMetadataByTarget(field.typeFn());
+        const targetClassMetadata = graphql_1.TypeMetadataStorage.getObjectTypeMetadataByTarget(field.typeFn && field.typeFn());
         if (!targetClassMetadata) {
             if (typeof field.typeFn === 'function') {
                 field.typeFn();
@@ -145,40 +142,5 @@ const getFilterFullInputType = (classes) => {
     filterFullTypes.set(key, EntityWhereInput);
     return EntityWhereInput;
 };
-const Filter = (baseEntity, options) => {
-    const extractedResults = baseEntity();
-    let typeFunctions = extractedResults;
-    if (!Array.isArray(extractedResults)) {
-        typeFunctions = [extractedResults];
-    }
-    const filterFullType = getFilterFullInputType(typeFunctions);
-    const customFields = typeFunctions.reduce((acc, x) => {
-        if (x.prototype.filterInputType) {
-            const fields = x.prototype.getFields();
-            for (const field of fields) {
-                acc.push({
-                    name: field.name,
-                    typeFn: field.typeFn,
-                    sqlExp: field.options.sqlExp
-                });
-            }
-        }
-        return acc;
-    }, []);
-    return (target, propertyName, paramIndex) => {
-        Reflect.defineMetadata(constants_1.FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, customFields, target, propertyName);
-        (0, graphql_1.Args)({
-            name: (options === null || options === void 0 ? void 0 : options.name) || 'where',
-            nullable: true,
-            defaultValue: {},
-            type: () => filterFullType,
-        })(target, propertyName, paramIndex);
-    };
-};
-exports.Filter = Filter;
-const compressFieldsName = (fields) => {
-    if (!(fields === null || fields === void 0 ? void 0 : fields.length))
-        return '';
-    return (0, utils_1.convertArrayOfStringIntoStringNumber)(fields.map(x => x.name));
-};
-//# sourceMappingURL=filter.js.map
+exports.getFilterFullInputType = getFilterFullInputType;
+//# sourceMappingURL=input-type-generator.js.map

@@ -4,7 +4,6 @@ exports.mapOneToManyPolymorphicRelation = exports.mapOneToManyRelation = exports
 const common_1 = require("@nestjs/common");
 const lodash_1 = require("lodash");
 const filters_1 = require("./filters");
-const graphql_filter_1 = require("./filters/graphql-filter");
 const sorting_1 = require("./sorting");
 const DataLoader = require('dataloader');
 exports.LOADER_DECORATOR_NAME_METADATA_KEY = 'LoaderPropertyDecorator';
@@ -31,7 +30,7 @@ const GraphqlLoader = (args) => {
         const actualDescriptor = descriptor.value;
         descriptor.value = function (...args) {
             if (!Reflect.hasMetadata(filters_1.GRAPHQL_FILTER_DECORATOR_METADATA_KEY, target, property)) {
-                (0, graphql_filter_1.applyFilterParameter)(args, target, property);
+                (0, filters_1.applyFilterParameter)(args, target, property);
             }
             if (!Reflect.hasMetadata(sorting_1.GRAPHQL_SORTING_DECORATOR_METADATA_KEY, target, property)) {
                 (0, sorting_1.applySortingParameter)(args, target, property);

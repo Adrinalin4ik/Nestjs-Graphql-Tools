@@ -23,12 +23,6 @@ export interface FilterFieldDefinition {
     name: string;
     typeFn: ReturnTypeFunc;
 }
-export interface CustomFilterFieldDefinition extends FilterFieldDefinition {
-    sqlExp: string;
-}
-export interface IFilterDecoratorParams {
-    name?: string;
-}
 export declare type IFilterField<T> = {
     [K in keyof T]: {
         eq: T[K];
@@ -50,4 +44,4 @@ export interface IFilter<T> {
     or: IFilterField<T>[];
     _name_: string;
 }
-export declare const Filter: (baseEntity: () => BaseEntity | BaseEntity[], options?: IFilterDecoratorParams) => (target: any, propertyName: any, paramIndex: any) => void;
+export declare const getFilterFullInputType: (classes: BaseEntity[]) => any;
