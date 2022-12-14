@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as config from 'config';
+import { seeds1671015219018 } from './migrations/1671015219018-seeds';
 import { IDBSettings } from './settings.types';
 
 const settings: IDBSettings = config.DB_SETTINGS;
@@ -15,9 +16,9 @@ export function getOrmConfig(): TypeOrmModuleOptions {
       logging: settings.logging,
       database: settings.database,
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-      migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+      migrations: [seeds1671015219018],
       migrationsRun: true,
-      synchronize: settings.synchronize || false,
+      // synchronize: settings.synchronize || false,
       extra: {
         connectionLimit: 15,
       },

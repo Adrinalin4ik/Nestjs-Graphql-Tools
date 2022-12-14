@@ -4,7 +4,7 @@
     "port": 5432,
     "username": "postgres",
     "password": "postgres",
-    "database": "nestjs_graphql_tools_development",
+    "database": "nestjs_graphql_tools_development_public",
     "logging": "all",
     "synchronize": true
   }

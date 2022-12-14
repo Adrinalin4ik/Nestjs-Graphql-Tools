@@ -8,16 +8,16 @@ export class TaskObjectType {
   @Field(() => String)
   title: string;
 
-  @Field(() => Int)
+  @Field(() => Int, {nullable: true})
   type_id: number;
 
-  @Field(() => Int)
+  @Field(() => Int, {nullable: true})
   priority: number;
 
-  @Field(() => Int)
+  @Field(() => Int, {nullable: true})
   story_points: number;
 
-  @Field(() => Int)
+  @Field(() => Int, {nullable: true})
   status: number;
   
   @Field(() => Int, {nullable: true})

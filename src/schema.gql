@@ -50,10 +50,10 @@ type DescriptionChecklistItemObjectType {
 type TaskObjectType {
   id: Int!
   title: String!
-  type_id: Int!
-  priority: Int!
-  story_points: Int!
-  status: Int!
+  type_id: Int
+  priority: Int
+  story_points: Int
+  status: Int
   assignee_id: Int
   task_id: Int!
   created_at: String!
@@ -76,7 +76,7 @@ input whereUserObjectTypeInput {
   is_active: is_activeUserObjectTypePropertyFilterType
 
   """Don't touch this field. Reserved for nestjs-graphql-toos purposes."""
-  _name_: String = "FilterPropertyDecorator"
+  _name_: String! = "FilterPropertyDecorator"
   and: [UserObjectTypePropertyFilterType!]
   or: [UserObjectTypePropertyFilterType!]
 }
@@ -292,7 +292,7 @@ input whereTaskFilterInputTypeInput {
   user_full_name: user_full_nameTaskFilterInputTypePropertyFilterType
 
   """Don't touch this field. Reserved for nestjs-graphql-toos purposes."""
-  _name_: String = "FilterPropertyDecorator"
+  _name_: String! = "FilterPropertyDecorator"
   and: [TaskFilterInputTypePropertyFilterType!]
   or: [TaskFilterInputTypePropertyFilterType!]
 }
@@ -337,7 +337,7 @@ input TaskFilterInputTypePropertyFilterType {
 input sortingTaskSortingInputTypeInput {
   id: SortType
   user_full_name: SortType
-  _name_: String = "SortingPropertyDecorator"
+  _name_: String! = "SortingPropertyDecorator"
 }
 
 enum SortType {
@@ -388,7 +388,7 @@ input whereUserObjectTypeUserFilterInputTypeInput {
   task_title: task_titleUserObjectTypeUserFilterInputTypePropertyFilterType
 
   """Don't touch this field. Reserved for nestjs-graphql-toos purposes."""
-  _name_: String = "FilterPropertyDecorator"
+  _name_: String! = "FilterPropertyDecorator"
   and: [UserObjectTypeUserFilterInputTypePropertyFilterType!]
   or: [UserObjectTypeUserFilterInputTypePropertyFilterType!]
 }
@@ -648,7 +648,7 @@ input sortingUserObjectTypeUserSortingInputTypeInput {
   is_active: SortType
   task_story_points: SortType
   full_name: SortType
-  _name_: String = "SortingPropertyDecorator"
+  _name_: String! = "SortingPropertyDecorator"
 }
 
 input whereTaskObjectTypeInput {
@@ -664,7 +664,7 @@ input whereTaskObjectTypeInput {
   updated_at: updated_atTaskObjectTypePropertyFilterType
 
   """Don't touch this field. Reserved for nestjs-graphql-toos purposes."""
-  _name_: String = "FilterPropertyDecorator"
+  _name_: String! = "FilterPropertyDecorator"
   and: [TaskObjectTypePropertyFilterType!]
   or: [TaskObjectTypePropertyFilterType!]
 }
@@ -843,8 +843,8 @@ input TaskObjectTypePropertyFilterType {
 }
 
 input PaginatorArgs {
-  per_page: Float = 10
-  page: Float = 0
+  per_page: Float! = 10
+  page: Float! = 0
 }
 
 input sortingTaskObjectTypeInput {
@@ -858,5 +858,5 @@ input sortingTaskObjectTypeInput {
   task_id: SortType
   created_at: SortType
   updated_at: SortType
-  _name_: String = "SortingPropertyDecorator"
+  _name_: String! = "SortingPropertyDecorator"
 }

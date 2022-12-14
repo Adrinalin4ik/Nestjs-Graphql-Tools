@@ -33,7 +33,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "cleanup": "rm lib.tsconfig.tsbuildinfo || true && rm -rf dist-lib || true",
-    "release": "npm run build && release-it"
+    "release": "npm run build && release-it",
+    "db:migrate": "typeorm migration:run"
   },
   "dependencies": {
     "@nestjs/graphql": ">8.0.0",
