@@ -23,6 +23,7 @@ The library allows to build efficient graphql API helping overcome n+1 problem a
 - [Field extraction](#field-extraction)
 - [Base models and inheritance](#base-models-and-inheritance)
 - [More examples](#more-examples)
+- [Contribution](#contribution)
 
 
 ## Installation
@@ -529,24 +530,25 @@ Options is an ENV variables that you can provide to configurate the lib
 
 
 ## More examples
-You can find another examples in the src folder
+You can find more examples in the src folder
 
-How to run it:
 
+## Contribution
+If you want to contribute please create new PR with good description.
+
+How to run the project:
 1. Create a database
 ```bash
-$ sudo su postgres
-$ psql
-$ create database nestjs_graphql_tools_development;
+createdb -h localhost -U postgres nestjs_graphql_tools_development;
 ```
-Then create new records
-
 2. Fill out database config in `config/default.json`
 3. Run dev server
 ```bash
-$ npm i
-$ npm run start:dev
+npm i
+npm run start:dev
 ```
+On the first run, server will seed up the database with testing dataset.
+4. Reach out `http://localhost:3000/graphql`
 
 ## License
 
