@@ -843,8 +843,8 @@ input TaskObjectTypePropertyFilterType {
 }
 
 input PaginatorArgs {
-  per_page: Float! = 10
-  page: Float! = 0
+  per_page: Int! = 10
+  page: Int! = 0
 }
 
 input sortingTaskObjectTypeInput {

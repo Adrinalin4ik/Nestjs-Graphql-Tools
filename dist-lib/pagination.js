@@ -14,11 +14,11 @@ const graphql_1 = require("@nestjs/graphql");
 let PaginatorArgs = class PaginatorArgs {
 };
 __decorate([
-    (0, graphql_1.Field)({ defaultValue: 10 }),
+    (0, graphql_1.Field)(() => graphql_1.Int, { defaultValue: 10 }),
     __metadata("design:type", Number)
 ], PaginatorArgs.prototype, "per_page", void 0);
 __decorate([
-    (0, graphql_1.Field)({ defaultValue: 0 }),
+    (0, graphql_1.Field)(() => graphql_1.Int, { defaultValue: 0 }),
     __metadata("design:type", Number)
 ], PaginatorArgs.prototype, "page", void 0);
 PaginatorArgs = __decorate([

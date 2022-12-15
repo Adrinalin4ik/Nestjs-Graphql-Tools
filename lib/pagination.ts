@@ -1,4 +1,4 @@
-import { Args, Field, InputType } from "@nestjs/graphql";
+import { Args, Field, InputType, Int } from "@nestjs/graphql";
 
 export interface PaginateDecoratorArgs {
   name?: string;
@@ -7,10 +7,10 @@ export interface PaginateDecoratorArgs {
 
 @InputType()
 export class PaginatorArgs {
-  @Field({ defaultValue: 10 })
+  @Field(() => Int, { defaultValue: 10 })
   per_page: number;
   
-  @Field({ defaultValue: 0 })
+  @Field(() => Int, { defaultValue: 0 })
   page: number;
 }
 
