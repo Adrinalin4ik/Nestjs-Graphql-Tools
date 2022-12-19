@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getFilterFullInputType = exports.InputMapPrefixes = exports.OperationQuery = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const functions_1 = require("../utils/functions");
 const constants_1 = require("./constants");
 var OperationQuery;
 (function (OperationQuery) {
@@ -31,14 +32,14 @@ var OperationQuery;
 const arrayLikeOperations = new Set([OperationQuery.between, OperationQuery.notbetween, OperationQuery.in]);
 var InputMapPrefixes;
 (function (InputMapPrefixes) {
-    InputMapPrefixes["PropertyFilterType"] = "PropertyFilterType";
+    InputMapPrefixes["PropertyFilterInputType"] = "PropertyFilterInputType";
     InputMapPrefixes["FilterInputType"] = "FilterInputType";
 })(InputMapPrefixes = exports.InputMapPrefixes || (exports.InputMapPrefixes = {}));
 const filterFullTypes = new Map();
 const filterTypes = new Map();
 const propertyTypes = new Map();
 const generateFilterPropertyType = (field, parentName) => {
-    const key = `${field.name}${parentName}${InputMapPrefixes.PropertyFilterType}`;
+    const key = `${(0, functions_1.standardize)(field.name)}_${parentName}_${InputMapPrefixes.PropertyFilterInputType}`;
     const propType = propertyTypes.get(key);
     if (propType)
         return propType;
@@ -65,9 +66,8 @@ const generateFilterPropertyType = (field, parentName) => {
     propertyTypes.set(key, PropertyFilter);
     return PropertyFilter;
 };
-function generateFilterInputType(classes) {
-    const concatinatedClassNames = classes.map(x => x.name).join('');
-    const key = `${concatinatedClassNames}${InputMapPrefixes.PropertyFilterType}`;
+function generateFilterInputType(classes, name) {
+    const key = `${name}${InputMapPrefixes.FilterInputType}`;
     if (filterTypes.get(key)) {
         return filterTypes.get(key);
     }
@@ -107,7 +107,7 @@ function generateFilterInputType(classes) {
             if (typeof field.typeFn === 'function') {
                 field.typeFn();
             }
-            const fieldType = generateFilterPropertyType(field, concatinatedClassNames);
+            const fieldType = generateFilterPropertyType(field, name);
             (0, graphql_1.Field)(() => fieldType, { nullable: true })(PartialObjectType.prototype, field.name);
         }
         else {
@@ -115,13 +115,12 @@ function generateFilterInputType(classes) {
     }
     return PartialObjectType;
 }
-const getFilterFullInputType = (classes) => {
-    const concatinatedClassName = classes.map(x => x.name).join('');
-    const key = `where${concatinatedClassName}Input`;
+const getFilterFullInputType = (classes, name) => {
+    const key = `${name}_FilterInputType`;
     if (filterFullTypes.get(key)) {
         return filterFullTypes.get(key);
     }
-    const FilterInputType = generateFilterInputType(classes);
+    const FilterInputType = generateFilterInputType(classes, name);
     let EntityWhereInput = class EntityWhereInput extends FilterInputType {
     };
     __decorate([

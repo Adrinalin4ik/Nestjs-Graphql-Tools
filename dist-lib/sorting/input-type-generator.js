@@ -26,14 +26,12 @@ var SortType;
 });
 var SortInputMapPrefixes;
 (function (SortInputMapPrefixes) {
-    SortInputMapPrefixes["PropertySortingType"] = "PropertySortType";
-    SortInputMapPrefixes["SortingInputType"] = "SortInputType";
+    SortInputMapPrefixes["SortingInputType"] = "SortingInputType";
 })(SortInputMapPrefixes = exports.SortInputMapPrefixes || (exports.SortInputMapPrefixes = {}));
 const sortingFullTypes = new Map();
 const sortingTypes = new Map();
-function generateSortingInputType(classes) {
-    const concatinatedClassNames = classes.map(x => x.name).join('');
-    const key = `${concatinatedClassNames}${SortInputMapPrefixes.PropertySortingType}`;
+function generateSortingInputType(classes, name) {
+    const key = `${name}_${SortInputMapPrefixes.SortingInputType}`;
     if (sortingTypes.get(key)) {
         return sortingTypes.get(key);
     }
@@ -80,13 +78,12 @@ function generateSortingInputType(classes) {
     }
     return PartialObjectType;
 }
-const getSortingFullInputType = (classes) => {
-    const concatinatedClassName = classes.map(x => x.name).join('');
-    const key = `sorting${concatinatedClassName}Input`;
+const getSortingFullInputType = (classes, name) => {
+    const key = `${name}_SortingInputType`;
     if (sortingFullTypes.get(key)) {
         return sortingFullTypes.get(key);
     }
-    const SortingInputType = generateSortingInputType(classes);
+    const SortingInputType = generateSortingInputType(classes, name);
     let EntitySortingInput = class EntitySortingInput extends SortingInputType {
     };
     __decorate([

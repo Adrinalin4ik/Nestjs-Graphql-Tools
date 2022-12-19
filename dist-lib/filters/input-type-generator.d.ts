@@ -16,7 +16,7 @@ export declare enum OperationQuery {
     null = "null"
 }
 export declare enum InputMapPrefixes {
-    PropertyFilterType = "PropertyFilterType",
+    PropertyFilterInputType = "PropertyFilterInputType",
     FilterInputType = "FilterInputType"
 }
 export interface FilterFieldDefinition {
@@ -44,4 +44,4 @@ export interface IFilter<T> {
     or: IFilterField<T>[];
     _name_: string;
 }
-export declare const getFilterFullInputType: (classes: BaseEntity[]) => any;
+export declare const getFilterFullInputType: (classes: BaseEntity[], name: string) => any;

@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.applyFilterParameter = void 0;
 const typeorm_1 = require("typeorm");
+const functions_1 = require("../utils/functions");
 const constants_1 = require("./constants");
 const input_type_generator_1 = require("./input-type-generator");
-const utils_1 = require("./utils");
 const applyFilterParameter = (args, target, property) => {
     const filterArgIndex = args.findIndex(x => (x === null || x === void 0 ? void 0 : x._name_) === constants_1.FILTER_DECORATOR_NAME_METADATA_KEY);
     if (filterArgIndex != -1) {
@@ -83,7 +83,7 @@ const recursivelyTransformComparators = (object, extendedParams, sqlAlias) => {
 };
 const buildSqlArgument = (operatorKey, field, value) => {
     let result = [];
-    const argName = `arg_${(0, utils_1.convertArrayOfStringIntoStringNumber)([field])}`;
+    const argName = `arg_${(0, functions_1.convertArrayOfStringIntoStringNumber)([field])}`;
     if (operatorKey === input_type_generator_1.OperationQuery.eq) {
         result = [`${field} = :${argName}`, { [argName]: value }];
     }

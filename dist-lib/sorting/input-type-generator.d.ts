@@ -9,11 +9,10 @@ export declare enum SortType {
     DESC_NULLS_FIRST = "DESC NULLS FIRST"
 }
 export declare enum SortInputMapPrefixes {
-    PropertySortingType = "PropertySortType",
-    SortingInputType = "SortInputType"
+    SortingInputType = "SortingInputType"
 }
 export interface SortingFieldDefinition {
     name: string;
     typeFn?: ReturnTypeFunc;
 }
-export declare const getSortingFullInputType: (classes: BaseEntity[]) => any;
+export declare const getSortingFullInputType: (classes: BaseEntity[], name: string) => any;

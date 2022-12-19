@@ -1,6 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertArrayOfStringIntoStringNumber = void 0;
+exports.convertArrayOfStringIntoStringNumber = exports.standardize = void 0;
+const standardize = (str) => {
+    if (str) {
+        return str.split('_').map(x => capitalize(x)).join('');
+    }
+    else {
+        return null;
+    }
+};
+exports.standardize = standardize;
+const capitalize = (str) => {
+    if (str) {
+        return str[0].toUpperCase() + str.slice(1);
+    }
+    else {
+        return null;
+    }
+};
 const convertArrayOfStringIntoStringNumber = (array) => {
     if (!array.length)
         return '';
@@ -10,4 +27,4 @@ const convertArrayOfStringIntoStringNumber = (array) => {
     return `${charSum}${stringArray.length}${sortedArray.length}`;
 };
 exports.convertArrayOfStringIntoStringNumber = convertArrayOfStringIntoStringNumber;
-//# sourceMappingURL=utils.js.map
+//# sourceMappingURL=functions.js.map
