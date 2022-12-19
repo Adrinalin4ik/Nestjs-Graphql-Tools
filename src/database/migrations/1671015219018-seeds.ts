@@ -31,7 +31,7 @@ export class seeds1671015219018 implements MigrationInterface {
                 mname: `MiddleName`,
                 identification_number: i + 100000,
                 created_at,
-                phone: Math.random() > 0.5 ? `00000000${i}` : null,
+                phone: i%2 == 0 ? `00000000${i}` : null,
             });
             users.push(user);
 
@@ -41,7 +41,7 @@ export class seeds1671015219018 implements MigrationInterface {
                     title: `Task ${i}-${t}`,
                     description: `Task description ${i}-${t}`,
                     created_at,
-                    story_points: Math.random() > 0.5 ? i*t : null,
+                    story_points: i%2 == 0 ? i*t : null,
                     type_id: 1,
                     status: t,
                 });

@@ -1,9 +1,9 @@
 import { Brackets } from "typeorm";
+import { convertArrayOfStringIntoStringNumber } from "../utils/functions";
 import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, FILTER_DECORATOR_NAME_METADATA_KEY, FILTER_DECORATOR_OPTIONS_METADATA_KEY, FILTER_OPERATION_PREFIX } from "./constants";
 import { GraphqlFilterFieldMetadata } from "./decorators/field.decorator";
 import { IFilterDecoratorParams } from "./decorators/resolver.decorator";
 import { IFilter, OperationQuery } from "./input-type-generator";
-import { convertArrayOfStringIntoStringNumber } from "./utils";
 
 export const applyFilterParameter = (args: any[], target, property: string) => {
   const filterArgIndex = args.findIndex(x => x?._name_ === FILTER_DECORATOR_NAME_METADATA_KEY);

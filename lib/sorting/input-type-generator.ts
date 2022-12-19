@@ -17,8 +17,7 @@ registerEnumType(SortType, {
 });
 
 export enum SortInputMapPrefixes {
-  PropertySortingType = 'PropertySortType',
-  SortingInputType = 'SortInputType',
+  SortingInputType = 'SortingInputType',
 }
 
 export interface SortingFieldDefinition {
@@ -31,9 +30,8 @@ export interface SortingFieldDefinition {
 const sortingFullTypes = new Map();
 const sortingTypes = new Map();
 
-function generateSortingInputType<T extends BaseEntity>(classes: T[]) {
-  const concatinatedClassNames = classes.map(x => x.name).join('')
-  const key = `${concatinatedClassNames}${SortInputMapPrefixes.PropertySortingType}`;
+function generateSortingInputType<T extends BaseEntity>(classes: T[], name: string) {
+  const key = `${name}_${SortInputMapPrefixes.SortingInputType}`;
   if (sortingTypes.get(key)) {
     return sortingTypes.get(key);
   }
@@ -98,15 +96,12 @@ function generateSortingInputType<T extends BaseEntity>(classes: T[]) {
   return PartialObjectType;
 }
 
-export const getSortingFullInputType = (classes: BaseEntity[]) => {
-  
-  const concatinatedClassName = classes.map(x => x.name).join('')
-
-  const key = `sorting${concatinatedClassName}Input`; 
+export const getSortingFullInputType = (classes: BaseEntity[], name: string) => {
+  const key = `${name}_SortingInputType`; 
   if (sortingFullTypes.get(key)) {
     return sortingFullTypes.get(key);
   }
-  const SortingInputType = generateSortingInputType(classes);
+  const SortingInputType = generateSortingInputType(classes, name);
   @InputType(key)
   class EntitySortingInput extends SortingInputType {
     @Field({defaultValue: SORTING_DECORATOR_NAME_METADATA_KEY})

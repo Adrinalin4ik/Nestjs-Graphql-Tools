@@ -58,30 +58,30 @@ type TaskObjectType {
   task_id: Int!
   created_at: String!
   updated_at: String!
-  assignee(where: whereUserObjectTypeInput = {}): UserObjectType
+  assignee(where: TaskResolver_Assignee_FilterInputType = {}): UserObjectType
   descriptions: [DescriptionObjectType!]!
 }
 
-input whereUserObjectTypeInput {
-  id: idUserObjectTypePropertyFilterType
-  created_at: created_atUserObjectTypePropertyFilterType
-  updated_at: updated_atUserObjectTypePropertyFilterType
-  identification_number: identification_numberUserObjectTypePropertyFilterType
-  email: emailUserObjectTypePropertyFilterType
-  fname: fnameUserObjectTypePropertyFilterType
-  lname: lnameUserObjectTypePropertyFilterType
-  mname: mnameUserObjectTypePropertyFilterType
-  age: ageUserObjectTypePropertyFilterType
-  phone: phoneUserObjectTypePropertyFilterType
-  is_active: is_activeUserObjectTypePropertyFilterType
+input TaskResolver_Assignee_FilterInputType {
+  id: Id_TaskResolver_Assignee_PropertyFilterInputType
+  created_at: CreatedAt_TaskResolver_Assignee_PropertyFilterInputType
+  updated_at: UpdatedAt_TaskResolver_Assignee_PropertyFilterInputType
+  identification_number: IdentificationNumber_TaskResolver_Assignee_PropertyFilterInputType
+  email: Email_TaskResolver_Assignee_PropertyFilterInputType
+  fname: Fname_TaskResolver_Assignee_PropertyFilterInputType
+  lname: Lname_TaskResolver_Assignee_PropertyFilterInputType
+  mname: Mname_TaskResolver_Assignee_PropertyFilterInputType
+  age: Age_TaskResolver_Assignee_PropertyFilterInputType
+  phone: Phone_TaskResolver_Assignee_PropertyFilterInputType
+  is_active: IsActive_TaskResolver_Assignee_PropertyFilterInputType
 
   """Don't touch this field. Reserved for nestjs-graphql-toos purposes."""
   _name_: String! = "FilterPropertyDecorator"
-  and: [UserObjectTypePropertyFilterType!]
-  or: [UserObjectTypePropertyFilterType!]
+  and: [TaskResolver_AssigneeFilterInputType!]
+  or: [TaskResolver_AssigneeFilterInputType!]
 }
 
-input idUserObjectTypePropertyFilterType {
+input Id_TaskResolver_Assignee_PropertyFilterInputType {
   eq: Int
   neq: Int
   gt: Int
@@ -97,7 +97,7 @@ input idUserObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input created_atUserObjectTypePropertyFilterType {
+input CreatedAt_TaskResolver_Assignee_PropertyFilterInputType {
   eq: DateTime
   neq: DateTime
   gt: DateTime
@@ -113,7 +113,7 @@ input created_atUserObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input updated_atUserObjectTypePropertyFilterType {
+input UpdatedAt_TaskResolver_Assignee_PropertyFilterInputType {
   eq: DateTime
   neq: DateTime
   gt: DateTime
@@ -129,7 +129,7 @@ input updated_atUserObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input identification_numberUserObjectTypePropertyFilterType {
+input IdentificationNumber_TaskResolver_Assignee_PropertyFilterInputType {
   eq: Int
   neq: Int
   gt: Int
@@ -145,7 +145,7 @@ input identification_numberUserObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input emailUserObjectTypePropertyFilterType {
+input Email_TaskResolver_Assignee_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -161,7 +161,7 @@ input emailUserObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input fnameUserObjectTypePropertyFilterType {
+input Fname_TaskResolver_Assignee_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -177,7 +177,7 @@ input fnameUserObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input lnameUserObjectTypePropertyFilterType {
+input Lname_TaskResolver_Assignee_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -193,7 +193,7 @@ input lnameUserObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input mnameUserObjectTypePropertyFilterType {
+input Mname_TaskResolver_Assignee_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -209,7 +209,7 @@ input mnameUserObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input ageUserObjectTypePropertyFilterType {
+input Age_TaskResolver_Assignee_PropertyFilterInputType {
   eq: Float
   neq: Float
   gt: Float
@@ -225,7 +225,7 @@ input ageUserObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input phoneUserObjectTypePropertyFilterType {
+input Phone_TaskResolver_Assignee_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -241,7 +241,7 @@ input phoneUserObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input is_activeUserObjectTypePropertyFilterType {
+input IsActive_TaskResolver_Assignee_PropertyFilterInputType {
   eq: Boolean
   neq: Boolean
   gt: Boolean
@@ -257,18 +257,18 @@ input is_activeUserObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input UserObjectTypePropertyFilterType {
-  id: idUserObjectTypePropertyFilterType
-  created_at: created_atUserObjectTypePropertyFilterType
-  updated_at: updated_atUserObjectTypePropertyFilterType
-  identification_number: identification_numberUserObjectTypePropertyFilterType
-  email: emailUserObjectTypePropertyFilterType
-  fname: fnameUserObjectTypePropertyFilterType
-  lname: lnameUserObjectTypePropertyFilterType
-  mname: mnameUserObjectTypePropertyFilterType
-  age: ageUserObjectTypePropertyFilterType
-  phone: phoneUserObjectTypePropertyFilterType
-  is_active: is_activeUserObjectTypePropertyFilterType
+input TaskResolver_AssigneeFilterInputType {
+  id: Id_TaskResolver_Assignee_PropertyFilterInputType
+  created_at: CreatedAt_TaskResolver_Assignee_PropertyFilterInputType
+  updated_at: UpdatedAt_TaskResolver_Assignee_PropertyFilterInputType
+  identification_number: IdentificationNumber_TaskResolver_Assignee_PropertyFilterInputType
+  email: Email_TaskResolver_Assignee_PropertyFilterInputType
+  fname: Fname_TaskResolver_Assignee_PropertyFilterInputType
+  lname: Lname_TaskResolver_Assignee_PropertyFilterInputType
+  mname: Mname_TaskResolver_Assignee_PropertyFilterInputType
+  age: Age_TaskResolver_Assignee_PropertyFilterInputType
+  phone: Phone_TaskResolver_Assignee_PropertyFilterInputType
+  is_active: IsActive_TaskResolver_Assignee_PropertyFilterInputType
 }
 
 type UserObjectType {
@@ -283,21 +283,21 @@ type UserObjectType {
   age: Float!
   phone: String
   is_active: Boolean!
-  tasks(where: whereTaskFilterInputTypeInput = {}, order_by: [sortingTaskSortingInputTypeInput!] = {}): [TaskObjectType!]
+  tasks(where: UserResolver_Tasks_FilterInputType = {}, order_by: [UserResolver_Tasks_SortingInputType!] = {}): [TaskObjectType!]
   searchTasks: [SearchTasks!]!
 }
 
-input whereTaskFilterInputTypeInput {
-  id: idTaskFilterInputTypePropertyFilterType
-  user_full_name: user_full_nameTaskFilterInputTypePropertyFilterType
+input UserResolver_Tasks_FilterInputType {
+  id: Id_UserResolver_Tasks_PropertyFilterInputType
+  user_full_name: UserFullName_UserResolver_Tasks_PropertyFilterInputType
 
   """Don't touch this field. Reserved for nestjs-graphql-toos purposes."""
   _name_: String! = "FilterPropertyDecorator"
-  and: [TaskFilterInputTypePropertyFilterType!]
-  or: [TaskFilterInputTypePropertyFilterType!]
+  and: [UserResolver_TasksFilterInputType!]
+  or: [UserResolver_TasksFilterInputType!]
 }
 
-input idTaskFilterInputTypePropertyFilterType {
+input Id_UserResolver_Tasks_PropertyFilterInputType {
   eq: Int
   neq: Int
   gt: Int
@@ -313,7 +313,7 @@ input idTaskFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input user_full_nameTaskFilterInputTypePropertyFilterType {
+input UserFullName_UserResolver_Tasks_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -329,12 +329,12 @@ input user_full_nameTaskFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input TaskFilterInputTypePropertyFilterType {
-  id: idTaskFilterInputTypePropertyFilterType
-  user_full_name: user_full_nameTaskFilterInputTypePropertyFilterType
+input UserResolver_TasksFilterInputType {
+  id: Id_UserResolver_Tasks_PropertyFilterInputType
+  user_full_name: UserFullName_UserResolver_Tasks_PropertyFilterInputType
 }
 
-input sortingTaskSortingInputTypeInput {
+input UserResolver_Tasks_SortingInputType {
   id: SortType
   user_full_name: SortType
   _name_: String! = "SortingPropertyDecorator"
@@ -366,34 +366,34 @@ type UserAggregationType {
 }
 
 type Query {
-  users(where: whereUserObjectTypeUserFilterInputTypeInput = {}, order_by: [sortingUserObjectTypeUserSortingInputTypeInput!] = {}): [UserObjectType!]!
+  users(where: UserResolver_Users_FilterInputType = {}, order_by: [UserResolver_Users_SortingInputType!] = {}): [UserObjectType!]!
   userAggregate: UserAggregationType!
-  tasks(where: whereTaskObjectTypeInput = {}, paginate: PaginatorArgs, order_by: [sortingTaskObjectTypeInput!] = {}): [TaskObjectType!]!
+  tasks(where: TaskResolver_Tasks_FilterInputType = {}, paginate: PaginatorArgs, order_by: [TaskResolver_Tasks_SortingInputType!] = {}): [TaskObjectType!]!
 }
 
-input whereUserObjectTypeUserFilterInputTypeInput {
-  id: idUserObjectTypeUserFilterInputTypePropertyFilterType
-  created_at: created_atUserObjectTypeUserFilterInputTypePropertyFilterType
-  updated_at: updated_atUserObjectTypeUserFilterInputTypePropertyFilterType
-  identification_number: identification_numberUserObjectTypeUserFilterInputTypePropertyFilterType
-  email: emailUserObjectTypeUserFilterInputTypePropertyFilterType
-  fname: fnameUserObjectTypeUserFilterInputTypePropertyFilterType
-  lname: lnameUserObjectTypeUserFilterInputTypePropertyFilterType
-  mname: mnameUserObjectTypeUserFilterInputTypePropertyFilterType
-  age: ageUserObjectTypeUserFilterInputTypePropertyFilterType
-  phone: phoneUserObjectTypeUserFilterInputTypePropertyFilterType
-  is_active: is_activeUserObjectTypeUserFilterInputTypePropertyFilterType
-  task_story_points: task_story_pointsUserObjectTypeUserFilterInputTypePropertyFilterType
-  full_name: full_nameUserObjectTypeUserFilterInputTypePropertyFilterType
-  task_title: task_titleUserObjectTypeUserFilterInputTypePropertyFilterType
+input UserResolver_Users_FilterInputType {
+  id: Id_UserResolver_Users_PropertyFilterInputType
+  created_at: CreatedAt_UserResolver_Users_PropertyFilterInputType
+  updated_at: UpdatedAt_UserResolver_Users_PropertyFilterInputType
+  identification_number: IdentificationNumber_UserResolver_Users_PropertyFilterInputType
+  email: Email_UserResolver_Users_PropertyFilterInputType
+  fname: Fname_UserResolver_Users_PropertyFilterInputType
+  lname: Lname_UserResolver_Users_PropertyFilterInputType
+  mname: Mname_UserResolver_Users_PropertyFilterInputType
+  age: Age_UserResolver_Users_PropertyFilterInputType
+  phone: Phone_UserResolver_Users_PropertyFilterInputType
+  is_active: IsActive_UserResolver_Users_PropertyFilterInputType
+  task_story_points: TaskStoryPoints_UserResolver_Users_PropertyFilterInputType
+  full_name: FullName_UserResolver_Users_PropertyFilterInputType
+  task_title: TaskTitle_UserResolver_Users_PropertyFilterInputType
 
   """Don't touch this field. Reserved for nestjs-graphql-toos purposes."""
   _name_: String! = "FilterPropertyDecorator"
-  and: [UserObjectTypeUserFilterInputTypePropertyFilterType!]
-  or: [UserObjectTypeUserFilterInputTypePropertyFilterType!]
+  and: [UserResolver_UsersFilterInputType!]
+  or: [UserResolver_UsersFilterInputType!]
 }
 
-input idUserObjectTypeUserFilterInputTypePropertyFilterType {
+input Id_UserResolver_Users_PropertyFilterInputType {
   eq: Int
   neq: Int
   gt: Int
@@ -409,7 +409,7 @@ input idUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input created_atUserObjectTypeUserFilterInputTypePropertyFilterType {
+input CreatedAt_UserResolver_Users_PropertyFilterInputType {
   eq: DateTime
   neq: DateTime
   gt: DateTime
@@ -425,7 +425,7 @@ input created_atUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input updated_atUserObjectTypeUserFilterInputTypePropertyFilterType {
+input UpdatedAt_UserResolver_Users_PropertyFilterInputType {
   eq: DateTime
   neq: DateTime
   gt: DateTime
@@ -441,7 +441,7 @@ input updated_atUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input identification_numberUserObjectTypeUserFilterInputTypePropertyFilterType {
+input IdentificationNumber_UserResolver_Users_PropertyFilterInputType {
   eq: Int
   neq: Int
   gt: Int
@@ -457,7 +457,7 @@ input identification_numberUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input emailUserObjectTypeUserFilterInputTypePropertyFilterType {
+input Email_UserResolver_Users_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -473,7 +473,7 @@ input emailUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input fnameUserObjectTypeUserFilterInputTypePropertyFilterType {
+input Fname_UserResolver_Users_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -489,7 +489,7 @@ input fnameUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input lnameUserObjectTypeUserFilterInputTypePropertyFilterType {
+input Lname_UserResolver_Users_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -505,7 +505,7 @@ input lnameUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input mnameUserObjectTypeUserFilterInputTypePropertyFilterType {
+input Mname_UserResolver_Users_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -521,7 +521,7 @@ input mnameUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input ageUserObjectTypeUserFilterInputTypePropertyFilterType {
+input Age_UserResolver_Users_PropertyFilterInputType {
   eq: Float
   neq: Float
   gt: Float
@@ -537,7 +537,7 @@ input ageUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input phoneUserObjectTypeUserFilterInputTypePropertyFilterType {
+input Phone_UserResolver_Users_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -553,7 +553,7 @@ input phoneUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input is_activeUserObjectTypeUserFilterInputTypePropertyFilterType {
+input IsActive_UserResolver_Users_PropertyFilterInputType {
   eq: Boolean
   neq: Boolean
   gt: Boolean
@@ -569,7 +569,7 @@ input is_activeUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input task_story_pointsUserObjectTypeUserFilterInputTypePropertyFilterType {
+input TaskStoryPoints_UserResolver_Users_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -585,7 +585,7 @@ input task_story_pointsUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input full_nameUserObjectTypeUserFilterInputTypePropertyFilterType {
+input FullName_UserResolver_Users_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -601,7 +601,7 @@ input full_nameUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input task_titleUserObjectTypeUserFilterInputTypePropertyFilterType {
+input TaskTitle_UserResolver_Users_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -617,24 +617,24 @@ input task_titleUserObjectTypeUserFilterInputTypePropertyFilterType {
   null: Boolean
 }
 
-input UserObjectTypeUserFilterInputTypePropertyFilterType {
-  id: idUserObjectTypeUserFilterInputTypePropertyFilterType
-  created_at: created_atUserObjectTypeUserFilterInputTypePropertyFilterType
-  updated_at: updated_atUserObjectTypeUserFilterInputTypePropertyFilterType
-  identification_number: identification_numberUserObjectTypeUserFilterInputTypePropertyFilterType
-  email: emailUserObjectTypeUserFilterInputTypePropertyFilterType
-  fname: fnameUserObjectTypeUserFilterInputTypePropertyFilterType
-  lname: lnameUserObjectTypeUserFilterInputTypePropertyFilterType
-  mname: mnameUserObjectTypeUserFilterInputTypePropertyFilterType
-  age: ageUserObjectTypeUserFilterInputTypePropertyFilterType
-  phone: phoneUserObjectTypeUserFilterInputTypePropertyFilterType
-  is_active: is_activeUserObjectTypeUserFilterInputTypePropertyFilterType
-  task_story_points: task_story_pointsUserObjectTypeUserFilterInputTypePropertyFilterType
-  full_name: full_nameUserObjectTypeUserFilterInputTypePropertyFilterType
-  task_title: task_titleUserObjectTypeUserFilterInputTypePropertyFilterType
+input UserResolver_UsersFilterInputType {
+  id: Id_UserResolver_Users_PropertyFilterInputType
+  created_at: CreatedAt_UserResolver_Users_PropertyFilterInputType
+  updated_at: UpdatedAt_UserResolver_Users_PropertyFilterInputType
+  identification_number: IdentificationNumber_UserResolver_Users_PropertyFilterInputType
+  email: Email_UserResolver_Users_PropertyFilterInputType
+  fname: Fname_UserResolver_Users_PropertyFilterInputType
+  lname: Lname_UserResolver_Users_PropertyFilterInputType
+  mname: Mname_UserResolver_Users_PropertyFilterInputType
+  age: Age_UserResolver_Users_PropertyFilterInputType
+  phone: Phone_UserResolver_Users_PropertyFilterInputType
+  is_active: IsActive_UserResolver_Users_PropertyFilterInputType
+  task_story_points: TaskStoryPoints_UserResolver_Users_PropertyFilterInputType
+  full_name: FullName_UserResolver_Users_PropertyFilterInputType
+  task_title: TaskTitle_UserResolver_Users_PropertyFilterInputType
 }
 
-input sortingUserObjectTypeUserSortingInputTypeInput {
+input UserResolver_Users_SortingInputType {
   id: SortType
   created_at: SortType
   updated_at: SortType
@@ -651,25 +651,25 @@ input sortingUserObjectTypeUserSortingInputTypeInput {
   _name_: String! = "SortingPropertyDecorator"
 }
 
-input whereTaskObjectTypeInput {
-  id: idTaskObjectTypePropertyFilterType
-  title: titleTaskObjectTypePropertyFilterType
-  type_id: type_idTaskObjectTypePropertyFilterType
-  priority: priorityTaskObjectTypePropertyFilterType
-  story_points: story_pointsTaskObjectTypePropertyFilterType
-  status: statusTaskObjectTypePropertyFilterType
-  assignee_id: assignee_idTaskObjectTypePropertyFilterType
-  task_id: task_idTaskObjectTypePropertyFilterType
-  created_at: created_atTaskObjectTypePropertyFilterType
-  updated_at: updated_atTaskObjectTypePropertyFilterType
+input TaskResolver_Tasks_FilterInputType {
+  id: Id_TaskResolver_Tasks_PropertyFilterInputType
+  title: Title_TaskResolver_Tasks_PropertyFilterInputType
+  type_id: TypeId_TaskResolver_Tasks_PropertyFilterInputType
+  priority: Priority_TaskResolver_Tasks_PropertyFilterInputType
+  story_points: StoryPoints_TaskResolver_Tasks_PropertyFilterInputType
+  status: Status_TaskResolver_Tasks_PropertyFilterInputType
+  assignee_id: AssigneeId_TaskResolver_Tasks_PropertyFilterInputType
+  task_id: TaskId_TaskResolver_Tasks_PropertyFilterInputType
+  created_at: CreatedAt_TaskResolver_Tasks_PropertyFilterInputType
+  updated_at: UpdatedAt_TaskResolver_Tasks_PropertyFilterInputType
 
   """Don't touch this field. Reserved for nestjs-graphql-toos purposes."""
   _name_: String! = "FilterPropertyDecorator"
-  and: [TaskObjectTypePropertyFilterType!]
-  or: [TaskObjectTypePropertyFilterType!]
+  and: [TaskResolver_TasksFilterInputType!]
+  or: [TaskResolver_TasksFilterInputType!]
 }
 
-input idTaskObjectTypePropertyFilterType {
+input Id_TaskResolver_Tasks_PropertyFilterInputType {
   eq: Int
   neq: Int
   gt: Int
@@ -685,7 +685,7 @@ input idTaskObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input titleTaskObjectTypePropertyFilterType {
+input Title_TaskResolver_Tasks_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -701,7 +701,7 @@ input titleTaskObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input type_idTaskObjectTypePropertyFilterType {
+input TypeId_TaskResolver_Tasks_PropertyFilterInputType {
   eq: Int
   neq: Int
   gt: Int
@@ -717,7 +717,7 @@ input type_idTaskObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input priorityTaskObjectTypePropertyFilterType {
+input Priority_TaskResolver_Tasks_PropertyFilterInputType {
   eq: Int
   neq: Int
   gt: Int
@@ -733,7 +733,7 @@ input priorityTaskObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input story_pointsTaskObjectTypePropertyFilterType {
+input StoryPoints_TaskResolver_Tasks_PropertyFilterInputType {
   eq: Int
   neq: Int
   gt: Int
@@ -749,7 +749,7 @@ input story_pointsTaskObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input statusTaskObjectTypePropertyFilterType {
+input Status_TaskResolver_Tasks_PropertyFilterInputType {
   eq: Int
   neq: Int
   gt: Int
@@ -765,7 +765,7 @@ input statusTaskObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input assignee_idTaskObjectTypePropertyFilterType {
+input AssigneeId_TaskResolver_Tasks_PropertyFilterInputType {
   eq: Int
   neq: Int
   gt: Int
@@ -781,7 +781,7 @@ input assignee_idTaskObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input task_idTaskObjectTypePropertyFilterType {
+input TaskId_TaskResolver_Tasks_PropertyFilterInputType {
   eq: Int
   neq: Int
   gt: Int
@@ -797,7 +797,7 @@ input task_idTaskObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input created_atTaskObjectTypePropertyFilterType {
+input CreatedAt_TaskResolver_Tasks_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -813,7 +813,7 @@ input created_atTaskObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input updated_atTaskObjectTypePropertyFilterType {
+input UpdatedAt_TaskResolver_Tasks_PropertyFilterInputType {
   eq: String
   neq: String
   gt: String
@@ -829,17 +829,17 @@ input updated_atTaskObjectTypePropertyFilterType {
   null: Boolean
 }
 
-input TaskObjectTypePropertyFilterType {
-  id: idTaskObjectTypePropertyFilterType
-  title: titleTaskObjectTypePropertyFilterType
-  type_id: type_idTaskObjectTypePropertyFilterType
-  priority: priorityTaskObjectTypePropertyFilterType
-  story_points: story_pointsTaskObjectTypePropertyFilterType
-  status: statusTaskObjectTypePropertyFilterType
-  assignee_id: assignee_idTaskObjectTypePropertyFilterType
-  task_id: task_idTaskObjectTypePropertyFilterType
-  created_at: created_atTaskObjectTypePropertyFilterType
-  updated_at: updated_atTaskObjectTypePropertyFilterType
+input TaskResolver_TasksFilterInputType {
+  id: Id_TaskResolver_Tasks_PropertyFilterInputType
+  title: Title_TaskResolver_Tasks_PropertyFilterInputType
+  type_id: TypeId_TaskResolver_Tasks_PropertyFilterInputType
+  priority: Priority_TaskResolver_Tasks_PropertyFilterInputType
+  story_points: StoryPoints_TaskResolver_Tasks_PropertyFilterInputType
+  status: Status_TaskResolver_Tasks_PropertyFilterInputType
+  assignee_id: AssigneeId_TaskResolver_Tasks_PropertyFilterInputType
+  task_id: TaskId_TaskResolver_Tasks_PropertyFilterInputType
+  created_at: CreatedAt_TaskResolver_Tasks_PropertyFilterInputType
+  updated_at: UpdatedAt_TaskResolver_Tasks_PropertyFilterInputType
 }
 
 input PaginatorArgs {
@@ -847,7 +847,7 @@ input PaginatorArgs {
   page: Int! = 0
 }
 
-input sortingTaskObjectTypeInput {
+input TaskResolver_Tasks_SortingInputType {
   id: SortType
   title: SortType
   type_id: SortType

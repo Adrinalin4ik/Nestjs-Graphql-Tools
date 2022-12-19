@@ -1,5 +1,6 @@
 import { Args } from "@nestjs/graphql";
 import { BaseEntity } from "../../common";
+import { standardize } from "../../utils/functions";
 import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, FILTER_DECORATOR_OPTIONS_METADATA_KEY, GRAPHQL_FILTER_DECORATOR_METADATA_KEY } from "../constants";
 import { getFilterFullInputType } from "../input-type-generator";
 import { applyFilterParameter } from "../query.builder";
@@ -26,27 +27,28 @@ export const GraphqlFilter = () => {
 
 // @Filter decorator
 export const Filter = (baseEntity: () => BaseEntity | BaseEntity[], options?: IFilterDecoratorParams) => {
-  // convert params to array
-  const extractedResults = baseEntity();
-  let typeFunctions = extractedResults as BaseEntity[];
-  if (!Array.isArray(extractedResults)) {
-    typeFunctions = [extractedResults];
-  }
-  const filterFullType = getFilterFullInputType(typeFunctions);
-  
-
-  // Combine fields from all models together
-  const customFields = typeFunctions.reduce((acc, typeFn) => {
-    const customFilterData: GraphqlFilterTypeDecoratorMetadata = Reflect.getMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, typeFn.prototype)
-    if (customFilterData) {
-      for (const field of customFilterData.fields.values()) {
-        acc.set(field.name, field)
-      }
-    }
-    return acc;
-  }, new Map<string, GraphqlFilterFieldMetadata>());
-
   return (target, propertyName, paramIndex) => {
+    const name = `${standardize(target.constructor.name)}_${standardize(propertyName)}`;
+    // convert params to array
+    const extractedResults = baseEntity();
+    let typeFunctions = extractedResults as BaseEntity[];
+    if (!Array.isArray(extractedResults)) {
+      typeFunctions = [extractedResults];
+    }
+    const filterFullType = getFilterFullInputType(typeFunctions, name);
+    
+
+    // Combine fields from all models together
+    const customFields = typeFunctions.reduce((acc, typeFn) => {
+      const customFilterData: GraphqlFilterTypeDecoratorMetadata = Reflect.getMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, typeFn.prototype)
+      if (customFilterData) {
+        for (const field of customFilterData.fields.values()) {
+          acc.set(field.name, field)
+        }
+      }
+      return acc;
+    }, new Map<string, GraphqlFilterFieldMetadata>());
+
     Reflect.defineMetadata(FILTER_DECORATOR_OPTIONS_METADATA_KEY, options, target, propertyName);
     Reflect.defineMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, customFields, target, propertyName);
     Args({

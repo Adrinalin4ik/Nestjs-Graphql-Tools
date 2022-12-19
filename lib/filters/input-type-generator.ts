@@ -1,5 +1,6 @@
 import { Field, InputType, PartialType, ReturnTypeFunc, TypeMetadataStorage } from "@nestjs/graphql";
 import { BaseEntity } from "../common";
+import { standardize } from "../utils/functions";
 import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, FILTER_DECORATOR_NAME_METADATA_KEY, FILTER_OPERATION_PREFIX } from "./constants";
 import { GraphqlFilterTypeDecoratorMetadata } from "./decorators/field.decorator";
 
@@ -22,7 +23,7 @@ export enum OperationQuery {
 const arrayLikeOperations = new Set([OperationQuery.between, OperationQuery.notbetween, OperationQuery.in]);
 
 export enum InputMapPrefixes {
-  PropertyFilterType = 'PropertyFilterType',
+  PropertyFilterInputType = 'PropertyFilterInputType',
   FilterInputType = 'FilterInputType',
 }
 
@@ -46,7 +47,7 @@ const filterTypes = new Map();
 const propertyTypes = new Map()
 
 const generateFilterPropertyType = (field, parentName: string) => {
-  const key = `${field.name}${parentName}${InputMapPrefixes.PropertyFilterType}`;
+  const key = `${standardize(field.name)}_${parentName}_${InputMapPrefixes.PropertyFilterInputType}`;
 
   const propType = propertyTypes.get(key);
   if (propType) return propType;
@@ -76,9 +77,8 @@ const generateFilterPropertyType = (field, parentName: string) => {
   return PropertyFilter;
 }
 
-function generateFilterInputType<T extends BaseEntity>(classes: T[]) {
-  const concatinatedClassNames = classes.map(x => x.name).join('')
-  const key = `${concatinatedClassNames}${InputMapPrefixes.PropertyFilterType}`;
+function generateFilterInputType<T extends BaseEntity>(classes: T[], name: string) {
+  const key = `${name}${InputMapPrefixes.FilterInputType}`;
   if (filterTypes.get(key)) {
     return filterTypes.get(key);
   }
@@ -129,7 +129,7 @@ function generateFilterInputType<T extends BaseEntity>(classes: T[]) {
       if (typeof field.typeFn === 'function') {
         field.typeFn();
       }
-      const fieldType = generateFilterPropertyType(field, concatinatedClassNames);
+      const fieldType = generateFilterPropertyType(field, name);
       Field(() => fieldType, {nullable: true})(PartialObjectType.prototype, field.name)
     } else {
       // Relations are not supported yet
@@ -167,15 +167,12 @@ export interface IFilter<T> {
   _name_: string;
 }
 
-export const getFilterFullInputType = (classes: BaseEntity[]) => {
-  
-  const concatinatedClassName = classes.map(x => x.name).join('')
-
-  const key = `where${concatinatedClassName}Input`; 
+export const getFilterFullInputType = (classes: BaseEntity[], name: string) => {
+  const key = `${name}_FilterInputType`; 
   if (filterFullTypes.get(key)) {
     return filterFullTypes.get(key);
   }
-  const FilterInputType = generateFilterInputType(classes);
+  const FilterInputType = generateFilterInputType(classes, name);
   @InputType(key)
   class EntityWhereInput extends FilterInputType {
     @Field({defaultValue: FILTER_DECORATOR_NAME_METADATA_KEY, description: 'Don\'t touch this field. Reserved for nestjs-graphql-toos purposes.'})

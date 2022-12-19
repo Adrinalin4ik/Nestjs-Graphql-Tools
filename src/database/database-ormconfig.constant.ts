@@ -28,10 +28,10 @@ export function getOrmConfig(): TypeOrmModuleOptions {
       type: 'sqlite',
       database: ':memory:',
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-      migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+      migrations: [seeds1671015219018],
       migrationsRun: true,
       keepConnectionAlive: true,
-      synchronize: settings.synchronize || false,
+      logging: settings.logging,
     };
   }
   return ormConfig;
