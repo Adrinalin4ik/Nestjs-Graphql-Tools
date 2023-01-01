@@ -21,6 +21,7 @@ export enum OperationQuery {
 }
 
 const arrayLikeOperations = new Set([OperationQuery.between, OperationQuery.notbetween, OperationQuery.in]);
+const stringLikeOperations = new Set([OperationQuery.like, OperationQuery.notlike]);
 
 export enum InputMapPrefixes {
   PropertyFilterInputType = 'PropertyFilterInputType',
@@ -62,6 +63,8 @@ const generateFilterPropertyType = (field, parentName: string) => {
         return [field.typeFn()];
       } if ([OperationQuery.null].includes(OperationQuery[operationName])) {
         return Boolean;
+      } else if (stringLikeOperations.has(OperationQuery[operationName])) {
+        return String;
       } else {
         return field.typeFn();
       }

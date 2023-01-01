@@ -90,8 +90,8 @@ input Id_TaskResolver_Assignee_PropertyFilterInputType {
   lte: Int
   in: [Int!]
   notin: Int
-  like: Int
-  notlike: Int
+  like: String
+  notlike: String
   between: [Int!]
   notbetween: [Int!]
   null: Boolean
@@ -106,8 +106,8 @@ input CreatedAt_TaskResolver_Assignee_PropertyFilterInputType {
   lte: DateTime
   in: [DateTime!]
   notin: DateTime
-  like: DateTime
-  notlike: DateTime
+  like: String
+  notlike: String
   between: [DateTime!]
   notbetween: [DateTime!]
   null: Boolean
@@ -122,8 +122,8 @@ input UpdatedAt_TaskResolver_Assignee_PropertyFilterInputType {
   lte: DateTime
   in: [DateTime!]
   notin: DateTime
-  like: DateTime
-  notlike: DateTime
+  like: String
+  notlike: String
   between: [DateTime!]
   notbetween: [DateTime!]
   null: Boolean
@@ -138,8 +138,8 @@ input IdentificationNumber_TaskResolver_Assignee_PropertyFilterInputType {
   lte: Int
   in: [Int!]
   notin: Int
-  like: Int
-  notlike: Int
+  like: String
+  notlike: String
   between: [Int!]
   notbetween: [Int!]
   null: Boolean
@@ -218,8 +218,8 @@ input Age_TaskResolver_Assignee_PropertyFilterInputType {
   lte: Float
   in: [Float!]
   notin: Float
-  like: Float
-  notlike: Float
+  like: String
+  notlike: String
   between: [Float!]
   notbetween: [Float!]
   null: Boolean
@@ -250,8 +250,8 @@ input IsActive_TaskResolver_Assignee_PropertyFilterInputType {
   lte: Boolean
   in: [Boolean!]
   notin: Boolean
-  like: Boolean
-  notlike: Boolean
+  like: String
+  notlike: String
   between: [Boolean!]
   notbetween: [Boolean!]
   null: Boolean
@@ -306,8 +306,8 @@ input Id_UserResolver_Tasks_PropertyFilterInputType {
   lte: Int
   in: [Int!]
   notin: Int
-  like: Int
-  notlike: Int
+  like: String
+  notlike: String
   between: [Int!]
   notbetween: [Int!]
   null: Boolean
@@ -402,8 +402,8 @@ input Id_UserResolver_Users_PropertyFilterInputType {
   lte: Int
   in: [Int!]
   notin: Int
-  like: Int
-  notlike: Int
+  like: String
+  notlike: String
   between: [Int!]
   notbetween: [Int!]
   null: Boolean
@@ -418,8 +418,8 @@ input CreatedAt_UserResolver_Users_PropertyFilterInputType {
   lte: DateTime
   in: [DateTime!]
   notin: DateTime
-  like: DateTime
-  notlike: DateTime
+  like: String
+  notlike: String
   between: [DateTime!]
   notbetween: [DateTime!]
   null: Boolean
@@ -434,8 +434,8 @@ input UpdatedAt_UserResolver_Users_PropertyFilterInputType {
   lte: DateTime
   in: [DateTime!]
   notin: DateTime
-  like: DateTime
-  notlike: DateTime
+  like: String
+  notlike: String
   between: [DateTime!]
   notbetween: [DateTime!]
   null: Boolean
@@ -450,8 +450,8 @@ input IdentificationNumber_UserResolver_Users_PropertyFilterInputType {
   lte: Int
   in: [Int!]
   notin: Int
-  like: Int
-  notlike: Int
+  like: String
+  notlike: String
   between: [Int!]
   notbetween: [Int!]
   null: Boolean
@@ -530,8 +530,8 @@ input Age_UserResolver_Users_PropertyFilterInputType {
   lte: Float
   in: [Float!]
   notin: Float
-  like: Float
-  notlike: Float
+  like: String
+  notlike: String
   between: [Float!]
   notbetween: [Float!]
   null: Boolean
@@ -562,8 +562,8 @@ input IsActive_UserResolver_Users_PropertyFilterInputType {
   lte: Boolean
   in: [Boolean!]
   notin: Boolean
-  like: Boolean
-  notlike: Boolean
+  like: String
+  notlike: String
   between: [Boolean!]
   notbetween: [Boolean!]
   null: Boolean
@@ -678,8 +678,8 @@ input Id_TaskResolver_Tasks_PropertyFilterInputType {
   lte: Int
   in: [Int!]
   notin: Int
-  like: Int
-  notlike: Int
+  like: String
+  notlike: String
   between: [Int!]
   notbetween: [Int!]
   null: Boolean
@@ -710,8 +710,8 @@ input TypeId_TaskResolver_Tasks_PropertyFilterInputType {
   lte: Int
   in: [Int!]
   notin: Int
-  like: Int
-  notlike: Int
+  like: String
+  notlike: String
   between: [Int!]
   notbetween: [Int!]
   null: Boolean
@@ -726,8 +726,8 @@ input Priority_TaskResolver_Tasks_PropertyFilterInputType {
   lte: Int
   in: [Int!]
   notin: Int
-  like: Int
-  notlike: Int
+  like: String
+  notlike: String
   between: [Int!]
   notbetween: [Int!]
   null: Boolean
@@ -742,8 +742,8 @@ input StoryPoints_TaskResolver_Tasks_PropertyFilterInputType {
   lte: Int
   in: [Int!]
   notin: Int
-  like: Int
-  notlike: Int
+  like: String
+  notlike: String
   between: [Int!]
   notbetween: [Int!]
   null: Boolean
@@ -758,8 +758,8 @@ input Status_TaskResolver_Tasks_PropertyFilterInputType {
   lte: Int
   in: [Int!]
   notin: Int
-  like: Int
-  notlike: Int
+  like: String
+  notlike: String
   between: [Int!]
   notbetween: [Int!]
   null: Boolean
@@ -774,8 +774,8 @@ input AssigneeId_TaskResolver_Tasks_PropertyFilterInputType {
   lte: Int
   in: [Int!]
   notin: Int
-  like: Int
-  notlike: Int
+  like: String
+  notlike: String
   between: [Int!]
   notbetween: [Int!]
   null: Boolean
@@ -790,8 +790,8 @@ input TaskId_TaskResolver_Tasks_PropertyFilterInputType {
   lte: Int
   in: [Int!]
   notin: Int
-  like: Int
-  notlike: Int
+  like: String
+  notlike: String
   between: [Int!]
   notbetween: [Int!]
   null: Boolean
