@@ -30,6 +30,7 @@ var OperationQuery;
     OperationQuery["null"] = "null";
 })(OperationQuery = exports.OperationQuery || (exports.OperationQuery = {}));
 const arrayLikeOperations = new Set([OperationQuery.between, OperationQuery.notbetween, OperationQuery.in]);
+const stringLikeOperations = new Set([OperationQuery.like, OperationQuery.notlike]);
 var InputMapPrefixes;
 (function (InputMapPrefixes) {
     InputMapPrefixes["PropertyFilterInputType"] = "PropertyFilterInputType";
@@ -54,6 +55,9 @@ const generateFilterPropertyType = (field, parentName) => {
             }
             if ([OperationQuery.null].includes(OperationQuery[operationName])) {
                 return Boolean;
+            }
+            else if (stringLikeOperations.has(OperationQuery[operationName])) {
+                return String;
             }
             else {
                 return field.typeFn();

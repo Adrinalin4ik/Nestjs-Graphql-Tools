@@ -103,10 +103,10 @@ const buildSqlArgument = (operatorKey, field, value) => {
         result = [`${field} >= :${argName}`, { [argName]: value }];
     }
     else if (operatorKey === input_type_generator_1.OperationQuery.like) {
-        result = [`${field} ilike :${argName}`, { [argName]: value }];
+        result = [`${field}::varchar ilike :${argName}::varchar`, { [argName]: value }];
     }
     else if (operatorKey === input_type_generator_1.OperationQuery.notlike) {
-        result = [`${field} not ilike :${argName}`, { [argName]: value }];
+        result = [`${field}::varchar not ilike :${argName}::varchar`, { [argName]: value }];
     }
     else if (operatorKey === input_type_generator_1.OperationQuery.between) {
         result = [`${field} between :${argName}1 and :${argName}2`, { [`${argName}1`]: value[0], [`${argName}2`]: value[1] }];
