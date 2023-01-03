@@ -23,7 +23,7 @@ export interface FilterFieldDefinition {
     name: string;
     typeFn: ReturnTypeFunc;
 }
-export declare type IFilterField<T> = {
+export type IFilterField<T> = {
     [K in keyof T]: {
         eq: T[K];
         neq: T[K];
