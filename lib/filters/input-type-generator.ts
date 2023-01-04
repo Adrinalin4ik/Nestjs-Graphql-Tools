@@ -20,7 +20,7 @@ export enum OperationQuery {
   null = 'null',
 }
 
-const arrayLikeOperations = new Set([OperationQuery.between, OperationQuery.notbetween, OperationQuery.in]);
+const arrayLikeOperations = new Set([OperationQuery.between, OperationQuery.notbetween, OperationQuery.in, OperationQuery.notin]);
 const stringLikeOperations = new Set([OperationQuery.like, OperationQuery.notlike]);
 
 export enum InputMapPrefixes {

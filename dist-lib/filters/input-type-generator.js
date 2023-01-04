@@ -29,7 +29,7 @@ var OperationQuery;
     OperationQuery["notbetween"] = "notbetween";
     OperationQuery["null"] = "null";
 })(OperationQuery = exports.OperationQuery || (exports.OperationQuery = {}));
-const arrayLikeOperations = new Set([OperationQuery.between, OperationQuery.notbetween, OperationQuery.in]);
+const arrayLikeOperations = new Set([OperationQuery.between, OperationQuery.notbetween, OperationQuery.in, OperationQuery.notin]);
 const stringLikeOperations = new Set([OperationQuery.like, OperationQuery.notlike]);
 var InputMapPrefixes;
 (function (InputMapPrefixes) {
