@@ -67,19 +67,28 @@ const GraphqlLoader = (args) => {
                 });
             }
             if (options.polymorphic) {
-                if (loader.parent[options.polymorphic.idField] && loader.parent[options.polymorphic.typeField]) {
+                if (typeof options.polymorphic === 'function') {
+                    return loader.req._loader[loaderKey].load(options.polymorphic(loader.parent));
+                }
+                else if (loader.parent[options.polymorphic.id] && loader.parent[options.polymorphic.descriminator]) {
                     return loader.req._loader[loaderKey].load({
-                        id: loader.parent[options.polymorphic.idField],
-                        descriminator: loader.parent[options.polymorphic.typeField]
+                        id: loader.parent[options.polymorphic.id],
+                        descriminator: loader.parent[options.polymorphic.descriminator]
                     });
                 }
                 else {
-                    throw new Error(`Polymorphic relation Error: Your parent model must provide ${options.polymorphic.idField} and ${options.polymorphic.typeField}`);
+                    throw new Error(`[${target.constructor.name}.${property}] Polymorphic relation Error: Your parent model must provide id and type for the nested model`);
                 }
             }
             else {
-                if (loader.parent[options.foreignKey]) {
+                if (typeof options.foreignKey === 'function') {
+                    return loader.req._loader[loaderKey].load(options.foreignKey(loader.parent));
+                }
+                else if (loader.parent[options.foreignKey]) {
                     return loader.req._loader[loaderKey].load(loader.parent[options.foreignKey]);
+                }
+                else {
+                    throw new Error(`[${target.constructor.name}.${property}] Can't find field ${options.foreignKey} in the parent object`);
                 }
             }
         };

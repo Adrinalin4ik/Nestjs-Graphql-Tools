@@ -61,7 +61,9 @@ export class UserResolver {
   }
 
   @ResolveField(() => [SearchTasksUnion])
-  @GraphqlLoader()
+  @GraphqlLoader({
+    foreignKey: (parent: User) => parent.id
+  })
   async searchTasks(
     @Loader() loader: LoaderData<TaskObjectType, number>,
     @SelectedUnionTypes() types

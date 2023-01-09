@@ -54,11 +54,14 @@ export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType> {
     selectedUnions: SelectedUnionTypesResult;
 }
 export interface GraphqlLoaderOptions {
-    foreignKey?: string;
-    polymorphic?: {
-        idField: string;
-        typeField: string;
-    };
+    foreignKey?: string | ((parent: any) => (any));
+    polymorphic?: ({
+        id: string;
+        descriminator: string;
+    }) | ((parent: any) => ({
+        id: any;
+        descriminator: any;
+    }));
 }
 export declare const Loader: (...dataOrPipes: unknown[]) => ParameterDecorator;
 export declare const GraphqlLoader: (args?: GraphqlLoaderOptions) => (target: any, property: any, descriptor: any) => void;
