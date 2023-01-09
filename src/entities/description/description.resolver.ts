@@ -17,10 +17,10 @@ export class DescriptionResolver {
 
   @ResolveField(() => [DescriptionableUnion], { nullable: true })
   @GraphqlLoader({
-    polymorphic: {
-      idField: 'description_id',
-      typeField: 'description_type'
-    }
+    polymorphic: (parent: DescriptionObjectType) => ({
+      id: parent.description_id,
+      descriminator: parent.description_type
+    })
   })
   async descriptionable(
     @Loader() loader: PolymorphicLoaderData<[DescriptionText | DescriptionChecklist], number, DescriptionType>,

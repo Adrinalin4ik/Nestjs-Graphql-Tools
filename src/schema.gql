@@ -89,7 +89,7 @@ input Id_TaskResolver_Assignee_PropertyFilterInputType {
   lt: Int
   lte: Int
   in: [Int!]
-  notin: Int
+  notin: [Int!]
   like: String
   notlike: String
   between: [Int!]
@@ -105,7 +105,7 @@ input CreatedAt_TaskResolver_Assignee_PropertyFilterInputType {
   lt: DateTime
   lte: DateTime
   in: [DateTime!]
-  notin: DateTime
+  notin: [DateTime!]
   like: String
   notlike: String
   between: [DateTime!]
@@ -121,7 +121,7 @@ input UpdatedAt_TaskResolver_Assignee_PropertyFilterInputType {
   lt: DateTime
   lte: DateTime
   in: [DateTime!]
-  notin: DateTime
+  notin: [DateTime!]
   like: String
   notlike: String
   between: [DateTime!]
@@ -137,7 +137,7 @@ input IdentificationNumber_TaskResolver_Assignee_PropertyFilterInputType {
   lt: Int
   lte: Int
   in: [Int!]
-  notin: Int
+  notin: [Int!]
   like: String
   notlike: String
   between: [Int!]
@@ -153,7 +153,7 @@ input Email_TaskResolver_Assignee_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -169,7 +169,7 @@ input Fname_TaskResolver_Assignee_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -185,7 +185,7 @@ input Lname_TaskResolver_Assignee_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -201,7 +201,7 @@ input Mname_TaskResolver_Assignee_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -217,7 +217,7 @@ input Age_TaskResolver_Assignee_PropertyFilterInputType {
   lt: Float
   lte: Float
   in: [Float!]
-  notin: Float
+  notin: [Float!]
   like: String
   notlike: String
   between: [Float!]
@@ -233,7 +233,7 @@ input Phone_TaskResolver_Assignee_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -249,7 +249,7 @@ input IsActive_TaskResolver_Assignee_PropertyFilterInputType {
   lt: Boolean
   lte: Boolean
   in: [Boolean!]
-  notin: Boolean
+  notin: [Boolean!]
   like: String
   notlike: String
   between: [Boolean!]
@@ -305,7 +305,7 @@ input Id_UserResolver_Tasks_PropertyFilterInputType {
   lt: Int
   lte: Int
   in: [Int!]
-  notin: Int
+  notin: [Int!]
   like: String
   notlike: String
   between: [Int!]
@@ -321,7 +321,7 @@ input UserFullName_UserResolver_Tasks_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -401,7 +401,7 @@ input Id_UserResolver_Users_PropertyFilterInputType {
   lt: Int
   lte: Int
   in: [Int!]
-  notin: Int
+  notin: [Int!]
   like: String
   notlike: String
   between: [Int!]
@@ -417,7 +417,7 @@ input CreatedAt_UserResolver_Users_PropertyFilterInputType {
   lt: DateTime
   lte: DateTime
   in: [DateTime!]
-  notin: DateTime
+  notin: [DateTime!]
   like: String
   notlike: String
   between: [DateTime!]
@@ -433,7 +433,7 @@ input UpdatedAt_UserResolver_Users_PropertyFilterInputType {
   lt: DateTime
   lte: DateTime
   in: [DateTime!]
-  notin: DateTime
+  notin: [DateTime!]
   like: String
   notlike: String
   between: [DateTime!]
@@ -449,7 +449,7 @@ input IdentificationNumber_UserResolver_Users_PropertyFilterInputType {
   lt: Int
   lte: Int
   in: [Int!]
-  notin: Int
+  notin: [Int!]
   like: String
   notlike: String
   between: [Int!]
@@ -465,7 +465,7 @@ input Email_UserResolver_Users_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -481,7 +481,7 @@ input Fname_UserResolver_Users_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -497,7 +497,7 @@ input Lname_UserResolver_Users_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -513,7 +513,7 @@ input Mname_UserResolver_Users_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -529,7 +529,7 @@ input Age_UserResolver_Users_PropertyFilterInputType {
   lt: Float
   lte: Float
   in: [Float!]
-  notin: Float
+  notin: [Float!]
   like: String
   notlike: String
   between: [Float!]
@@ -545,7 +545,7 @@ input Phone_UserResolver_Users_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -561,7 +561,7 @@ input IsActive_UserResolver_Users_PropertyFilterInputType {
   lt: Boolean
   lte: Boolean
   in: [Boolean!]
-  notin: Boolean
+  notin: [Boolean!]
   like: String
   notlike: String
   between: [Boolean!]
@@ -577,7 +577,7 @@ input TaskStoryPoints_UserResolver_Users_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -593,7 +593,7 @@ input FullName_UserResolver_Users_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -609,7 +609,7 @@ input TaskTitle_UserResolver_Users_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -677,7 +677,7 @@ input Id_TaskResolver_Tasks_PropertyFilterInputType {
   lt: Int
   lte: Int
   in: [Int!]
-  notin: Int
+  notin: [Int!]
   like: String
   notlike: String
   between: [Int!]
@@ -693,7 +693,7 @@ input Title_TaskResolver_Tasks_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -709,7 +709,7 @@ input TypeId_TaskResolver_Tasks_PropertyFilterInputType {
   lt: Int
   lte: Int
   in: [Int!]
-  notin: Int
+  notin: [Int!]
   like: String
   notlike: String
   between: [Int!]
@@ -725,7 +725,7 @@ input Priority_TaskResolver_Tasks_PropertyFilterInputType {
   lt: Int
   lte: Int
   in: [Int!]
-  notin: Int
+  notin: [Int!]
   like: String
   notlike: String
   between: [Int!]
@@ -741,7 +741,7 @@ input StoryPoints_TaskResolver_Tasks_PropertyFilterInputType {
   lt: Int
   lte: Int
   in: [Int!]
-  notin: Int
+  notin: [Int!]
   like: String
   notlike: String
   between: [Int!]
@@ -757,7 +757,7 @@ input Status_TaskResolver_Tasks_PropertyFilterInputType {
   lt: Int
   lte: Int
   in: [Int!]
-  notin: Int
+  notin: [Int!]
   like: String
   notlike: String
   between: [Int!]
@@ -773,7 +773,7 @@ input AssigneeId_TaskResolver_Tasks_PropertyFilterInputType {
   lt: Int
   lte: Int
   in: [Int!]
-  notin: Int
+  notin: [Int!]
   like: String
   notlike: String
   between: [Int!]
@@ -789,7 +789,7 @@ input TaskId_TaskResolver_Tasks_PropertyFilterInputType {
   lt: Int
   lte: Int
   in: [Int!]
-  notin: Int
+  notin: [Int!]
   like: String
   notlike: String
   between: [Int!]
@@ -805,7 +805,7 @@ input CreatedAt_TaskResolver_Tasks_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
@@ -821,7 +821,7 @@ input UpdatedAt_TaskResolver_Tasks_PropertyFilterInputType {
   lt: String
   lte: String
   in: [String!]
-  notin: String
+  notin: [String!]
   like: String
   notlike: String
   between: [String!]
