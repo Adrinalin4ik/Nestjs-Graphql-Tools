@@ -63,7 +63,9 @@ const GraphqlLoader = (args) => {
                     else {
                         loader.ids = ids;
                     }
-                    return actualDescriptor.call(this, ...args);
+                    const result = await actualDescriptor.call(this, ...args);
+                    loader.req._loader = [];
+                    return result;
                 });
             }
             if (options.polymorphic) {
