@@ -164,7 +164,10 @@ export const GraphqlLoader = (
             loader.ids = ids as any[];
           }
           
-          return actualDescriptor.call(this, ...args);
+          const result = await actualDescriptor.call(this, ...args);
+          // Clean up context
+          loader.req._loader = [];
+          return result;
         });
       }
       if (options.polymorphic) {
