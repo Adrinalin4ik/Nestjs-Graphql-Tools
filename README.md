@@ -312,8 +312,6 @@ export class UserResolver {
 ##### Example 3. Custom filters
 
 ```typescript
-// Declare filters model
-@FilterInputType()
 export class UserFilterInputType {
   @FilterField(() => String, { sqlExp: 't.title'})
   task_title: string;
