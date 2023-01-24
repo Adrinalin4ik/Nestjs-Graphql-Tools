@@ -86,11 +86,13 @@ const GraphqlLoader = (args) => {
                 if (typeof options.foreignKey === 'function') {
                     return loader.req._loader[loaderKey].load(options.foreignKey(loader.parent));
                 }
-                else if (loader.parent[options.foreignKey]) {
-                    return loader.req._loader[loaderKey].load(loader.parent[options.foreignKey]);
+                else if (loader.parent.hasOwnProperty(options.foreignKey)) {
+                    if (loader.parent[options.foreignKey]) {
+                        return loader.req._loader[loaderKey].load(loader.parent[options.foreignKey]);
+                    }
                 }
                 else {
-                    throw new Error(`[${target.constructor.name}.${property}] Can't find field ${options.foreignKey} in the parent object`);
+                    throw new Error(`[${target.constructor.name}.${property}] Can't find field "${options.foreignKey}" in the parent object. You should request "${options.foreignKey}" in the parent of "${property}" in the graphql query.`);
                 }
             }
         };

@@ -86,7 +86,7 @@ export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType> {
 }
 
 export interface GraphqlLoaderOptions {
-  /** Parent ID. It works pretty straight forward. It takes parent[foreignKey] and accumulates in loader.ids */
+  /** Parent ID. It works pretty straightforward. It takes parent[foreignKey] and accumulates in loader.ids */
   foreignKey?: string | ((parent: any) => (any));
   polymorphic?: ({
     id:  string;
@@ -123,7 +123,7 @@ export const GraphqlLoader = (
   return (target, property, descriptor) => {
     const actualDescriptor = descriptor.value;
     descriptor.value = function(...args) {
-      // Processing other decorators in case if they weren't added explicitly
+      // Processing other decorators in case if they not added explicitly
       if (!Reflect.hasMetadata(GRAPHQL_FILTER_DECORATOR_METADATA_KEY, target, property)) {
         applyFilterParameter(args, target, property);
       }
@@ -184,10 +184,12 @@ export const GraphqlLoader = (
       } else {
         if (typeof options.foreignKey === 'function') {
           return loader.req._loader[loaderKey].load(options.foreignKey(loader.parent));
-        } else if (loader.parent[options.foreignKey]) {
-          return loader.req._loader[loaderKey].load(loader.parent[options.foreignKey]);
+        } else if (loader.parent.hasOwnProperty(options.foreignKey)) {
+          if (loader.parent[options.foreignKey]) {
+            return loader.req._loader[loaderKey].load(loader.parent[options.foreignKey]);
+          }
         } else {
-          throw new Error(`[${target.constructor.name}.${property}] Can't find field ${options.foreignKey} in the parent object`)
+          throw new Error(`[${target.constructor.name}.${property}] Can't find field "${options.foreignKey}" in the parent object. You should request "${options.foreignKey}" in the parent of "${property}" in the graphql query.`)
         }
       }
     };
