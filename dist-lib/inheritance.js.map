@@ -1,0 +1,1 @@
+{"version":3,"file":"inheritance.js","sourceRoot":"","sources":["../lib/inheritance.ts"],"names":[],"mappings":";;;AAAO,MAAM,cAAc,GAAG,GAAG,EAAE;IACjC,OAAO,CAAC,MAAM,EAAE,EAAE;QAChB,MAAM,CAAC,cAAc,CAAC,MAAM,EAAE,eAAe,EAAE;YAC7C,KAAK,EAAE,MAAM,CAAC,IAAI;SACnB,CAAC,CAAC;QACH,OAAO,MAAM,CAAC;IAChB,CAAC,CAAA;AACH,CAAC,CAAA;AAPY,QAAA,cAAc,kBAO1B"}
