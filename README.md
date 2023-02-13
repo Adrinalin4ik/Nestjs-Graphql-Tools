@@ -20,6 +20,7 @@ The library allows to build efficient graphql API helping overcome n+1 problem a
 - [Filtering](#filters)
 - [Pagination](#pagination)
 - [Sorting](#sorting)
+- [Exclusion](#exclusion)
 - [Field extraction](#field-extraction)
 - [Base models and inheritance](#base-models-and-inheritance)
 - [More examples](#more-examples)
@@ -351,6 +352,49 @@ export class UserResolver {
   }
 }
 ```
+
+## Exclusion
+Sometimes you don't want to provide filters/sorting by all the fields in the dto. There's a couple decorators that can help with it `@FilterField({exclude: true}) ` and `@SortingField({exclude: true})`
+
+##### Example
+```typescript
+
+@ObjectType()
+export class User {
+  @Field(() => String)
+  fname: string;
+
+  @Field(() => String)
+  @FilterField({exclude: true})
+  @SortingField({exclude: true})
+  mname: string;
+
+  @Field(() => String)
+  lname: string;
+}
+
+export class UserResolver {
+  @Query(() => [UserObjectType])
+  @GraphqlFilter()
+  @GraphqlSorting()
+  users(
+    @Filter(() => [UserObjectType], {sqlAlias: 'u'}) filter: Brackets,
+    @Sorting(() => [UserObjectType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
+  ) {
+    const qb = this.userRepository.createQueryBuilder('u')
+      .where(filter);
+      
+      if (sorting) {
+        qb.orderBy(sorting)
+      }
+
+    return qb.getMany()
+  }
+}
+
+```
+
+Now, if you try to build a query with the sorting an filtering by mname you'll get an error, because there's not such field in the graphql schema definition for sorting and filtering.
 
 ## Pagination
 The library provides parameter decorator `@Paginator()` for the pagination. This decorator returns object like that

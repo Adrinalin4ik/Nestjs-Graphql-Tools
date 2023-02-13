@@ -50,8 +50,9 @@ function generateSortingInputType<T extends BaseEntity>(classes: T[], name: stri
   for (const typeFn of classes) {
     const customSortingData: GraphqlSortingTypeDecoratorMetadata = Reflect.getMetadata(SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, typeFn.prototype)
     if (customSortingData) {
-      properties.push(...customSortingData.fields.values());
+      properties.push(...Array.from(customSortingData.fields.values()).filter(x => !customSortingData?.excludedFilterFields.has(x.name)));
     }
+
     const classMetadata = TypeMetadataStorage.getObjectTypeMetadataByTarget(typeFn);
     if (classMetadata) {
       PartialType(typeFn, InputType); // cast to input type
@@ -70,9 +71,14 @@ function generateSortingInputType<T extends BaseEntity>(classes: T[], name: stri
       if (!classMetadata?.properties) {
         throw new Error(`DTO ${typeFn.name} hasn't been initialized yet`)
       }
-    
-    
-      properties.push(...(inheritedType?.properties || []), ...classMetadata.properties)
+
+      let classMetaProps = classMetadata.properties;
+
+      if (customSortingData) {
+        classMetaProps = classMetadata.properties.filter(x => !customSortingData?.excludedFilterFields.has(x.name));
+      }
+     
+      properties.push(...(inheritedType?.properties || []), ...classMetaProps)
     }
   }
 

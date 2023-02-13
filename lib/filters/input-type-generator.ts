@@ -99,9 +99,10 @@ function generateFilterInputType<T extends BaseEntity>(classes: T[], name: strin
 
   for (const typeFn of classes) {
     const customFilterData: GraphqlFilterTypeDecoratorMetadata = Reflect.getMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, typeFn.prototype)
-    if (customFilterData) {
-      properties.push(...customFilterData.fields.values());
+    if (customFilterData && customFilterData.fields.size > 0) {
+      properties.push(...Array.from(customFilterData.fields.values()).filter(x => !customFilterData?.excludedFilterFields.has(x.name)));
     }
+
     const classMetadata = TypeMetadataStorage.getObjectTypeMetadataByTarget(typeFn);
     if (classMetadata) {
       PartialType(typeFn, InputType); // cast to input type
@@ -120,9 +121,14 @@ function generateFilterInputType<T extends BaseEntity>(classes: T[], name: strin
       if (!classMetadata?.properties) {
         throw new Error(`DTO ${typeFn.name} hasn't been initialized yet`)
       }
-    
-    
-      properties.push(...(inheritedType?.properties || []), ...classMetadata.properties)
+      
+      let classMetaProps = classMetadata.properties;
+
+      if (customFilterData) {
+        classMetaProps = classMetadata.properties.filter(x => !customFilterData?.excludedFilterFields.has(x.name));
+      }
+      
+      properties.push(...(inheritedType?.properties || []), ...classMetaProps)
     }
   }
 

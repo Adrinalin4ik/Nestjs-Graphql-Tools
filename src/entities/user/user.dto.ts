@@ -1,4 +1,5 @@
 import { createUnionType, Field, Int, ObjectType } from "@nestjs/graphql";
+import { FilterField, SortingField } from "../../../lib";
 import { StoryModel } from "../story/story.entity";
 import { TaskObjectType } from "../task/task.dto";
 import { Task } from "../task/task.entity";
@@ -19,6 +20,8 @@ export class UserObjectType extends BaseDTO {
   lname: string;
 
   @Field()
+  @FilterField({exclude: true})
+  @SortingField({exclude: true})
   mname: string;
 
   @Field()

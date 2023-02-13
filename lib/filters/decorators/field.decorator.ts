@@ -9,8 +9,25 @@ export interface FilterFieldOptions {
   sqlExp?: string;
 }
 
-export interface GraphqlFilterTypeDecoratorMetadata {
-  fields: Map<string, GraphqlFilterFieldMetadata>;
+export interface FilterFieldExcludeOptions {
+  exclude: boolean;
+}
+
+export class GraphqlFilterTypeDecoratorMetadata {
+  fields: Map<string, GraphqlFilterFieldMetadata> = new Map()
+  excludedFilterFields = new Set<string>();
+
+  constructor(private target) {
+    const meta: GraphqlFilterTypeDecoratorMetadata = Reflect.getMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, target);
+
+    if (meta) {
+      this.fields = meta.fields;
+    }
+  }
+  
+  save() {
+    Reflect.defineMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, this, this.target)
+  }
 }
 
 export interface GraphqlFilterFieldMetadata extends FilterFieldOptions {
@@ -18,36 +35,35 @@ export interface GraphqlFilterFieldMetadata extends FilterFieldOptions {
   typeFn: ReturnTypeFunc;
 }
 
-export const FilterField = (typeFn: ReturnTypeFunc, options: FilterFieldOptions = {}) => {
+export function FilterField(options: FilterFieldExcludeOptions);
+export function FilterField(typeFn: ReturnTypeFunc, options: FilterFieldOptions);
+
+
+export function FilterField(typeFn: ReturnTypeFunc | FilterFieldExcludeOptions, options: FilterFieldOptions = {}) {
   return (target, property) => {
-    const meta: GraphqlFilterTypeDecoratorMetadata = Reflect.getMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, target);
+    const metadataObject = new GraphqlFilterTypeDecoratorMetadata(target);
 
-    let metadataObject = meta;
-
-    if (!meta) {
-      metadataObject = {
-        fields: new Map()
+    if (typeof typeFn !== 'function') {
+      metadataObject.excludedFilterFields.add(property);
+    } else {
+      if (options && !options.sqlExp) {
+        options.sqlExp = property;
+      }
+  
+      if (metadataObject.fields.has(property)) {
+        const field = metadataObject.fields.get(property);
+        metadataObject.fields.set(property, {
+          ...field,
+          ...options
+        })
+      } else {
+        metadataObject.fields.set(property, {
+          name: property,
+          typeFn,
+          ...options
+        })
       }
     }
-
-    if (options && !options.sqlExp) {
-      options.sqlExp = property;
-    }
-
-    if (metadataObject.fields.has(property)) {
-      const field = metadataObject.fields.get(property);
-      metadataObject.fields.set(property, {
-        ...field,
-        ...options
-      })
-    } else {
-      metadataObject.fields.set(property, {
-        name: property,
-        typeFn,
-        ...options
-      })
-    }
-    
-    Reflect.defineMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, metadataObject, target)
+    metadataObject.save();
   }
 }

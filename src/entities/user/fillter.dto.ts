@@ -9,6 +9,7 @@ export class UserFilterInputType {
   full_name: string;
 
   @FilterField(() => String, { sqlExp: 't.title'})
+  // @FilterField({exclude: true})
   task_title: string;
 }
 
