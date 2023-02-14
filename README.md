@@ -594,4 +594,4 @@ On the first run, server will seed up the database with testing dataset.
 
 ## License
 
-NestJS Graphql tools is [MIT licensed](LICENSE).
+NestJS Graphql tools is [GNU GPLv3 licensed](LICENSE).

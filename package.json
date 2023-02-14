@@ -4,7 +4,7 @@
   "description": "Nestjs Graphql automation library for building performant API",
   "author": "Alexey Panfilkin",
   "private": false,
-  "license": "MIT",
+  "license": "GNU GPLv3",
   "main": "dist-lib/index.js",
   "homepage": "https://adrinalin4ik.github.io/Nestjs-Graphql-Tools",
   "repository": "https://github.com/Adrinalin4ik/Nestjs-Graphql-Tools",
