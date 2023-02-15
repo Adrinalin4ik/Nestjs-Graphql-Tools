@@ -1,11 +1,13 @@
-import { Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
 import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
+import { liveQueryStore } from '../../app.module';
 import { StoryModel } from '../story/story.entity';
 import { TaskObjectType } from '../task/task.dto';
 import { Task } from '../task/task.entity';
 import { TaskFilterInputType, UserFilterInputType } from './fillter.dto';
+import { UpdateUserInputType } from './input.dto';
 import { TaskSortingInputType, UserSortingInputType } from './sorting.dto';
 import { SearchTasksUnion, UserAggregationType, UserObjectType } from './user.dto';
 import { User } from './user.entity';
@@ -108,5 +110,24 @@ export class UserResolver {
     }
 
     return qb.getRawOne();
+  }
+
+  @Query(() => UserObjectType)
+  users1() {
+    this.userRepository.find();
+  }
+
+  @Mutation(() => UserObjectType)
+  async updateUser(
+    @Args({name: 'user', type: () => UpdateUserInputType}) user: UpdateUserInputType
+  ) {
+    await this.userRepository.update({
+      id: user.id
+    }, user)
+    const test = liveQueryStore;
+    
+    await liveQueryStore.invalidate(`Query.users`)
+
+    return this.userRepository.findOne({where: {id: user.id}})
   }
 }
