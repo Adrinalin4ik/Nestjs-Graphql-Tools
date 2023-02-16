@@ -14,6 +14,12 @@ export class GraphqlOptions implements GqlOptionsFactory {
       playground: true,
       path: '/graphql',
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      subscriptions: {
+        'graphql-ws': {
+          path: '/graphql',
+        },
+        'subscriptions-transport-ws': true,
+      },
     };
   }
 }

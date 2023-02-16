@@ -1,11 +1,14 @@
-import { Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, ResolveField, Resolver, Subscription } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
+import { $$asyncIterator } from 'iterall';
 import { Brackets, In, Repository } from 'typeorm';
 import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
 import { StoryModel } from '../story/story.entity';
 import { TaskObjectType } from '../task/task.dto';
 import { Task } from '../task/task.entity';
 import { TaskFilterInputType, UserFilterInputType } from './fillter.dto';
+import { UpdateUserInputType } from './input.dto';
+import { GraphqlSubscription, pubSub } from './pubsub';
 import { TaskSortingInputType, UserSortingInputType } from './sorting.dto';
 import { SearchTasksUnion, UserAggregationType, UserObjectType } from './user.dto';
 import { User } from './user.entity';
@@ -18,9 +21,11 @@ export class UserResolver {
     @InjectRepository(User) public readonly userRepository: Repository<User>
   ) {}
 
+  @Subscription(() => [UserObjectType])
   @Query(() => [UserObjectType])
   @GraphqlFilter()
   @GraphqlSorting()
+  @GraphqlSubscription()
   users(
     @Filter(() => [UserObjectType, UserFilterInputType], {sqlAlias: 'u'}) filter: Brackets,
     @Sorting(() => [UserObjectType, UserSortingInputType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
@@ -34,6 +39,57 @@ export class UserResolver {
       }
 
     return qb.getMany()
+  }
+  
+  @Subscription(() => [UserObjectType], {
+    name: 'usersSubscription',
+    // filter: (payload, variables) => {
+    //   console.log(payload, variables);
+    //   return true;
+    // }
+  })
+  @Query(() => [UserObjectType])
+  @GraphqlFilter()
+  @GraphqlSorting()
+  // @GraphqlSubscription()
+  usersSubscription(
+    @Filter(() => [UserObjectType, UserFilterInputType], {sqlAlias: 'u'}) filter: Brackets,
+    // @Sorting(() => [UserObjectType, UserSortingInputType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>,
+    // @Context() ctx
+  ) {
+    const iterator1 = pubSub.asyncIterator('usersSubscription');
+    // return iterator;
+    const iterator = {
+      queue: [
+        [{id: 1, email: '1', fname: '1'}],
+        // [{id: 1, email: '1', fname: '1'}],
+      ],
+      next: async function() {
+        const value = this.queue[0];
+        this.queue.shift();
+        const res =  {
+          value: {
+            usersSubscription: value
+          },
+          done: !value || value?.length === 0
+        }
+
+        return res;
+      },
+      [$$asyncIterator]: function() {
+        return this;
+      }
+    }
+
+    return iterator;
+    // return iterator1
+    // const gen = function*() {
+    //   yield [{id: 1, email: '1', fname: '1'}]
+    //   yield [{id: 1, email: '1', fname: '1'}]
+    //   yield [{id: 1, email: '1', fname: '1'}]
+    // }
+    // const t = gen();
+    // return new Promise((res) => res(t));
   }
 
   @ResolveField(() => [TaskObjectType], { nullable: true })
@@ -108,5 +164,16 @@ export class UserResolver {
     }
 
     return qb.getRawOne();
+  }
+  
+  @Mutation(() => UserObjectType)
+  async updateUser(
+    @Args({name: 'user', type: () => UpdateUserInputType}) userData: UpdateUserInputType
+  ) {
+    await this.userRepository.update({id: userData.id}, userData)
+
+    const user = await this.userRepository.findOne({where: {id: userData.id}})
+    pubSub.publish('users', { 'users': [user] });
+    return user;
   }
 }
