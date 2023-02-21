@@ -1,6 +1,7 @@
 // import { Filter } from '@nestjs-query/core';
 import { Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CacheControl } from 'nestjs-gql-cache-control';
 import { Brackets, In, Repository } from 'typeorm';
 import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, Paginator, PaginatorArgs, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SelectedUnionTypesResult, SortArgs, Sorting } from '../../../lib';
 import { DescriptionChecklistObjectType } from '../description/description-types/description-checklist/description-checklist.dto';
@@ -22,6 +23,7 @@ export class TaskResolver {
   ) {}
 
   @Query(() => [TaskObjectType])
+  @CacheControl({ maxAge: 10 })
   @GraphqlFilter()
   @GraphqlSorting()
   async tasks(
@@ -32,6 +34,7 @@ export class TaskResolver {
   ) {
     const qb = this.taskRepository.createQueryBuilder('t')
       .select(selectedFields.fieldsData.fieldsString)
+      .addSelect('t.assignee_id')
       .where(filter)
     
     if (paginator) {
@@ -45,6 +48,7 @@ export class TaskResolver {
   }
 
   @ResolveField(() => UserObjectType, {nullable: true})
+  @CacheControl({ inheritMaxAge: true })
   @GraphqlLoader({
     foreignKey: 'assignee_id'
   })
