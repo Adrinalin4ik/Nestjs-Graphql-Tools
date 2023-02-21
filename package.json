@@ -16,7 +16,13 @@
     "nestjs",
     "dataloader",
     "query",
-    "auto"
+    "auto",
+    "n+1",
+    "graphql-tools",
+    "@nestjs",
+    "hasura",
+    "typescript",
+    "nestjs"
   ],
   "scripts": {
     "prebuild": "rimraf dist",
