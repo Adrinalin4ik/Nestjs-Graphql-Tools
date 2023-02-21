@@ -39,8 +39,10 @@ var InputMapPrefixes;
 const filterFullTypes = new Map();
 const filterTypes = new Map();
 const propertyTypes = new Map();
-const generateFilterPropertyType = (field, parentName) => {
-    const key = `${(0, functions_1.standardize)(field.name)}_${parentName}_${InputMapPrefixes.PropertyFilterInputType}`;
+const generateFilterPropertyType = (field) => {
+    var _a;
+    const typeName = field.typeFn && ((_a = field.typeFn()) === null || _a === void 0 ? void 0 : _a.name);
+    const key = `${(0, functions_1.standardize)(typeName)}_${InputMapPrefixes.PropertyFilterInputType}`;
     const propType = propertyTypes.get(key);
     if (propType)
         return propType;
@@ -115,7 +117,7 @@ function generateFilterInputType(classes, name) {
             if (typeof field.typeFn === 'function') {
                 field.typeFn();
             }
-            const fieldType = generateFilterPropertyType(field, name);
+            const fieldType = generateFilterPropertyType(field);
             (0, graphql_1.Field)(() => fieldType, { nullable: true })(PartialObjectType.prototype, field.name);
         }
         else {

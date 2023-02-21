@@ -47,8 +47,9 @@ const filterFullTypes = new Map();
 const filterTypes = new Map();
 const propertyTypes = new Map()
 
-const generateFilterPropertyType = (field, parentName: string) => {
-  const key = `${standardize(field.name)}_${parentName}_${InputMapPrefixes.PropertyFilterInputType}`;
+const generateFilterPropertyType = (field) => {
+  const typeName = field.typeFn && field.typeFn()?.name;
+  const key = `${standardize(typeName)}_${InputMapPrefixes.PropertyFilterInputType}`;
 
   const propType = propertyTypes.get(key);
   if (propType) return propType;
@@ -138,7 +139,7 @@ function generateFilterInputType<T extends BaseEntity>(classes: T[], name: strin
       if (typeof field.typeFn === 'function') {
         field.typeFn();
       }
-      const fieldType = generateFilterPropertyType(field, name);
+      const fieldType = generateFilterPropertyType(field);
       Field(() => fieldType, {nullable: true})(PartialObjectType.prototype, field.name)
     } else {
       // Relations are not supported yet
