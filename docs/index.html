@@ -59,9 +59,22 @@
         }
         // homepage: "README.md"
       };
+
+      const OnReady = (hook, vm) => {
+        hook.ready(function () {
+          console.log('ready')
+          Array.from(document.getElementsByTagName('code')).forEach(x => Prism.highlightElement(x))
+        });
+      }
+
+      $docsify.plugins = [].concat($docsify.plugins || [], OnReady);
     </script>
     <script src="//cdn.jsdelivr.net/npm/docsify@4.12.2/lib/docsify.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/prismjs@1.28.0/prism.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-graphql.min.js"></script>
   </body>
 </html>
