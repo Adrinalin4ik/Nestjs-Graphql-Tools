@@ -567,8 +567,8 @@ export class BaseDTO {
 ```
 
 ## Options
-Options is an ENV variables that you can provide to configurate the lib
-- FILTER_OPERATION_PREFIX - Operation prefix. You can make hasura-like prefix for where operators like _eq, _neq, etc. Example FILTER_OPERATION_PREFIX=\_
+Options are ENV variables that you can provide to configurate the lib
+- `FILTER_OPERATION_PREFIX` - Operation prefix. You can make hasura-like prefix for where operators like _eq, _neq, etc. Example `FILTER_OPERATION_PREFIX=\_`
 
 
 ## More examples
@@ -590,6 +590,7 @@ npm i
 npm run start:dev
 ```
 On the first run, server will seed up the database with testing dataset.
+
 4. Reach out `http://localhost:3000/graphql`
 
 ## License
