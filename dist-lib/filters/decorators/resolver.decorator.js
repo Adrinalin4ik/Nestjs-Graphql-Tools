@@ -40,7 +40,7 @@ const Filter = (baseEntity, options) => {
         (0, graphql_1.Args)({
             name: (options === null || options === void 0 ? void 0 : options.name) || 'where',
             nullable: true,
-            defaultValue: {},
+            defaultValue: { _name_: constants_1.FILTER_DECORATOR_NAME_METADATA_KEY },
             type: () => filterFullType,
         })(target, propertyName, paramIndex);
     };

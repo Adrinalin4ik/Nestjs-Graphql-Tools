@@ -1,7 +1,7 @@
 import { Args } from "@nestjs/graphql";
 import { BaseEntity } from "../../common";
 import { standardize } from "../../utils/functions";
-import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, FILTER_DECORATOR_OPTIONS_METADATA_KEY, GRAPHQL_FILTER_DECORATOR_METADATA_KEY } from "../constants";
+import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, FILTER_DECORATOR_OPTIONS_METADATA_KEY, GRAPHQL_FILTER_DECORATOR_METADATA_KEY, FILTER_DECORATOR_NAME_METADATA_KEY } from "../constants";
 import { getFilterFullInputType } from "../input-type-generator";
 import { applyFilterParameter } from "../query.builder";
 import { GraphqlFilterFieldMetadata, GraphqlFilterTypeDecoratorMetadata } from "./field.decorator";
@@ -36,7 +36,7 @@ export const Filter = (baseEntity: () => BaseEntity | BaseEntity[], options?: IF
       typeFunctions = [extractedResults];
     }
     const filterFullType = getFilterFullInputType(typeFunctions, name);
-    
+
 
     // Combine fields from all models together
     const customFields = typeFunctions.reduce((acc, typeFn) => {
@@ -54,7 +54,7 @@ export const Filter = (baseEntity: () => BaseEntity | BaseEntity[], options?: IF
     Args({
       name: options?.name || 'where',
       nullable: true,
-      defaultValue: {},
+      defaultValue: {_name_: FILTER_DECORATOR_NAME_METADATA_KEY},
       type: () => filterFullType,
     })(target, propertyName, paramIndex);
   }
