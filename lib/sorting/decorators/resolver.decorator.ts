@@ -1,7 +1,7 @@
 import { Args } from "@nestjs/graphql";
 import { BaseEntity } from "../../common";
 import { standardize } from "../../utils/functions";
-import { GRAPHQL_SORTING_DECORATOR_METADATA_KEY, SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, SORTING_DECORATOR_OPTIONS_METADATA_KEY } from "../constants";
+import { GRAPHQL_SORTING_DECORATOR_METADATA_KEY, SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, SORTING_DECORATOR_INDEX_METADATA_KEY, SORTING_DECORATOR_OPTIONS_METADATA_KEY } from "../constants";
 import { getSortingFullInputType } from "../input-type-generator";
 import { applySortingParameter } from "../query.builder";
 import { GraphqlSortingFieldMetadata, GraphqlSortingTypeDecoratorMetadata } from "./field.decorator";
@@ -49,12 +49,12 @@ export const Sorting = (baseEntity: () => BaseEntity | BaseEntity[], options?: I
       return acc;
     }, new Map<string, GraphqlSortingFieldMetadata>());
 
+    Reflect.defineMetadata(SORTING_DECORATOR_INDEX_METADATA_KEY, paramIndex, target, propertyName);
     Reflect.defineMetadata(SORTING_DECORATOR_OPTIONS_METADATA_KEY, options, target, propertyName);
     Reflect.defineMetadata(SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, customFields, target, propertyName);
     Args({
       name: options?.name || 'order_by',
       nullable: true,
-      defaultValue: {},
       type: () => [sortingFullType],
     })(target, propertyName, paramIndex);
   }

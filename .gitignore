@@ -36,3 +36,4 @@ lerna-debug.log*
 
 lib.tsconfig.tsbuildinfo
 schema.gql
+testing

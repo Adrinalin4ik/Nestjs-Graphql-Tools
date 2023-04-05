@@ -28,11 +28,8 @@ export class UserResolver {
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
       .leftJoin('task', 't', 't.assignee_id = u.id')
-      .where(filter);
-      
-      if (sorting) {
-        qb.orderBy(sorting)
-      }
+      .where(filter)
+      .orderBy(sorting)
 
     return qb.getMany()
   }
