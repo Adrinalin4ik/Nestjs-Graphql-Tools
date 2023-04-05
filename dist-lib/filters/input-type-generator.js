@@ -134,10 +134,6 @@ const getFilterFullInputType = (classes, name) => {
     let EntityWhereInput = class EntityWhereInput extends FilterInputType {
     };
     __decorate([
-        (0, graphql_1.Field)({ defaultValue: constants_1.FILTER_DECORATOR_NAME_METADATA_KEY, description: 'Don\'t touch this field. Reserved for nestjs-graphql-toos purposes.' }),
-        __metadata("design:type", String)
-    ], EntityWhereInput.prototype, "_name_", void 0);
-    __decorate([
         (0, graphql_1.Field)(() => [FilterInputType], { nullable: true }),
         __metadata("design:type", Array)
     ], EntityWhereInput.prototype, "and", void 0);

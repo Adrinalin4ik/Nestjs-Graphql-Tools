@@ -6,8 +6,8 @@ const functions_1 = require("../utils/functions");
 const constants_1 = require("./constants");
 const input_type_generator_1 = require("./input-type-generator");
 const applyFilterParameter = (args, target, property) => {
-    const filterArgIndex = args.findIndex(x => (x === null || x === void 0 ? void 0 : x._name_) === constants_1.FILTER_DECORATOR_NAME_METADATA_KEY);
-    if (filterArgIndex != -1) {
+    const filterArgIndex = Reflect.getMetadata(constants_1.FILTER_DECORATOR_INDEX_METADATA_KEY, target, property);
+    if (filterArgIndex !== undefined) {
         const options = Reflect.getMetadata(constants_1.FILTER_DECORATOR_OPTIONS_METADATA_KEY, target, property);
         const customFields = Reflect.getMetadata(constants_1.FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, target, property);
         args[filterArgIndex] = convertParameters(args[filterArgIndex], customFields, options);
@@ -15,11 +15,13 @@ const applyFilterParameter = (args, target, property) => {
 };
 exports.applyFilterParameter = applyFilterParameter;
 const convertParameters = (parameters, customFields, options) => {
-    const obj = new typeorm_1.Brackets((qb) => {
+    return new typeorm_1.Brackets((qb) => {
+        if (parameters == null) {
+            return;
+        }
         const clonnedParams = Object.assign({}, parameters);
         delete clonnedParams.and;
         delete clonnedParams.or;
-        delete clonnedParams._name_;
         if (parameters === null || parameters === void 0 ? void 0 : parameters.and) {
             qb.andWhere(new typeorm_1.Brackets((andBracketsQb) => {
                 for (const op of parameters === null || parameters === void 0 ? void 0 : parameters.and) {
@@ -53,7 +55,6 @@ const convertParameters = (parameters, customFields, options) => {
             }));
         }
     });
-    return obj;
 };
 const recursivelyTransformComparators = (object, extendedParams, sqlAlias) => {
     if (!object || !Object.entries(object).length)

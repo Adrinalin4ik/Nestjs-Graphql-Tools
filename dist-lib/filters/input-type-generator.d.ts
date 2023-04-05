@@ -42,6 +42,5 @@ export type IFilterField<T> = {
 export interface IFilter<T> {
     and: IFilterField<T>[];
     or: IFilterField<T>[];
-    _name_: string;
 }
 export declare const getFilterFullInputType: (classes: BaseEntity[], name: string) => any;

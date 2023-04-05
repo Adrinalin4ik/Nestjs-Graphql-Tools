@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.applySortingParameter = void 0;
 const constants_1 = require("./constants");
 const applySortingParameter = (args, target, property) => {
-    const sortingArgIndex = args.findIndex(x => Array.isArray(x) && (x === null || x === void 0 ? void 0 : x.some(x => x._name_ === constants_1.SORTING_DECORATOR_NAME_METADATA_KEY)));
-    if (sortingArgIndex != -1) {
+    const sortingArgIndex = Reflect.getMetadata(constants_1.SORTING_DECORATOR_INDEX_METADATA_KEY, target, property);
+    if (sortingArgIndex !== undefined) {
         const options = Reflect.getMetadata(constants_1.SORTING_DECORATOR_OPTIONS_METADATA_KEY, target, property);
         const customFields = Reflect.getMetadata(constants_1.SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, target, property);
         args[sortingArgIndex] = convertParameters(args[sortingArgIndex], customFields, options);
@@ -12,8 +12,7 @@ const applySortingParameter = (args, target, property) => {
 };
 exports.applySortingParameter = applySortingParameter;
 const convertParameters = (parameters, customFields, options) => {
-    return parameters.reduce((accumulatedParams, x) => {
-        delete x._name_;
+    return parameters && parameters.reduce((accumulatedParams, x) => {
         const convertedParams = Object.entries(x).reduce((acc, [k, v]) => {
             if (customFields.has(k)) {
                 const field = customFields.get(k);

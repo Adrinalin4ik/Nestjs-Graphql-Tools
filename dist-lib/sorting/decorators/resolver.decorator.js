@@ -35,12 +35,12 @@ const Sorting = (baseEntity, options) => {
             }
             return acc;
         }, new Map());
+        Reflect.defineMetadata(constants_1.SORTING_DECORATOR_INDEX_METADATA_KEY, paramIndex, target, propertyName);
         Reflect.defineMetadata(constants_1.SORTING_DECORATOR_OPTIONS_METADATA_KEY, options, target, propertyName);
         Reflect.defineMetadata(constants_1.SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, customFields, target, propertyName);
         (0, graphql_1.Args)({
             name: (options === null || options === void 0 ? void 0 : options.name) || 'order_by',
             nullable: true,
-            defaultValue: {},
             type: () => [sortingFullType],
         })(target, propertyName, paramIndex);
     };
