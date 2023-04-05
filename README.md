@@ -14,6 +14,31 @@
 
 The library allows to build efficient graphql API helping overcome n+1 problem and building hasura-like search interface with the minimum dependencies.
 
+## Introduction
+With the library you will be able to build queries like that easily, using decorators and having full controll over everything.
+```graphql
+{
+  users(
+    where: {
+      id: { in: [1,2,3,4] }
+      task_title: { like: "%Task%" }
+    }
+    order_by: {email: ASC, created_at: DESC}
+    paginate: {page: 1, per_page: 10}
+  ) {
+    id
+    fname
+    lname
+    email
+    tasks(order_by: {id: ASC_NULLS_LAST}) {
+      id
+      title
+    }
+  }
+}
+
+```
+
 ## Overview
 - [Loader](#data-loader-n1-resolver)
 - [Polymorphic relations](#polymorphic-relations)
@@ -25,7 +50,6 @@ The library allows to build efficient graphql API helping overcome n+1 problem a
 - [Base models and inheritance](#base-models-and-inheritance)
 - [More examples](#more-examples)
 - [Contribution](#contribution)
-
 
 ## Installation
 
@@ -275,8 +299,9 @@ export class UserResolver {
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
       .leftJoin('task', 't', 't.assignee_id = u.id')
-      .where(filter)
-      if (taskTitle) {
+      .where(filter);
+
+      if (taskTitle) { // mixed filters
         qb.andWhere(`t.title ilike :title`, { title: `%${taskTitle}%` })
       }
 
@@ -342,11 +367,8 @@ export class UserResolver {
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
       .leftJoin('task', 't', 't.assignee_id = u.id')
-      .where(filter);
-      
-      if (sorting) {
-        qb.orderBy(sorting)
-      }
+      .where(filter)
+      .orderBy(sorting);
 
     return qb.getMany()
   }
@@ -382,11 +404,8 @@ export class UserResolver {
     @Sorting(() => [UserObjectType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
-      .where(filter);
-      
-      if (sorting) {
-        qb.orderBy(sorting)
-      }
+      .where(filter)
+      .orderBy(sorting);
 
     return qb.getMany()
   }
@@ -457,11 +476,8 @@ export class TaskResolver {
     /* SqlAlias is an ptional argument. Allows to provide alias in case if you have many tables joined. In current case it doesn't required */
     @Sorting(() => TaskObjectType, { sqlAlias: 't' }) sorting: SortArgs<TaskObjectType>
   ) {
-    const qb = this.taskRepository.createQueryBuilder('t');
-    
-    if (sorting) {
-      qb.orderBy(sorting);
-    }
+    const qb = this.taskRepository.createQueryBuilder('t')
+      .orderBy(sorting);
     return qb.getMany();
   }
 }
@@ -493,11 +509,8 @@ export class UserResolver {
     @Sorting(() => [UserObjectType, UserSortingInputType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
-      .leftJoin('task', 't', 't.assignee_id = u.id');
-      
-      if (sorting) {
-        qb.orderBy(sorting)
-      }
+      .leftJoin('task', 't', 't.assignee_id = u.id')
+      .orderBy(sorting);
 
     return qb.getMany()
   }
