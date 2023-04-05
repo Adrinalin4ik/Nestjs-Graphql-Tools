@@ -1,26 +1,30 @@
 import { Brackets } from "typeorm";
 import { convertArrayOfStringIntoStringNumber } from "../utils/functions";
-import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, FILTER_DECORATOR_NAME_METADATA_KEY, FILTER_DECORATOR_OPTIONS_METADATA_KEY, FILTER_OPERATION_PREFIX } from "./constants";
+import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, FILTER_DECORATOR_INDEX_METADATA_KEY, FILTER_DECORATOR_OPTIONS_METADATA_KEY, FILTER_OPERATION_PREFIX } from "./constants";
 import { GraphqlFilterFieldMetadata } from "./decorators/field.decorator";
 import { IFilterDecoratorParams } from "./decorators/resolver.decorator";
 import { IFilter, OperationQuery } from "./input-type-generator";
 
 export const applyFilterParameter = (args: any[], target, property: string) => {
-  const filterArgIndex = args.findIndex(x => x?._name_ === FILTER_DECORATOR_NAME_METADATA_KEY);
-  if (filterArgIndex != -1) {
+  const filterArgIndex = Reflect.getMetadata(FILTER_DECORATOR_INDEX_METADATA_KEY, target, property);
+  if (filterArgIndex !== undefined) {
     const options = Reflect.getMetadata(FILTER_DECORATOR_OPTIONS_METADATA_KEY, target, property) as IFilterDecoratorParams;
     const customFields = Reflect.getMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, target, property) as Map<string, GraphqlFilterFieldMetadata>;
     args[filterArgIndex] = convertParameters(args[filterArgIndex], customFields, options);
   }
 }
 
-const convertParameters = <T>(parameters: IFilter<T>, customFields?: Map<string, GraphqlFilterFieldMetadata>, options?: IFilterDecoratorParams) => {
-  const obj = new Brackets((qb) => {
+const convertParameters = <T>(parameters?: IFilter<T>, customFields?: Map<string, GraphqlFilterFieldMetadata>, options?: IFilterDecoratorParams) => {
+  return new Brackets((qb) => {
+    if (parameters == null) {
+      return;
+    }
+
     const clonnedParams = {...parameters};
     
     delete clonnedParams.and;
     delete clonnedParams.or;
-    delete clonnedParams._name_;
+
     if (parameters?.and) {
       qb.andWhere(
         new Brackets((andBracketsQb) => {
@@ -60,8 +64,6 @@ const convertParameters = <T>(parameters: IFilter<T>, customFields?: Map<string,
       )
     }
   });
-  
-  return obj;
 }
 
 const recursivelyTransformComparators = (object: Record<string, any>, extendedParams?: Map<string, GraphqlFilterFieldMetadata>, sqlAlias?: string) => {

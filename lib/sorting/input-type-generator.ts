@@ -1,6 +1,6 @@
 import { Field, InputType, PartialType, registerEnumType, ReturnTypeFunc, TypeMetadataStorage } from "@nestjs/graphql";
 import { BaseEntity } from "../common";
-import { SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, SORTING_DECORATOR_NAME_METADATA_KEY } from "./constants";
+import { SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY } from "./constants";
 import { GraphqlSortingTypeDecoratorMetadata } from "./decorators/field.decorator";
 
 export enum SortType {
@@ -109,10 +109,7 @@ export const getSortingFullInputType = (classes: BaseEntity[], name: string) => 
   }
   const SortingInputType = generateSortingInputType(classes, name);
   @InputType(key)
-  class EntitySortingInput extends SortingInputType {
-    @Field({defaultValue: SORTING_DECORATOR_NAME_METADATA_KEY})
-    _name_: string;
-  }
+  class EntitySortingInput extends SortingInputType {}
   sortingFullTypes.set(key, EntitySortingInput);
   return EntitySortingInput;
 }

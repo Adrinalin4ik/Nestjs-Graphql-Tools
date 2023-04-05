@@ -1,7 +1,0 @@
-title: NestJS Graphql Tools
-description: NestJS Graphql Tools is a flexible solution that provides a bunch of decorators for solving problems like n+1 request, filtering, sorting, pagination, polymorphic relation, graphql field extraction. It is fully based on decorators. To use it you can just add a decorator to your resolver.
-keywords: graphql, polymorphic, resolver, typeorm, nestjs, dataloader, query, auto, n+1, graphql-tools, @nestjs, hasura, typescript, nestjs
-remote_theme: pages-themes/midnight@v0.2.0
-plugins:
-- jekyll-remote-theme # add this line to the plugins list if you already have one
-google_analytics: G-8FFW3Z10T4

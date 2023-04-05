@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
-import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
+import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, Paginator, PaginatorArgs, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
 import { StoryModel } from '../story/story.entity';
 import { TaskObjectType } from '../task/task.dto';
 import { Task } from '../task/task.entity';
@@ -24,15 +24,17 @@ export class UserResolver {
   @GraphqlSorting()
   users(
     @Filter(() => [UserObjectType, UserFilterInputType], {sqlAlias: 'u'}) filter: Brackets,
-    @Sorting(() => [UserObjectType, UserSortingInputType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
+    @Sorting(() => [UserObjectType, UserSortingInputType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>,
+    @Paginator() paginator: PaginatorArgs
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
       .leftJoin('task', 't', 't.assignee_id = u.id')
-      .where(filter);
-      
-      if (sorting) {
-        qb.orderBy(sorting)
-      }
+      .where(filter)
+      .orderBy(sorting)
+
+    if (paginator) {
+      qb.limit(paginator.per_page).offset(paginator.page * paginator.per_page)
+    }
 
     return qb.getMany()
   }

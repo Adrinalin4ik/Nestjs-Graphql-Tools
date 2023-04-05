@@ -1,7 +1,7 @@
 import { Field, InputType, PartialType, ReturnTypeFunc, TypeMetadataStorage } from "@nestjs/graphql";
 import { BaseEntity } from "../common";
 import { standardize } from "../utils/functions";
-import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, FILTER_DECORATOR_NAME_METADATA_KEY, FILTER_OPERATION_PREFIX } from "./constants";
+import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, FILTER_OPERATION_PREFIX } from "./constants";
 import { GraphqlFilterTypeDecoratorMetadata } from "./decorators/field.decorator";
 
 export enum OperationQuery {
@@ -174,7 +174,6 @@ export type IFilterField<T> = {
 export interface IFilter<T> {
   and: IFilterField<T>[];
   or: IFilterField<T>[];
-  _name_: string;
 }
 
 export const getFilterFullInputType = (classes: BaseEntity[], name: string) => {
@@ -185,8 +184,6 @@ export const getFilterFullInputType = (classes: BaseEntity[], name: string) => {
   const FilterInputType = generateFilterInputType(classes, name);
   @InputType(key)
   class EntityWhereInput extends FilterInputType {
-    @Field({defaultValue: FILTER_DECORATOR_NAME_METADATA_KEY, description: 'Don\'t touch this field. Reserved for nestjs-graphql-toos purposes.'})
-    _name_: string;
     @Field(() => [FilterInputType], {nullable: true})
     and: BaseEntity[];
     @Field(() => [FilterInputType], {nullable: true})
