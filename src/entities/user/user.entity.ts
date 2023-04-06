@@ -5,6 +5,7 @@ import {
 } from 'typeorm';
 import { Task } from '../task/task.entity';
 import { Base } from '../utils/base.entity';
+import { EGenderType, ERole } from './user.dto';
 
 @Entity('user')
 export class User extends Base {
@@ -30,6 +31,12 @@ export class User extends Base {
 
   @Column({ nullable: true })
   phone: string;
+
+  @Column({ default: EGenderType.Male, enum: EGenderType, type: "enum",})
+  gender: EGenderType;
+
+  @Column({ default: ERole.User, enum: ERole, type: "enum",})
+  role: ERole;
 
   @Column({ default: true })
   is_active: boolean;

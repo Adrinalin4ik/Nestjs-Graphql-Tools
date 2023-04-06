@@ -43,12 +43,25 @@ export interface FilterFieldDefinition {
 //   sqlExp: string;
 // }
 
+export enum EObjectResolveType {
+  Full,
+  Enum
+}
+
 const filterFullTypes = new Map();
 const filterTypes = new Map();
 const propertyTypes = new Map()
 
 const generateFilterPropertyType = (field) => {
-  const typeName = field.typeFn && field.typeFn()?.name;
+  let typeName = field.typeFn && field.typeFn()?.name;
+  let objectResolveType = EObjectResolveType.Full;
+
+  if (field.typeFn && !typeName) {
+    const enumMeta = TypeMetadataStorage.getEnumsMetadata().find(x => x.ref === field.typeFn());
+    typeName = enumMeta.name;
+    objectResolveType = EObjectResolveType.Enum
+  }
+
   const key = `${standardize(typeName)}_${InputMapPrefixes.PropertyFilterInputType}`;
 
   const propType = propertyTypes.get(key);
@@ -57,7 +70,21 @@ const generateFilterPropertyType = (field) => {
   class PropertyFilter {}
   InputType(key, {isAbstract: true})(PropertyFilter);
 
-  Object.keys(OperationQuery).forEach(operationName => {
+  const availableOperations = Object.keys(OperationQuery).filter((operation: OperationQuery) => {
+    if (objectResolveType === EObjectResolveType.Enum) {
+      return [
+        OperationQuery.eq, 
+        OperationQuery.neq, 
+        OperationQuery.in, 
+        OperationQuery.notin, 
+        OperationQuery.null
+      ].includes(operation)
+    } else {
+      return true
+    }
+  })
+
+  availableOperations.forEach(operationName => {
     field.typeFn();
     Field(() => {
       if (arrayLikeOperations.has(OperationQuery[operationName])) {

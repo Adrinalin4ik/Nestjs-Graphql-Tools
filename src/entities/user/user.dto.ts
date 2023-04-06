@@ -1,9 +1,27 @@
-import { createUnionType, Field, Int, ObjectType } from "@nestjs/graphql";
+import { createUnionType, Field, Int, ObjectType, registerEnumType } from "@nestjs/graphql";
 import { FilterField, SortingField } from "../../../lib";
 import { StoryModel } from "../story/story.entity";
 import { TaskObjectType } from "../task/task.dto";
 import { Task } from "../task/task.entity";
 import { BaseDTO } from "../utils/base.dto";
+
+export enum EGenderType {
+  Male = 1,
+  Female = 2,
+}
+
+registerEnumType(EGenderType, {
+  name: 'EGenderType',
+});
+
+export enum ERole {
+  Admin = 'Admin',
+  User = 'User'
+}
+
+registerEnumType(ERole, {
+  name: 'ERole',
+});
 
 @ObjectType()
 export class UserObjectType extends BaseDTO {
@@ -32,6 +50,12 @@ export class UserObjectType extends BaseDTO {
 
   @Field()
   is_active: boolean;
+
+  @Field(() => EGenderType)
+  gender: EGenderType;
+
+  @Field(() => ERole)
+  role: ERole;
 }
 
 @ObjectType()
