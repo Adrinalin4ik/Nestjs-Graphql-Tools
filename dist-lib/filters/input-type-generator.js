@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFilterFullInputType = exports.InputMapPrefixes = exports.OperationQuery = void 0;
+exports.getFilterFullInputType = exports.EObjectResolveType = exports.InputMapPrefixes = exports.OperationQuery = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const functions_1 = require("../utils/functions");
 const constants_1 = require("./constants");
@@ -36,12 +36,23 @@ var InputMapPrefixes;
     InputMapPrefixes["PropertyFilterInputType"] = "PropertyFilterInputType";
     InputMapPrefixes["FilterInputType"] = "FilterInputType";
 })(InputMapPrefixes = exports.InputMapPrefixes || (exports.InputMapPrefixes = {}));
+var EObjectResolveType;
+(function (EObjectResolveType) {
+    EObjectResolveType[EObjectResolveType["Full"] = 0] = "Full";
+    EObjectResolveType[EObjectResolveType["Enum"] = 1] = "Enum";
+})(EObjectResolveType = exports.EObjectResolveType || (exports.EObjectResolveType = {}));
 const filterFullTypes = new Map();
 const filterTypes = new Map();
 const propertyTypes = new Map();
 const generateFilterPropertyType = (field) => {
     var _a;
-    const typeName = field.typeFn && ((_a = field.typeFn()) === null || _a === void 0 ? void 0 : _a.name);
+    let typeName = field.typeFn && ((_a = field.typeFn()) === null || _a === void 0 ? void 0 : _a.name);
+    let objectResolveType = EObjectResolveType.Full;
+    if (field.typeFn && !typeName) {
+        const enumMeta = graphql_1.TypeMetadataStorage.getEnumsMetadata().find(x => x.ref === field.typeFn());
+        typeName = enumMeta.name;
+        objectResolveType = EObjectResolveType.Enum;
+    }
     const key = `${(0, functions_1.standardize)(typeName)}_${InputMapPrefixes.PropertyFilterInputType}`;
     const propType = propertyTypes.get(key);
     if (propType)
@@ -49,7 +60,21 @@ const generateFilterPropertyType = (field) => {
     class PropertyFilter {
     }
     (0, graphql_1.InputType)(key, { isAbstract: true })(PropertyFilter);
-    Object.keys(OperationQuery).forEach(operationName => {
+    const availableOperations = Object.keys(OperationQuery).filter((operation) => {
+        if (objectResolveType === EObjectResolveType.Enum) {
+            return [
+                OperationQuery.eq,
+                OperationQuery.neq,
+                OperationQuery.in,
+                OperationQuery.notin,
+                OperationQuery.null
+            ].includes(operation);
+        }
+        else {
+            return true;
+        }
+    });
+    availableOperations.forEach(operationName => {
         field.typeFn();
         (0, graphql_1.Field)(() => {
             if (arrayLikeOperations.has(OperationQuery[operationName])) {

@@ -23,6 +23,10 @@ export interface FilterFieldDefinition {
     name: string;
     typeFn: ReturnTypeFunc;
 }
+export declare enum EObjectResolveType {
+    Full = 0,
+    Enum = 1
+}
 export type IFilterField<T> = {
     [K in keyof T]: {
         eq: T[K];
