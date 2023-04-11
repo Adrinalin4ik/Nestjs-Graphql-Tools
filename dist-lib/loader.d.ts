@@ -5,21 +5,15 @@ import { IncomingMessage } from 'http';
 import { SelectedUnionTypesResult } from './union-type-extractor';
 export declare const LOADER_DECORATOR_NAME_METADATA_KEY = "LoaderPropertyDecorator";
 export interface LoaderHelper<DtoType> {
-    mapOneToManyRelation: (entities: object[], ids: any[], foreignKey: string) => {
-        [key: string]: DtoType;
-    };
+    mapOneToManyRelation: (entities: object[], ids: any[], foreignKey: string) => [DtoType[]];
     mapOneToManyPolymorphicRelation: (entities: {
         descriminator: string;
         entities: object[];
     }[], typeIds: {
         descriminator: string | any;
         id: any;
-    }, foreignKey?: string) => {
-        [key: string]: DtoType;
-    };
-    mapManyToOneRelation: (entities: object[], ids: any[], foreignKey?: string) => {
-        [key: string]: DtoType;
-    };
+    }, foreignKey?: string) => [DtoType[]];
+    mapManyToOneRelation: (entities: object[], ids: any[], foreignKey?: string) => [DtoType[]];
 }
 export interface ILoaderInstance<DtoType, IdType> {
     _loader: {
