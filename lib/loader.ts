@@ -45,17 +45,17 @@ export interface LoaderHelper<DtoType> {
     entities: object[],
     ids: any[],
     foreignKey: string
-  ) => { [key: string]: DtoType };
+  ) => [DtoType[]];
   mapOneToManyPolymorphicRelation: (
     entities: {descriminator: string, entities: object[]}[],
     typeIds: {descriminator: string | any, id: any},
     foreignKey?: string
-  ) => { [key: string]: DtoType };
+  ) => [DtoType[]];
   mapManyToOneRelation: (
     entities: object[],
     ids: any[],
     foreignKey?: string
-  ) => { [key: string]: DtoType };
+  ) => [DtoType[]];
 }
 
 export interface ILoaderInstance<DtoType, IdType> {
