@@ -17,4 +17,4 @@ export interface GraphqlFilterFieldMetadata extends FilterFieldOptions {
     typeFn: ReturnTypeFunc;
 }
 export declare function FilterField(options: FilterFieldExcludeOptions): any;
-export declare function FilterField(typeFn: ReturnTypeFunc, options: FilterFieldOptions): any;
+export declare function FilterField(typeFn: ReturnTypeFunc, options?: FilterFieldOptions): any;
