@@ -97,9 +97,17 @@ const buildSqlArgument = (operatorKey: string, field: string, value: any) => {
   let result = [];
   const argName = `arg_${convertArrayOfStringIntoStringNumber([field])}`
   if (operatorKey === OperationQuery.eq) {
-    result = [`${field} = :${argName}`, { [argName]: value }];
+    if (value === null || value === 'null') {
+      result = [`${field} is null`];
+    } else {
+      result = [`${field} = :${argName}`, { [argName]: value }];
+    }
   } else if (operatorKey === OperationQuery.neq) {
-    result = [`${field} != :${argName}`, { [argName]: value }];
+    if (value === null || value === 'null') {   
+      result = [`${field} != :${argName}`, { [argName]: value }];
+    } else {
+      result = [`${field} is not null`];
+    }
   } else if (operatorKey === OperationQuery.lt) {
     result = [`${field} < :${argName}`, { [argName]: value }];
   } else if (operatorKey === OperationQuery.lte) {
@@ -123,7 +131,7 @@ const buildSqlArgument = (operatorKey: string, field: string, value: any) => {
   } else if (operatorKey === "any") {
     result = [`${field} any (:${argName})`, { [argName]: value }];
   } else if (operatorKey === OperationQuery.null) {
-    if (value === 'true') {
+    if (value === 'true' || value === true) {
       result = [`${field} is null`];
     } else {
       result = [`${field} is not null`];
