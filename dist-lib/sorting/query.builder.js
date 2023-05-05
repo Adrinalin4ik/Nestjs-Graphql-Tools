@@ -12,6 +12,8 @@ const applySortingParameter = (args, target, property) => {
 };
 exports.applySortingParameter = applySortingParameter;
 const convertParameters = (parameters, customFields, options) => {
+    if (!Array.isArray(parameters))
+        return parameters;
     return parameters && parameters.reduce((accumulatedParams, x) => {
         const convertedParams = Object.entries(x).reduce((acc, [k, v]) => {
             if (customFields.has(k)) {
@@ -29,6 +31,6 @@ const convertParameters = (parameters, customFields, options) => {
             return acc;
         }, {});
         return Object.assign(Object.assign({}, accumulatedParams), convertedParams);
-    }, {});
+    }, {}) || {};
 };
 //# sourceMappingURL=query.builder.js.map

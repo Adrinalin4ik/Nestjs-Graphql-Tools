@@ -15,6 +15,8 @@ const applyFilterParameter = (args, target, property) => {
 };
 exports.applyFilterParameter = applyFilterParameter;
 const convertParameters = (parameters, customFields, options) => {
+    if (parameters && 'whereFactory' in parameters)
+        return parameters;
     return new typeorm_1.Brackets((qb) => {
         if (parameters == null) {
             return;
