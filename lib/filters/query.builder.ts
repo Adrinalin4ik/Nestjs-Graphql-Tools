@@ -15,6 +15,9 @@ export const applyFilterParameter = (args: any[], target, property: string) => {
 }
 
 const convertParameters = <T>(parameters?: IFilter<T>, customFields?: Map<string, GraphqlFilterFieldMetadata>, options?: IFilterDecoratorParams) => {
+  // For tests purposes. If you provide Brackets instead of object to the decorator, it will use your brackets without processing it.
+  if (parameters && 'whereFactory' in parameters) return parameters;
+
   return new Brackets((qb) => {
     if (parameters == null) {
       return;

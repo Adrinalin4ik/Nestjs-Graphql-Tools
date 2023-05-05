@@ -19,7 +19,10 @@ export const applySortingParameter = (args: any[], target, property: string) => 
   }
 }
 
-const convertParameters = <T>(parameters?: (SortArgs<T> & ISortingMetadata)[], customFields?: Map<string, GraphqlSortingFieldMetadata>, options?: ISortingDecoratorParams) => {
+const convertParameters = (parameters?: (ISortingMetadata)[], customFields?: Map<string, GraphqlSortingFieldMetadata>, options?: ISortingDecoratorParams) => {
+  // For tests purposes. The library always provides an array. If object is provided that means that something overrides decorator value, like mocks.
+  if (!Array.isArray(parameters)) return parameters;
+  
   return parameters && parameters.reduce((accumulatedParams, x) => {
     
     const convertedParams = Object.entries(x).reduce((acc, [k, v]) => {
@@ -41,5 +44,5 @@ const convertParameters = <T>(parameters?: (SortArgs<T> & ISortingMetadata)[], c
       ...accumulatedParams,
       ...convertedParams
     };
-  }, {})
+  }, {}) || {};
 }
