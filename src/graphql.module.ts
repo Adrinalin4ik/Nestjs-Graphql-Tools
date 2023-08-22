@@ -10,7 +10,6 @@ import { join } from 'path';
 export class GraphqlOptions implements GqlOptionsFactory {
   public createGqlOptions(): ApolloDriverConfig {
     return {
-      debug: true,
       playground: true,
       path: '/graphql',
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
