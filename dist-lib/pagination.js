@@ -9,28 +9,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Paginator = exports.PaginatorArgs = void 0;
+exports.Paginator = void 0;
 const graphql_1 = require("@nestjs/graphql");
-let PaginatorArgs = class PaginatorArgs {
+let PaginatorArgsDto = class PaginatorArgsDto {
 };
 __decorate([
     (0, graphql_1.Field)(() => graphql_1.Int, { defaultValue: 10 }),
     __metadata("design:type", Number)
-], PaginatorArgs.prototype, "per_page", void 0);
+], PaginatorArgsDto.prototype, "per_page", void 0);
 __decorate([
     (0, graphql_1.Field)(() => graphql_1.Int, { defaultValue: 0 }),
     __metadata("design:type", Number)
-], PaginatorArgs.prototype, "page", void 0);
-PaginatorArgs = __decorate([
+], PaginatorArgsDto.prototype, "page", void 0);
+PaginatorArgsDto = __decorate([
     (0, graphql_1.InputType)()
-], PaginatorArgs);
-exports.PaginatorArgs = PaginatorArgs;
+], PaginatorArgsDto);
 const Paginator = (options) => {
     return (target, propertyName, paramIndex) => {
         (0, graphql_1.Args)({
             name: (options === null || options === void 0 ? void 0 : options.name) || 'paginate',
             nullable: (options === null || options === void 0 ? void 0 : options.nullable) !== undefined ? options.nullable : true,
-            type: () => PaginatorArgs,
+            type: () => PaginatorArgsDto,
         })(target, propertyName, paramIndex);
     };
 };

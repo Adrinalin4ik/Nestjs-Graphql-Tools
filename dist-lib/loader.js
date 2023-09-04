@@ -3,8 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.mapOneToManyPolymorphicRelation = exports.mapOneToManyRelation = exports.GraphqlLoader = exports.Loader = exports.LOADER_DECORATOR_NAME_METADATA_KEY = void 0;
 const common_1 = require("@nestjs/common");
 const lodash_1 = require("lodash");
-const filters_1 = require("./filters");
-const sorting_1 = require("./sorting");
 const DataLoader = require('dataloader');
 exports.LOADER_DECORATOR_NAME_METADATA_KEY = 'LoaderPropertyDecorator';
 exports.Loader = (0, common_1.createParamDecorator)((_data, ctx) => {
@@ -29,12 +27,6 @@ const GraphqlLoader = (args) => {
     return (target, property, descriptor) => {
         const actualDescriptor = descriptor.value;
         descriptor.value = function (...args) {
-            if (!Reflect.hasMetadata(filters_1.GRAPHQL_FILTER_DECORATOR_METADATA_KEY, target, property)) {
-                (0, filters_1.applyFilterParameter)(args, target, property);
-            }
-            if (!Reflect.hasMetadata(sorting_1.GRAPHQL_SORTING_DECORATOR_METADATA_KEY, target, property)) {
-                (0, sorting_1.applySortingParameter)(args, target, property);
-            }
             const loader = args.find(x => (x === null || x === void 0 ? void 0 : x._name_) === exports.LOADER_DECORATOR_NAME_METADATA_KEY);
             const loaderKey = `${concatPath(loader.info.path)}.${target.constructor.name}.${property}`;
             if (!loader || !loader.parent) {

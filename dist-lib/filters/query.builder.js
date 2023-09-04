@@ -1,21 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.applyFilterParameter = void 0;
+exports.convertFilterParameters = void 0;
 const typeorm_1 = require("typeorm");
 const functions_1 = require("../utils/functions");
 const constants_1 = require("./constants");
 const input_type_generator_1 = require("./input-type-generator");
-const applyFilterParameter = (args, target, property) => {
-    const filterArgIndex = Reflect.getMetadata(constants_1.FILTER_DECORATOR_INDEX_METADATA_KEY, target, property);
-    if (filterArgIndex !== undefined) {
-        const options = Reflect.getMetadata(constants_1.FILTER_DECORATOR_OPTIONS_METADATA_KEY, target, property);
-        const customFields = Reflect.getMetadata(constants_1.FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, target, property);
-        args[filterArgIndex] = convertParameters(args[filterArgIndex], customFields, options);
-    }
-};
-exports.applyFilterParameter = applyFilterParameter;
-const convertParameters = (parameters, customFields, options) => {
-    if (parameters && 'whereFactory' in parameters)
+const convertFilterParameters = (parameters, customFields, options) => {
+    if (parameters === null || parameters === void 0 ? void 0 : parameters.whereFactory)
         return parameters;
     return new typeorm_1.Brackets((qb) => {
         if (parameters == null) {
@@ -58,6 +49,7 @@ const convertParameters = (parameters, customFields, options) => {
         }
     });
 };
+exports.convertFilterParameters = convertFilterParameters;
 const recursivelyTransformComparators = (object, extendedParams, sqlAlias) => {
     if (!object || !Object.entries(object).length)
         return null;
