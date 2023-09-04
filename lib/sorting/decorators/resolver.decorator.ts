@@ -1,9 +1,10 @@
+import { ArgumentMetadata, Injectable, PipeTransform } from "@nestjs/common";
 import { Args } from "@nestjs/graphql";
 import { BaseEntity } from "../../common";
 import { standardize } from "../../utils/functions";
-import { GRAPHQL_SORTING_DECORATOR_METADATA_KEY, SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, SORTING_DECORATOR_INDEX_METADATA_KEY, SORTING_DECORATOR_OPTIONS_METADATA_KEY } from "../constants";
+import { SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, SORTING_DECORATOR_INDEX_METADATA_KEY, SORTING_DECORATOR_OPTIONS_METADATA_KEY } from "../constants";
 import { getSortingFullInputType } from "../input-type-generator";
-import { applySortingParameter } from "../query.builder";
+import { convertSortingParameters } from "../query.builder";
 import { GraphqlSortingFieldMetadata, GraphqlSortingTypeDecoratorMetadata } from "./field.decorator";
 
 export interface ISortingDecoratorParams {
@@ -13,14 +14,15 @@ export interface ISortingDecoratorParams {
 
 
 // @GraphqlSorting decorator
+// @deprecated
 export const GraphqlSorting = () => {
   return (target, property, descriptor) => {
-    const actualDescriptor = descriptor.value;
-    descriptor.value = function(...args) {
-      applySortingParameter(args, target, property);
-      return actualDescriptor.call(this, ...args);
-    };
-    Reflect.defineMetadata(GRAPHQL_SORTING_DECORATOR_METADATA_KEY, '', target, property); // for graphql loader
+    // const actualDescriptor = descriptor.value;
+    // descriptor.value = function(...args) {
+    //   applySortingParameter(args, target, property);
+    //   return actualDescriptor.call(this, ...args);
+    // };
+    // Reflect.defineMetadata(GRAPHQL_SORTING_DECORATOR_METADATA_KEY, '', target, property); // for graphql loader
   };
 };
 
@@ -49,13 +51,31 @@ export const Sorting = (baseEntity: () => BaseEntity | BaseEntity[], options?: I
       return acc;
     }, new Map<string, GraphqlSortingFieldMetadata>());
 
-    Reflect.defineMetadata(SORTING_DECORATOR_INDEX_METADATA_KEY, paramIndex, target, propertyName);
-    Reflect.defineMetadata(SORTING_DECORATOR_OPTIONS_METADATA_KEY, options, target, propertyName);
     Reflect.defineMetadata(SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, customFields, target, propertyName);
-    Args({
-      name: options?.name || 'order_by',
-      nullable: true,
-      type: () => [sortingFullType],
-    })(target, propertyName, paramIndex);
+    
+    Args(
+      {
+        name: options?.name || 'order_by',
+        nullable: true,
+        type: () => [sortingFullType],
+      }, 
+      new SortingPipe({
+        options,
+        customFields
+      })
+    )(target, propertyName, paramIndex);
+  }
+}
+
+export interface ISortingPipeArgs {
+  options: ISortingDecoratorParams,
+  customFields: Map<string, GraphqlSortingFieldMetadata>
+}
+
+@Injectable()
+export class SortingPipe implements PipeTransform {
+  constructor(public readonly args: ISortingPipeArgs) {}
+  transform(value: any, _metadata: ArgumentMetadata) {
+    return convertSortingParameters(value, this.args.customFields, this.args.options);
   }
 }

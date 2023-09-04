@@ -1,8 +1,8 @@
 // import { Filter } from '@nestjs-query/core';
 import { Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, In, Repository } from 'typeorm';
-import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, Paginator, PaginatorArgs, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SelectedUnionTypesResult, SortArgs, Sorting } from '../../../lib';
+import { In, Repository } from 'typeorm';
+import { Filter, FilterArgs, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, Paginator, PaginatorArgs, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SelectedUnionTypesResult, SortArgs, Sorting } from '../../../lib';
 import { DescriptionChecklistObjectType } from '../description/description-types/description-checklist/description-checklist.dto';
 import { DescriptionTextObjectType } from '../description/description-types/description-text/description-text.dto';
 import { DescriptionObjectType, DescriptionType } from '../description/description.dto';
@@ -25,7 +25,7 @@ export class TaskResolver {
   @GraphqlFilter()
   @GraphqlSorting()
   async tasks(
-   @Filter(() => TaskObjectType) filter: Brackets,
+   @Filter(() => TaskObjectType) filter: FilterArgs,
    @SelectedFields({sqlAlias: 't'}) selectedFields: SelectedFieldsResult,
    @Paginator() paginator: PaginatorArgs,
    @Sorting(() => TaskObjectType) sorting: SortArgs<TaskObjectType>
@@ -50,7 +50,7 @@ export class TaskResolver {
   })
   async assignee(
     @Loader() loader: LoaderData<TaskObjectType, number>,
-    @Filter(() => UserObjectType) filter: Brackets,
+    @Filter(() => UserObjectType) filter: FilterArgs,
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
       .where(filter)

@@ -277,9 +277,8 @@ By default it generates filter based on provided model. It supports only first l
 ```
 
 #### Filter usage guide
-1. Decorate your resolver with `@GraphqlFilter()` or `@GraphqlLoader()` (this one is already includes `@GraphqlFilter()` inside)
-2. Add `@Filter()` parameter with type of `Brackets` from typeorm library
-3. `@Filter()` will return typeorm compatible condition which you can use in your query builder.
+1. Add `@Filter()` parameter with type of `FilterArgs`
+2. `@Filter()` will return typeorm compatible condition which you can use in your query builder.
 
 ##### Example 1. Query.
 
@@ -292,14 +291,14 @@ export class UserResolver {
   ) {}
 
   @Query(() => [UserObjectType])
-  @GraphqlFilter() // This decorator will put the data to the filter argument
   users(
-    @Filter(() => UserObjectType) filter: Brackets, // It will return  typeorm condition
+    @Filter(() => UserObjectType) filter: FilterArgs, // It will return  typeorm condition
     @Args('task_title', {nullable: true}) taskTitle: string, // You can add custom additional filter if needed
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
       .leftJoin('task', 't', 't.assignee_id = u.id')
-      .where(filter);
+      .where(filter)
+      .distinct();
 
       if (taskTitle) { // mixed filters
         qb.andWhere(`t.title ilike :title`, { title: `%${taskTitle}%` })
@@ -318,10 +317,10 @@ export class UserResolver {
   constructor(@InjectRepository(Task) public readonly taskRepository: Repository<Task>) {}
 
   @ResolveField(() => TaskObjectType)
-  @GraphqlLoader() // This decorator already includes @GraphqlFilter()
+  @GraphqlLoader()
   async tasks(
     @Loader() loader: LoaderData<TaskObjectType, number>,
-    @Filter(() => TaskObjectType) filter: Brackets,
+    @Filter(() => TaskObjectType) filter: FilterArgs,
   ) {
     const qb = this.taskRepository.createQueryBuilder()
     .where(filter)
@@ -359,10 +358,8 @@ export class UserResolver {
   ) {}
 
   @Query(() => [UserObjectType])
-  @GraphqlFilter()
-  @GraphqlSorting()
   users(
-    @Filter(() => [UserObjectType, UserFilterInputType]) filter: Brackets, // <-- Object model and Filter model. It is possible to provide only one model or more that 2.
+    @Filter(() => [UserObjectType, UserFilterInputType]) filter: FilterArgs, // <-- Object model and Filter model. It is possible to provide only one model or more that 2.
     @Sorting(() => UserObjectType, { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
@@ -397,10 +394,8 @@ export class User {
 
 export class UserResolver {
   @Query(() => [UserObjectType])
-  @GraphqlFilter()
-  @GraphqlSorting()
   users(
-    @Filter(() => [UserObjectType], {sqlAlias: 'u'}) filter: Brackets,
+    @Filter(() => [UserObjectType], {sqlAlias: 'u'}) filter: FilterArgs,
     @Sorting(() => [UserObjectType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
@@ -449,7 +444,7 @@ export class TaskResolver {
 ```
 
 ## Sorting
-The library provides ability to make sorting. To make sorting works you need to decorate your resolver with `@GraphqlSorting()` or `@GraphqlLoader()`. It supports all types of sorting.
+The library provides ability to make sorting. It supports all types of sorting.
 `[ASC/DESC] [NULLS FIRST/LAST]`
 
 ##### Example 1
@@ -471,7 +466,6 @@ export class TaskResolver {
   constructor(@InjectRepository(Task) public readonly taskRepository: Repository<Task>) {}
 
   @Query(() => [TaskObjectType])
-  @GraphqlSorting()
   async tasks(
     /* SqlAlias is an ptional argument. Allows to provide alias in case if you have many tables joined. In current case it doesn't required */
     @Sorting(() => TaskObjectType, { sqlAlias: 't' }) sorting: SortArgs<TaskObjectType>
@@ -501,7 +495,6 @@ export class UserResolver {
   ) {}
 
   @Query(() => [UserObjectType])
-  @GraphqlSorting()
   users(
     /* SqlAlias is an optional argument. You can provide alias in case if you have many tables joined.
     Object model and Sorting model. Ability to provide 1+ model. It accepts both Object and Sorting models. Next model in array extends previous model overriding fields with the same names.
@@ -510,7 +503,8 @@ export class UserResolver {
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
       .leftJoin('task', 't', 't.assignee_id = u.id')
-      .orderBy(sorting);
+      .orderBy(sorting)
+      .distinct();
 
     return qb.getMany()
   }
@@ -540,9 +534,8 @@ export class TaskResolver {
   constructor(@InjectRepository(Task) public readonly taskRepository: Repository<Task>) {}
 
   @Query(() => [TaskObjectType])
-  @GraphqlFilter()
   async tasks(
-   @Filter(() => TaskObjectType) filter: Brackets,
+   @Filter(() => TaskObjectType) filter: FilterArgs,
    @SelectedFields({sqlAlias: 't'}) selectedFields: SelectedFieldsResult // Requested fields will be here. sqlAlias is optional thing. It useful in case if you're using alias in query builder
   ) {
     const res = await this.taskRepository.createQueryBuilder('t')
@@ -587,7 +580,9 @@ Options are ENV variables that you can provide to configurate the lib
 ## More examples
 You can find more examples in the src folder
 
-
+## FAQ
+1. **Q**: Let's say you have many joins and some tables has duplicated fields like name or title. **A**: In order not to break filters you need to provide sqlAlias that matches alias of the main model of the query. There plenty examples in the code in in readme.
+2. **Q**:The same example where you have a model with many joins and you want to provide ability to sort or filter by joined field. **A**: you can create custom filter with ability to provide sql alias that they will use. Check out filtering section, there a couple examples with custom fields.
 ## Contribution
 If you want to contribute please create new PR with good description.
 

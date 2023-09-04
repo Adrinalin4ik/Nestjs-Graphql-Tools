@@ -5,8 +5,6 @@ import {
 import { GraphQLResolveInfo } from 'graphql';
 import { IncomingMessage } from 'http';
 import { groupBy } from 'lodash';
-import { applyFilterParameter, GRAPHQL_FILTER_DECORATOR_METADATA_KEY } from './filters';
-import { applySortingParameter, GRAPHQL_SORTING_DECORATOR_METADATA_KEY } from './sorting';
 import { SelectedUnionTypesResult } from './union-type-extractor';
 const DataLoader = require('dataloader');
 
@@ -123,14 +121,6 @@ export const GraphqlLoader = (
   return (target, property, descriptor) => {
     const actualDescriptor = descriptor.value;
     descriptor.value = function(...args) {
-      // Processing other decorators in case if they not added explicitly
-      if (!Reflect.hasMetadata(GRAPHQL_FILTER_DECORATOR_METADATA_KEY, target, property)) {
-        applyFilterParameter(args, target, property);
-      }
-      if (!Reflect.hasMetadata(GRAPHQL_SORTING_DECORATOR_METADATA_KEY, target, property)) {
-        applySortingParameter(args, target, property);
-      }
-
       const loader = args.find(x => x?._name_ === LOADER_DECORATOR_NAME_METADATA_KEY) as LoaderData<any, any> | PolymorphicLoaderData<any, any, any>;
       const loaderKey = `${concatPath(loader.info.path)}.${target.constructor.name}.${property}`;
       if (!loader || !loader.parent) {

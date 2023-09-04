@@ -5,18 +5,10 @@ import { GraphqlFilterFieldMetadata } from "./decorators/field.decorator";
 import { IFilterDecoratorParams } from "./decorators/resolver.decorator";
 import { IFilter, OperationQuery } from "./input-type-generator";
 
-export const applyFilterParameter = (args: any[], target, property: string) => {
-  const filterArgIndex = Reflect.getMetadata(FILTER_DECORATOR_INDEX_METADATA_KEY, target, property);
-  if (filterArgIndex !== undefined) {
-    const options = Reflect.getMetadata(FILTER_DECORATOR_OPTIONS_METADATA_KEY, target, property) as IFilterDecoratorParams;
-    const customFields = Reflect.getMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, target, property) as Map<string, GraphqlFilterFieldMetadata>;
-    args[filterArgIndex] = convertParameters(args[filterArgIndex], customFields, options);
-  }
-}
-
-const convertParameters = <T>(parameters?: IFilter<T>, customFields?: Map<string, GraphqlFilterFieldMetadata>, options?: IFilterDecoratorParams) => {
-  // For tests purposes. If you provide Brackets instead of object to the decorator, it will use your brackets without processing it.
-  if (parameters && 'whereFactory' in parameters) return parameters;
+export const convertFilterParameters = <T>(parameters?: IFilter<T>, customFields?: Map<string, GraphqlFilterFieldMetadata>, options?: IFilterDecoratorParams) => {
+  // For tests purposes and GlobalPipes like ValidationPipe that uses class-transformer to transform object to the class. 
+  // If you provide Brackets instead of object to the decorator, it will use your brackets without processing it.
+  if ((parameters as any)?.whereFactory) return parameters;
 
   return new Brackets((qb) => {
     if (parameters == null) {

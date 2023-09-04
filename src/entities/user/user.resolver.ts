@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, In, Repository } from 'typeorm';
-import { Filter, GraphqlFilter, GraphqlLoader, GraphqlSorting, Loader, LoaderData, Paginator, PaginatorArgs, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
+import { In, Repository } from 'typeorm';
+import { Filter, FilterArgs, GraphqlLoader, Loader, LoaderData, Paginator, PaginatorArgs, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
 import { StoryModel } from '../story/story.entity';
 import { TaskObjectType } from '../task/task.dto';
 import { Task } from '../task/task.entity';
@@ -20,10 +20,8 @@ export class UserResolver {
   ) {}
 
   @Query(() => [UserObjectType])
-  @GraphqlFilter()
-  @GraphqlSorting()
-  users(
-    @Filter(() => [UserObjectType, UserFilterInputType], {sqlAlias: 'u'}) filter: Brackets,
+  async users(
+    @Filter(() => [UserObjectType, UserFilterInputType], {sqlAlias: 'u'}) filter: FilterArgs,
     @Sorting(() => [UserObjectType, UserSortingInputType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>,
     @Paginator() paginator: PaginatorArgs
   ) {
@@ -31,20 +29,20 @@ export class UserResolver {
       .leftJoin('task', 't', 't.assignee_id = u.id')
       .where(filter)
       .orderBy(sorting)
+      .distinct()
 
     if (paginator) {
       qb.limit(paginator.per_page).offset(paginator.page * paginator.per_page)
     }
 
-    return qb.getMany()
+    return qb.getMany();
   }
 
   @ResolveField(() => [TaskObjectType], { nullable: true })
   @GraphqlLoader()
-  @GraphqlFilter()
   async tasks(
     @Loader() loader: LoaderData<TaskObjectType, number>,
-    @Filter(() => TaskFilterInputType, {sqlAlias: 't'}) filter: Brackets,
+    @Filter(() => TaskFilterInputType, {sqlAlias: 't'}) filter: FilterArgs,
     @Sorting(() => TaskSortingInputType, { sqlAlias: 't' }) sorting: SortArgs<TaskObjectType>,
   ) {
     const qb = this.taskRepository.createQueryBuilder('t')
@@ -52,7 +50,8 @@ export class UserResolver {
     .where(filter)
     .andWhere({
       assignee_id: In<number>(loader.ids)
-    });
+    })
+    .distinct();
     
     if (sorting) {
       qb.orderBy(sorting)
