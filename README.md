@@ -682,8 +682,8 @@ createdb -h localhost -U postgres nestjs_graphql_tools_development_public;
 2. Fill out database config in `config/default.json`
 3. Run dev server
 ```bash
-npm i
-npm run start:dev
+yarn install
+yarn start:dev
 ```
 On the first run, server will seed up the database with testing dataset.
 
