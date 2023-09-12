@@ -40,21 +40,49 @@ With the library you will be able to build queries like that easily, using decor
 ```
 
 ## Overview
-- [Loader](#data-loader-n1-resolver)
+- [Description](#description)
+- [Introduction](#introduction)
+- [Overview](#overview)
+- [Installation](#installation)
+- [Data Loader n+1 problem solver](#data-loader-n1-problem-solver)
+    - [Loader usage guide](#loader-usage-guide)
+      - [One to many example](#one-to-many-example)
+      - [Many to one relation](#many-to-one-relation)
 - [Polymorphic relations](#polymorphic-relations)
-- [Filtering](#filters)
-- [Pagination](#pagination)
+    - [Usage](#usage)
+      - [Example](#example)
+- [Filters](#filters)
+      - [Basic example 1](#basic-example-1)
+      - [Basic example 2](#basic-example-2)
+    - [Filter usage guide](#filter-usage-guide)
+      - [@Query with filters](#query-with-filters)
+      - [@ResolveField with filter](#resolvefield-with-filter)
+      - [Custom filters](#custom-filters)
 - [Sorting](#sorting)
-- [Exclusion](#exclusion)
+      - [Basic example](#basic-example)
+      - [Custom sorting fields](#custom-sorting-fields)
+- [Exclusions](#exclusions)
+      - [Exclude field from filters and sortings](#exclude-field-from-filters-and-sortings)
+- [Pagination](#pagination)
+      - [@Query with pagination](#query-with-pagination)
 - [Field extraction](#field-extraction)
+      - [Basic example](#basic-example-1)
 - [Base models and inheritance](#base-models-and-inheritance)
+      - [How to inherit DTO from base class](#how-to-inherit-dto-from-base-class)
+- [Federation](#federation)
+      - [Example](#example-1)
+- [Additional options](#additional-options)
 - [More examples](#more-examples)
+- [FAQ](#faq)
 - [Contribution](#contribution)
+- [License](#license)
 
 ## Installation
 
 ```bash
-$ npm i nestjs-graphql-tools
+npm i nestjs-graphql-tools
+or
+yarn add nestjs-graphql-tools
 ```
 
 ## Data Loader n+1 problem solver
@@ -63,7 +91,7 @@ $ npm i nestjs-graphql-tools
   2. Add `@Loader()` parameter as a first parameter
   3. @Loader will return you LoaderData interface which includes ids of entities and helpers for constructing sutable object for graphql
 
-##### Example 1. One to many example.
+##### One to many example
 
 ```typescript
 @Resolver(() => UserObjectType) 
@@ -87,7 +115,7 @@ export class UserResolver {
 }
 ```
 
-##### Example 2. Many to one relation.
+##### Many to one relation
 ```typescript
 @Resolver(() => TaskObjectType)
 export class TaskResolver {
@@ -129,7 +157,7 @@ To be able to use it you need to decorate your resolver with `@GraphqlLoader` de
 ```
 This decorator will aggregate all types and provide ids for each type. All aggregated types will be aveilable in `@Loader` decorator. It has attribute which called `polymorphicTypes. 
 
-##### PolmorphicTypes attribute shape 
+PolmorphicTypes attribute shape 
 ```typescript
 [
   {
@@ -140,7 +168,7 @@ This decorator will aggregate all types and provide ids for each type. All aggre
 
 ```
 
-##### Example 1
+##### Example
 
 ```typescript
 // Parent class
@@ -242,7 +270,7 @@ You can find complete example in src/descriptions folder
 Filter is giving ability to filter out entities by the condition. Condition looks similar to hasura interface using operators `eq, neq, gt, gte, lt, lte, in, like, notlike, between, notbetween, null`.
 By default it generates filter based on provided model. It supports only first level of the tables hierachy. If you need to search in depth you can declare custom filters (example 3).
 
-##### Example 1
+##### Basic example 1
 
 ```graphql
 {
@@ -251,7 +279,7 @@ By default it generates filter based on provided model. It supports only first l
   }
 }
 ```
-##### Example 2
+##### Basic example 2
 ```graphql
 {
   users(
@@ -280,7 +308,7 @@ By default it generates filter based on provided model. It supports only first l
 1. Add `@Filter()` parameter with type of `FilterArgs`
 2. `@Filter()` will return typeorm compatible condition which you can use in your query builder.
 
-##### Example 1. Query.
+##### @Query with filters
 
 ```typescript
 @Resolver(() => UserObjectType)
@@ -309,7 +337,7 @@ export class UserResolver {
 }
 ```
 
-##### Example 2. Combination with loader
+##### @ResolveField with filter
 
 ```typescript
 @Resolver(() => UserObjectType)
@@ -334,7 +362,7 @@ export class UserResolver {
   }
 }
 ```
-##### Example 3. Custom filters
+##### Custom filters
 
 ```typescript
 export class UserFilterInputType {
@@ -372,10 +400,82 @@ export class UserResolver {
 }
 ```
 
-## Exclusion
+You can also exclude some fields from the DTO filter. Read [Exclusions](#exclusions).
+
+
+## Sorting
+The library provides ability to make sorting. It supports all types of sorting.
+`[ASC/DESC] [NULLS FIRST/LAST]`
+
+##### Basic example
+
+```graphql
+{
+  users(
+    order_by: {
+      id: ASC_NULLS_LAST
+    }
+  ) {
+    id
+  }
+}
+```
+```typescript
+@Resolver(() => TaskObjectType)
+export class TaskResolver {
+  constructor(@InjectRepository(Task) public readonly taskRepository: Repository<Task>) {}
+
+  @Query(() => [TaskObjectType])
+  async tasks(
+    /* SqlAlias is an ptional argument. Allows to provide alias in case if you have many tables joined. In current case it doesn't required */
+    @Sorting(() => TaskObjectType, { sqlAlias: 't' }) sorting: SortArgs<TaskObjectType>
+  ) {
+    const qb = this.taskRepository.createQueryBuilder('t')
+      .orderBy(sorting);
+    return qb.getMany();
+  }
+}
+```
+
+##### Custom sorting fields
+```typescript
+// sorting.dto.ts
+export class UserSortingInputType {
+  @SortingField({sqlExp: 't.story_points'})
+  task_story_points: number;
+}
+
+// user.resolver.ts
+@Resolver(() => UserObjectType)
+export class UserResolver {
+  constructor(
+    @InjectRepository(Task) public readonly taskRepository: Repository<Task>,
+    @InjectRepository(StoryModel) public readonly storyRepository: Repository<StoryModel>,
+    @InjectRepository(User) public readonly userRepository: Repository<User>
+  ) {}
+
+  @Query(() => [UserObjectType])
+  users(
+    /* SqlAlias is an optional argument. You can provide alias in case if you have many tables joined.
+    Object model and Sorting model. Ability to provide 1+ model. It accepts both Object and Sorting models. Next model in array extends previous model overriding fields with the same names.
+    */
+    @Sorting(() => [UserObjectType, UserSortingInputType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
+  ) {
+    const qb = this.userRepository.createQueryBuilder('u')
+      .leftJoin('task', 't', 't.assignee_id = u.id')
+      .orderBy(sorting)
+      .distinct();
+
+    return qb.getMany()
+  }
+}
+```
+You can also exclude some fields from the sorting DTO. Read [Exclusions](#exclusions).
+
+## Exclusions
 Sometimes you don't want to provide filters/sorting by all the fields in the dto. There's a couple decorators that can help with it `@FilterField({exclude: true}) ` and `@SortingField({exclude: true})`
 
-##### Example
+##### Exclude field from filters and sortings
 ```typescript
 
 @ObjectType()
@@ -421,7 +521,7 @@ The library provides parameter decorator `@Paginator()` for the pagination. This
 
 ```
 
-##### Full example
+##### @Query with pagination
 
 ```typescript
 @Resolver(() => TaskObjectType)
@@ -443,78 +543,10 @@ export class TaskResolver {
 }
 ```
 
-## Sorting
-The library provides ability to make sorting. It supports all types of sorting.
-`[ASC/DESC] [NULLS FIRST/LAST]`
-
-##### Example 1
-
-```graphql
-{
-  users(
-    order_by: {
-      id: ASC_NULLS_LAST
-    }
-  ) {
-    id
-  }
-}
-```
-```typescript
-@Resolver(() => TaskObjectType)
-export class TaskResolver {
-  constructor(@InjectRepository(Task) public readonly taskRepository: Repository<Task>) {}
-
-  @Query(() => [TaskObjectType])
-  async tasks(
-    /* SqlAlias is an ptional argument. Allows to provide alias in case if you have many tables joined. In current case it doesn't required */
-    @Sorting(() => TaskObjectType, { sqlAlias: 't' }) sorting: SortArgs<TaskObjectType>
-  ) {
-    const qb = this.taskRepository.createQueryBuilder('t')
-      .orderBy(sorting);
-    return qb.getMany();
-  }
-}
-```
-
-##### Example 2. Sorting by custom fields
-```typescript
-// sorting.dto.ts
-export class UserSortingInputType {
-  @SortingField({sqlExp: 't.story_points'})
-  task_story_points: number;
-}
-
-// user.resolver.ts
-@Resolver(() => UserObjectType)
-export class UserResolver {
-  constructor(
-    @InjectRepository(Task) public readonly taskRepository: Repository<Task>,
-    @InjectRepository(StoryModel) public readonly storyRepository: Repository<StoryModel>,
-    @InjectRepository(User) public readonly userRepository: Repository<User>
-  ) {}
-
-  @Query(() => [UserObjectType])
-  users(
-    /* SqlAlias is an optional argument. You can provide alias in case if you have many tables joined.
-    Object model and Sorting model. Ability to provide 1+ model. It accepts both Object and Sorting models. Next model in array extends previous model overriding fields with the same names.
-    */
-    @Sorting(() => [UserObjectType, UserSortingInputType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>
-  ) {
-    const qb = this.userRepository.createQueryBuilder('u')
-      .leftJoin('task', 't', 't.assignee_id = u.id')
-      .orderBy(sorting)
-      .distinct();
-
-    return qb.getMany()
-  }
-}
-```
-
 ## Field extraction
 The library allows to gather only requested field from the query and provides it as an array to the parameter variable.
 
-##### Example
+##### Basic example
 
 Simple graphql query
 ```graphql
@@ -555,7 +587,7 @@ SELECT "t"."id" AS "t_id", "t"."title" AS "t_title" FROM "task" "t"
 ## Base models and inheritance
 In order to make base model with common attributes it is required to decorate base model with the `@InheritedModel()` decorator. You can find usage of it in base.dto.ts file inside src folder.
 
-##### Example
+##### How to inherit DTO from base class
 ```typescript
 @ObjectType()
 @InheritedModel() // <-- Make inheritance possible. If you not decorate object with this decorator, you will not see these properties in "where" and sorting statements
@@ -572,7 +604,60 @@ export class BaseDTO {
 }
 ```
 
-## Options
+## Federation
+Basic support of federation already in place. Just add to your method with `@ResolveReference()` one more decorator `@GraphqlLoader()`
+
+##### Example
+This examples is the reference to official example https://github.com/nestjs/nest/tree/master/sample/31-graphql-federation-code-first. Clone https://github.com/nestjs/nest/tree/master/sample/31-graphql-federation-code-first (download specific directory with https://download-directory.github.io/ or with chrome extention https://chrome.google.com/webstore/detail/gitzip-for-github/ffabmkklhbepgcgfonabamgnfafbdlkn)
+1. Annotate method resolveReference of `users-application/src/users/users.resolver.ts`
+```typescript
+// users-application/src/users/users.resolver.ts
+@ResolveReference()
+@GraphqlLoader()
+async resolveReference(
+   @Loader() loader: LoaderData<User, number>,
+) {
+ const ids = loader.ids;
+ const users = this.usersService.findByIds(ids);
+ return loader.helpers.mapManyToOneRelation(users, loader.ids, 'id')
+}
+```
+1. Add method findByIds to `users-application/src/users/users.service.ts`
+```typescript
+// users-application/src/users/users.service.ts
+@Injectable()
+export class UsersService {
+  private users: User[] = [
+    { id: 1, name: 'John Doe' },
+    { id: 2, name: 'Richard Roe' },
+  ];
+
+  findByIds(idsList: number[]): User[] {
+    return this.users.filter((user) => idsList.some(id => Number(id) === user.id));
+  }
+}
+```
+3. Install dependencies of 3 projects : npm ci in gateway, posts-application, users-application.
+4. Run all projects in order :
+   - `cd users-application && npm run start`
+   - `cd posts-application && npm run start`
+   - `cd gateway && npm run start`
+
+5. Go to localhost:3001/graphql and send graphql request to gateway
+```graphql
+{
+  posts {
+    id
+    title
+    authorId
+    user {
+      id
+      name
+    }
+  }
+}
+```
+## Additional options
 Options are ENV variables that you can provide to configurate the lib
 - `FILTER_OPERATION_PREFIX` - Operation prefix. You can make hasura-like prefix for where operators like _eq, _neq, etc. Example `FILTER_OPERATION_PREFIX=\_`
 
@@ -583,6 +668,9 @@ You can find more examples in the src folder
 ## FAQ
 1. **Q**: Let's say you have many joins and some tables has duplicated fields like name or title. **A**: In order not to break filters you need to provide sqlAlias that matches alias of the main model of the query. There plenty examples in the code in in readme.
 2. **Q**:The same example where you have a model with many joins and you want to provide ability to sort or filter by joined field. **A**: you can create custom filter with ability to provide sql alias that they will use. Check out filtering section, there a couple examples with custom fields.
+3. **Q**: The error: `QueryFailedError: for SELECT DISTINCT, ORDER BY expressions must appear in select list`. **A** To avoid this error add sorted field to selected fields. In most of the time it might happen in case you're using custom fields for sorting.
+
+
 ## Contribution
 If you want to contribute please create new PR with good description.
 

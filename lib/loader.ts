@@ -94,8 +94,8 @@ export interface GraphqlLoaderOptions {
 
 export const Loader = createParamDecorator((_data: unknown, ctx: ExecutionContext) => {
   const args = ctx.getArgs();
-  const { req } = args[2];
-  const info = args[3];
+  const { req } = args.find(x => x.req);;
+  const info = args.find(x => x.fieldName);
   return {
     _name_: LOADER_DECORATOR_NAME_METADATA_KEY,
     parent: args[0],
