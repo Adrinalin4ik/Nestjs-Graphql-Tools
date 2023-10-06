@@ -59,9 +59,9 @@ let SortingPipe = class SortingPipe {
         return (0, query_builder_1.convertSortingParameters)(value, this.args.customFields, this.args.options);
     }
 };
-SortingPipe = __decorate([
+exports.SortingPipe = SortingPipe;
+exports.SortingPipe = SortingPipe = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [Object])
 ], SortingPipe);
-exports.SortingPipe = SortingPipe;
 //# sourceMappingURL=resolver.decorator.js.map

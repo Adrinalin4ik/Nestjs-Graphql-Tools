@@ -59,9 +59,9 @@ let FilterPipe = class FilterPipe {
         return (0, query_builder_1.convertFilterParameters)(value, this.args.customFields, this.args.options);
     }
 };
-FilterPipe = __decorate([
+exports.FilterPipe = FilterPipe;
+exports.FilterPipe = FilterPipe = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [Object])
 ], FilterPipe);
-exports.FilterPipe = FilterPipe;
 //# sourceMappingURL=resolver.decorator.js.map

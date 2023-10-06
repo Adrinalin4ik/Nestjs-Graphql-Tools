@@ -28,19 +28,19 @@ var OperationQuery;
     OperationQuery["between"] = "between";
     OperationQuery["notbetween"] = "notbetween";
     OperationQuery["null"] = "null";
-})(OperationQuery = exports.OperationQuery || (exports.OperationQuery = {}));
+})(OperationQuery || (exports.OperationQuery = OperationQuery = {}));
 const arrayLikeOperations = new Set([OperationQuery.between, OperationQuery.notbetween, OperationQuery.in, OperationQuery.notin]);
 const stringLikeOperations = new Set([OperationQuery.like, OperationQuery.notlike]);
 var InputMapPrefixes;
 (function (InputMapPrefixes) {
     InputMapPrefixes["PropertyFilterInputType"] = "PropertyFilterInputType";
     InputMapPrefixes["FilterInputType"] = "FilterInputType";
-})(InputMapPrefixes = exports.InputMapPrefixes || (exports.InputMapPrefixes = {}));
+})(InputMapPrefixes || (exports.InputMapPrefixes = InputMapPrefixes = {}));
 var EObjectResolveType;
 (function (EObjectResolveType) {
     EObjectResolveType[EObjectResolveType["Full"] = 0] = "Full";
     EObjectResolveType[EObjectResolveType["Enum"] = 1] = "Enum";
-})(EObjectResolveType = exports.EObjectResolveType || (exports.EObjectResolveType = {}));
+})(EObjectResolveType || (exports.EObjectResolveType = EObjectResolveType = {}));
 const filterFullTypes = new Map();
 const filterTypes = new Map();
 const propertyTypes = new Map();

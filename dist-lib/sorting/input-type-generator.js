@@ -17,14 +17,14 @@ var SortType;
     SortType["ASC_NULLS_FIRST"] = "ASC NULLS FIRST";
     SortType["DESC_NULLS_LAST"] = "DESC NULLS LAST";
     SortType["DESC_NULLS_FIRST"] = "DESC NULLS FIRST";
-})(SortType = exports.SortType || (exports.SortType = {}));
+})(SortType || (exports.SortType = SortType = {}));
 (0, graphql_1.registerEnumType)(SortType, {
     name: 'SortType',
 });
 var SortInputMapPrefixes;
 (function (SortInputMapPrefixes) {
     SortInputMapPrefixes["SortingInputType"] = "SortingInputType";
-})(SortInputMapPrefixes = exports.SortInputMapPrefixes || (exports.SortInputMapPrefixes = {}));
+})(SortInputMapPrefixes || (exports.SortInputMapPrefixes = SortInputMapPrefixes = {}));
 const sortingFullTypes = new Map();
 const sortingTypes = new Map();
 function generateSortingInputType(classes, name) {
