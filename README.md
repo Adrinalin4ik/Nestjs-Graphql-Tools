@@ -52,25 +52,25 @@ With the library you will be able to build queries like that easily, using decor
     - [Usage](#usage)
       - [Example](#example)
 - [Filters](#filters)
-      - [Basic example 1](#basic-example-1)
-      - [Basic example 2](#basic-example-2)
+    - [Basic example 1](#basic-example-1)
+    - [Basic example 2](#basic-example-2)
     - [Filter usage guide](#filter-usage-guide)
       - [@Query with filters](#query-with-filters)
       - [@ResolveField with filter](#resolvefield-with-filter)
       - [Custom filters](#custom-filters)
 - [Sorting](#sorting)
-      - [Basic example](#basic-example)
-      - [Custom sorting fields](#custom-sorting-fields)
+    - [Basic example](#basic-example)
+    - [Custom sorting fields](#custom-sorting-fields)
 - [Exclusions](#exclusions)
-      - [Exclude field from filters and sortings](#exclude-field-from-filters-and-sortings)
+    - [Exclude field from filters and sortings](#exclude-field-from-filters-and-sortings)
 - [Pagination](#pagination)
-      - [@Query with pagination](#query-with-pagination)
+    - [@Query with pagination](#query-with-pagination)
 - [Field extraction](#field-extraction)
-      - [Basic example](#basic-example-1)
+    - [Basic example](#basic-example-1)
 - [Base models and inheritance](#base-models-and-inheritance)
-      - [How to inherit DTO from base class](#how-to-inherit-dto-from-base-class)
+    - [How to inherit DTO from base class](#how-to-inherit-dto-from-base-class)
 - [Federation](#federation)
-      - [Example](#example-1)
+    - [Example](#example-1)
 - [Additional options](#additional-options)
 - [More examples](#more-examples)
 - [FAQ](#faq)
@@ -270,7 +270,7 @@ You can find complete example in src/descriptions folder
 Filter is giving ability to filter out entities by the condition. Condition looks similar to hasura interface using operators `eq, neq, gt, gte, lt, lte, in, like, notlike, between, notbetween, null`.
 By default it generates filter based on provided model. It supports only first level of the tables hierachy. If you need to search in depth you can declare custom filters (example 3).
 
-##### Basic example 1
+#### Basic example 1
 
 ```graphql
 {
@@ -279,7 +279,7 @@ By default it generates filter based on provided model. It supports only first l
   }
 }
 ```
-##### Basic example 2
+#### Basic example 2
 ```graphql
 {
   users(
@@ -407,7 +407,7 @@ You can also exclude some fields from the DTO filter. Read [Exclusions](#exclusi
 The library provides ability to make sorting. It supports all types of sorting.
 `[ASC/DESC] [NULLS FIRST/LAST]`
 
-##### Basic example
+#### Basic example
 
 ```graphql
 {
@@ -437,7 +437,7 @@ export class TaskResolver {
 }
 ```
 
-##### Custom sorting fields
+#### Custom sorting fields
 ```typescript
 // sorting.dto.ts
 export class UserSortingInputType {
@@ -475,7 +475,7 @@ You can also exclude some fields from the sorting DTO. Read [Exclusions](#exclus
 ## Exclusions
 Sometimes you don't want to provide filters/sorting by all the fields in the dto. There's a couple decorators that can help with it `@FilterField({exclude: true}) ` and `@SortingField({exclude: true})`
 
-##### Exclude field from filters and sortings
+#### Exclude field from filters and sortings
 ```typescript
 
 @ObjectType()
@@ -521,7 +521,7 @@ The library provides parameter decorator `@Paginator()` for the pagination. This
 
 ```
 
-##### @Query with pagination
+#### @Query with pagination
 
 ```typescript
 @Resolver(() => TaskObjectType)
@@ -546,7 +546,7 @@ export class TaskResolver {
 ## Field extraction
 The library allows to gather only requested field from the query and provides it as an array to the parameter variable.
 
-##### Basic example
+#### Basic example
 
 Simple graphql query
 ```graphql
@@ -587,7 +587,7 @@ SELECT "t"."id" AS "t_id", "t"."title" AS "t_title" FROM "task" "t"
 ## Base models and inheritance
 In order to make base model with common attributes it is required to decorate base model with the `@InheritedModel()` decorator. You can find usage of it in base.dto.ts file inside src folder.
 
-##### How to inherit DTO from base class
+#### How to inherit DTO from base class
 ```typescript
 @ObjectType()
 @InheritedModel() // <-- Make inheritance possible. If you not decorate object with this decorator, you will not see these properties in "where" and sorting statements
@@ -607,7 +607,7 @@ export class BaseDTO {
 ## Federation
 Basic support of federation already in place. Just add to your method with `@ResolveReference()` one more decorator `@GraphqlLoader()`
 
-##### Example
+#### Example
 This examples is the reference to official example https://github.com/nestjs/nest/tree/master/sample/31-graphql-federation-code-first. Clone https://github.com/nestjs/nest/tree/master/sample/31-graphql-federation-code-first (download specific directory with https://download-directory.github.io/ or with chrome extention https://chrome.google.com/webstore/detail/gitzip-for-github/ffabmkklhbepgcgfonabamgnfafbdlkn)
 1. Annotate method resolveReference of `users-application/src/users/users.resolver.ts`
 ```typescript
