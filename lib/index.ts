@@ -5,4 +5,5 @@ export * from './loader';
 export * from './pagination';
 export * from './sorting';
 export * from './union-type-extractor';
-
+export * from './caching';
+export * from './graphql-tools.module';

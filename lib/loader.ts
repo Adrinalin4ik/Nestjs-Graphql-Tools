@@ -1,11 +1,16 @@
 import {
   createParamDecorator,
-  ExecutionContext
+  ExecutionContext,
+  Inject,
+  Optional
 } from '@nestjs/common';
 import { GraphQLResolveInfo } from 'graphql';
 import { IncomingMessage } from 'http';
 import { groupBy } from 'lodash';
 import { SelectedUnionTypesResult } from './union-type-extractor';
+import { CacheInterceptor } from './caching';
+import { from, lastValueFrom, of } from 'rxjs';
+import { GraphqlToolsConfig, GraphqlToolsConfigToken } from './graphql-tools.module';
 const DataLoader = require('dataloader');
 
 export const LOADER_DECORATOR_NAME_METADATA_KEY = 'LoaderPropertyDecorator';
@@ -89,13 +94,14 @@ export interface GraphqlLoaderOptions {
   polymorphic?: ({
     id:  string;
     descriminator:  string;
-  }) | ((parent: any) => ({ id: any; descriminator: any }))
+  }) | ((parent: any) => ({ id: any; descriminator: any })),
 }
 
 export const Loader = createParamDecorator((_data: unknown, ctx: ExecutionContext) => {
   const args = ctx.getArgs();
   const { req } = args.find(x => x.req);;
   const info = args.find(x => x.fieldName);
+
   return {
     _name_: LOADER_DECORATOR_NAME_METADATA_KEY,
     parent: args[0],
@@ -117,10 +123,15 @@ export const GraphqlLoader = (
     foreignKey: 'id',
     ...args
   }
-  
+  const cacheInterceptorInjector = Inject(CacheInterceptor);
+  const graphqlToolsConfigInjector = Inject(GraphqlToolsConfigToken);
   return (target, property, descriptor) => {
+    graphqlToolsConfigInjector(target, 'graphqlToolsConfigInjector');
+    cacheInterceptorInjector(target, 'cacheInterceptor');
+    Optional()(target, 'cacheInterceptor');
+    
     const actualDescriptor = descriptor.value;
-    descriptor.value = function(...args) {
+    descriptor.value = async function(...args) {
       const loader = args.find(x => x?._name_ === LOADER_DECORATOR_NAME_METADATA_KEY) as LoaderData<any, any> | PolymorphicLoaderData<any, any, any>;
       const loaderKey = `${concatPath(loader.info.path)}.${target.constructor.name}.${property}`;
       if (!loader || !loader.parent) {
@@ -132,11 +143,19 @@ export const GraphqlLoader = (
       }
 
       if (!loader.req._loader) {
+        // const cachedValueObserver = await this.cacheInterceptor.intercept(loader.ctx, {
+        //   handle: () => of(loader.ctx.getHandler())
+        // });
+
+        // const cachedValue = await lastValueFrom(cachedValueObserver)
+
         loader.req._loader = {};
       }
 
       if (!loader.req._loader[loaderKey]) {
         loader.req._loader[loaderKey] = new DataLoader(async ids => {
+          
+          
           if (options.polymorphic) {
             const polyLoader = loader as PolymorphicLoaderData<any, any, any>
             
@@ -154,7 +173,19 @@ export const GraphqlLoader = (
             loader.ids = ids as any[];
           }
           
-          const result = await actualDescriptor.call(this, ...args);
+          let result; 
+          
+          if (this.graphqlToolsConfigInjector?.caching?.enabled && this.graphqlToolsConfigInjector?.caching?.globalCaching?.resolveFieldCaching) {
+            
+            const cachedValueObserver = await this.cacheInterceptor.intercept(loader.ctx, {
+              handle: () => from(actualDescriptor.call(this, ...args))
+            }, [ids]);
+    
+            result = await lastValueFrom(cachedValueObserver)
+          } else {
+            result = await actualDescriptor.call(this, ...args);
+          }
+
           // Clean up context
           loader.req._loader = [];
           return result;

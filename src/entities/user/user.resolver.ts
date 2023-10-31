@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { Filter, FilterArgs, GraphqlLoader, Loader, LoaderData, Paginator, PaginatorArgs, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
+import { CacheInterceptor, Filter, FilterArgs, GraphqlLoader, Loader, LoaderData, Paginator, PaginatorArgs, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
 import { StoryModel } from '../story/story.entity';
 import { TaskObjectType } from '../task/task.dto';
 import { Task } from '../task/task.entity';
@@ -10,6 +10,7 @@ import { UpdateUserInputType } from './input.dto';
 import { TaskSortingInputType, UserSortingInputType } from './sorting.dto';
 import { SearchTasksUnion, UserAggregationType, UserObjectType } from './user.dto';
 import { User } from './user.entity';
+import { UseInterceptors } from '@nestjs/common';
 
 @Resolver(() => UserObjectType)
 export class UserResolver {
@@ -40,6 +41,7 @@ export class UserResolver {
 
   @ResolveField(() => [TaskObjectType], { nullable: true })
   @GraphqlLoader()
+  @UseInterceptors(CacheInterceptor)
   async tasks(
     @Loader() loader: LoaderData<TaskObjectType, number>,
     @Filter(() => TaskFilterInputType, {sqlAlias: 't'}) filter: FilterArgs,
