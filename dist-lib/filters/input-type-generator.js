@@ -135,6 +135,9 @@ function generateFilterInputType(classes, name) {
             }
             properties.push(...((inheritedType === null || inheritedType === void 0 ? void 0 : inheritedType.properties) || []), ...classMetaProps);
         }
+        else {
+            (0, graphql_1.PartialType)(typeFn, graphql_1.InputType);
+        }
     }
     for (const field of properties) {
         const targetClassMetadata = graphql_1.TypeMetadataStorage.getObjectTypeMetadataByTarget(field.typeFn && field.typeFn());
