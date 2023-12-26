@@ -1,6 +1,8 @@
-import { Int } from "@nestjs/graphql";
+import { InputType, Int } from "@nestjs/graphql";
 import { FilterField } from "../../../lib";
+import { ERole } from "./user.dto";
 
+@InputType()
 export class UserFilterInputType {
   @FilterField(() => String, { sqlExp: 't.story_points'})
   task_story_points: number;
@@ -11,8 +13,12 @@ export class UserFilterInputType {
   @FilterField(() => String, { sqlExp: 't.title'})
   // @FilterField({exclude: true})
   task_title: string;
+
+  @FilterField(() => ERole)
+  role: ERole;
 }
 
+@InputType()
 export class TaskFilterInputType {
   @FilterField(() => Int, { sqlExp: 't.id' })
   id: number;

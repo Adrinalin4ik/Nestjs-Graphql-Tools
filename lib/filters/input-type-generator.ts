@@ -1,4 +1,4 @@
-import { Field, InputType, PartialType, ReturnTypeFunc, TypeMetadataStorage } from "@nestjs/graphql";
+import { Field, InputType, PartialType, ReturnTypeFunc, TypeMetadataStorage, registerEnumType } from "@nestjs/graphql";
 import { BaseEntity } from "../common";
 import { standardize } from "../utils/functions";
 import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, FILTER_OPERATION_PREFIX } from "./constants";
@@ -157,6 +157,8 @@ function generateFilterInputType<T extends BaseEntity>(classes: T[], name: strin
       }
       
       properties.push(...(inheritedType?.properties || []), ...classMetaProps)
+    } else {
+      PartialType(typeFn, InputType);
     }
   }
 

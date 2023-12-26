@@ -4,6 +4,7 @@ import { StoryModule } from './entities/story/story.module';
 import { TaskModule } from './entities/task/task.module';
 import { UserModule } from './entities/user/user.module';
 import { GraphqlModule } from './graphql.module';
+import { TestModule } from './entities/test/test.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { GraphqlModule } from './graphql.module';
     UserModule,
     TaskModule,
     StoryModule,
+    TestModule,
     GraphqlModule,
   ],
 })

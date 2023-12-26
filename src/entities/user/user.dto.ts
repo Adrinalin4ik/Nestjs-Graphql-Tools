@@ -54,8 +54,6 @@ export class UserObjectType extends BaseDTO {
   @Field(() => EGenderType)
   gender: EGenderType;
 
-  @Field(() => ERole)
-  role: ERole;
 }
 
 @ObjectType()

@@ -32,10 +32,10 @@ export class User extends Base {
   @Column({ nullable: true })
   phone: string;
 
-  @Column({ default: EGenderType.Male, enum: EGenderType, type: "enum",})
+  @Column({ default: EGenderType.Male, enum: EGenderType, type: process.env.NODE_ENV === 'test' ? 'text' : 'enum'})
   gender: EGenderType;
 
-  @Column({ default: ERole.User, enum: ERole, type: "enum",})
+  @Column({ default: ERole.User, enum: ERole, type: process.env.NODE_ENV === 'test' ? 'text' : 'enum'})
   role: ERole;
 
   @Column({ default: true })
