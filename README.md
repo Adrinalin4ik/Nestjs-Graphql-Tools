@@ -365,6 +365,7 @@ export class UserResolver {
 ##### Custom filters
 
 ```typescript
+@InputType()
 export class UserFilterInputType {
   @FilterField(() => String, { sqlExp: 't.title'})
   task_title: string;
@@ -440,6 +441,7 @@ export class TaskResolver {
 #### Custom sorting fields
 ```typescript
 // sorting.dto.ts
+@InputType()
 export class UserSortingInputType {
   @SortingField({sqlExp: 't.story_points'})
   task_story_points: number;
