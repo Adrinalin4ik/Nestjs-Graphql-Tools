@@ -58,9 +58,11 @@ With the library you will be able to build queries like that easily, using decor
       - [@Query with filters](#query-with-filters)
       - [@ResolveField with filter](#resolvefield-with-filter)
       - [Custom filters](#custom-filters)
+    - [Raw filters](#raw-filters)
 - [Sorting](#sorting)
     - [Basic example](#basic-example)
     - [Custom sorting fields](#custom-sorting-fields)
+    - [Raw sorting](#raw-sorting)
 - [Exclusions](#exclusions)
     - [Exclude field from filters and sortings](#exclude-field-from-filters-and-sortings)
 - [Pagination](#pagination)
@@ -403,6 +405,23 @@ export class UserResolver {
 
 You can also exclude some fields from the DTO filter. Read [Exclusions](#exclusions).
 
+#### Raw filters
+Raw filters allow to get access to the user provided raw value right from the code. This feature allows to build your own filters interpreters.
+
+How to use raw filters:
+1. Add `@Filter({ raw: true })` parameter with type of `RawFilterArgs<T>` where `T` is your filter type
+2. `@Filter()` will return raw filter data.
+
+```typesript
+@Query(() => [UserObjectType])
+async usersRaw(
+  @Filter(() => [UserObjectType, UserFilterInputType], {sqlAlias: 'u', raw: true}) filter: RawFilterArgs<UserObjectType & UserFilterInputType>,
+  @Paginator() paginator: PaginatorArgs
+) {
+  // Your customer filter logic..
+  return [];
+}
+```
 
 ## Sorting
 The library provides ability to make sorting. It supports all types of sorting.
@@ -473,6 +492,24 @@ export class UserResolver {
 }
 ```
 You can also exclude some fields from the sorting DTO. Read [Exclusions](#exclusions).
+
+#### Raw sorting
+Raw sorting allows to get access to the user provided raw value right from the code. This feature allows to build your own sorting interpreters.
+
+How to use raw filters:
+1. Add `@Sorting({ raw: true })` parameter with type of `RawSortingArgs<T>` where `T` is your filter type
+2. `@Sorting()` will return raw sorting data.
+
+```typesript
+@Query(() => [UserObjectType])
+async usersRaw(
+  @Sorting(() => [UserObjectType], { sqlAlias: 'u', raw: true}) sorting: RawSortingArgs<UserObjectType>,
+  @Paginator() paginator: PaginatorArgs
+) {
+  // Your customer filter logic..
+  return [];
+}
+```
 
 ## Exclusions
 Sometimes you don't want to provide filters/sorting by all the fields in the dto. There's a couple decorators that can help with it `@FilterField({exclude: true}) ` and `@SortingField({exclude: true})`

@@ -1,4 +1,4 @@
-import { Field, InputType, PartialType, ReturnTypeFunc, TypeMetadataStorage, registerEnumType } from "@nestjs/graphql";
+import { Field, InputType, PartialType, ReturnTypeFunc, TypeMetadataStorage } from "@nestjs/graphql";
 import { BaseEntity } from "../common";
 import { standardize } from "../utils/functions";
 import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, FILTER_OPERATION_PREFIX } from "./constants";
@@ -19,6 +19,30 @@ export enum OperationQuery {
   notbetween = 'notbetween',
   null = 'null',
 }
+
+export type IFilterField<T> = {
+  [K in keyof T]: {
+    eq: T[K],
+    neq: T[K],
+    gt: T[K],
+    gte: T[K],
+    lt: T[K],
+    lte: T[K],
+    in: T[K],
+    like: T[K],
+    notlike: T[K],
+    between: T[K],
+    notbetween: T[K],
+    null: T[K],
+  };
+}
+
+export interface IFilter<T> {
+  and: IFilterField<T>[];
+  or: IFilterField<T>[];
+}
+
+export type RawFilterArgs<T> = IFilter<T> & IFilterField<T>;
 
 const arrayLikeOperations = new Set([OperationQuery.between, OperationQuery.notbetween, OperationQuery.in, OperationQuery.notin]);
 const stringLikeOperations = new Set([OperationQuery.like, OperationQuery.notlike]);
@@ -181,28 +205,6 @@ function generateFilterInputType<T extends BaseEntity>(classes: T[], name: strin
   }
 
   return PartialObjectType;
-}
-
-export type IFilterField<T> = {
-  [K in keyof T]: {
-    eq: T[K],
-    neq: T[K],
-    gt: T[K],
-    gte: T[K],
-    lt: T[K],
-    lte: T[K],
-    in: T[K],
-    like: T[K],
-    notlike: T[K],
-    between: T[K],
-    notbetween: T[K],
-    null: T[K],
-  };
-}
-
-export interface IFilter<T> {
-  and: IFilterField<T>[];
-  or: IFilterField<T>[];
 }
 
 export const getFilterFullInputType = (classes: BaseEntity[], name: string) => {

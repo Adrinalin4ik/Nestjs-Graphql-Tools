@@ -16,6 +16,12 @@ registerEnumType(SortType, {
   name: 'SortType',
 });
 
+export type ISortingField<T> = {
+  [K in keyof T]: SortType;
+}
+
+export type RawSortingArgs<T> = ISortingField<T>;
+
 export enum SortInputMapPrefixes {
   SortingInputType = 'SortingInputType',
 }

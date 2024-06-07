@@ -3,7 +3,7 @@ import { Args } from "@nestjs/graphql";
 import { Brackets } from "typeorm";
 import { BaseEntity } from "../../common";
 import { standardize } from "../../utils/functions";
-import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, FILTER_DECORATOR_INDEX_METADATA_KEY, FILTER_DECORATOR_OPTIONS_METADATA_KEY } from "../constants";
+import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY } from "../constants";
 import { getFilterFullInputType } from "../input-type-generator";
 import { convertFilterParameters } from "../query.builder";
 import { GraphqlFilterFieldMetadata, GraphqlFilterTypeDecoratorMetadata } from "./field.decorator";
@@ -11,6 +11,7 @@ import { GraphqlFilterFieldMetadata, GraphqlFilterTypeDecoratorMetadata } from "
 export interface IFilterDecoratorParams {
   sqlAlias?: string;
   name?: string;
+  raw?: boolean;
 }
 
 
@@ -54,16 +55,25 @@ export const Filter = (baseEntity: () => BaseEntity | BaseEntity[], options?: IF
     }, new Map<string, GraphqlFilterFieldMetadata>());
 
     Reflect.defineMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, customFields, target, propertyName);
+
+    const pipes: PipeTransform[] = [];
+
+    if (!options?.raw) {
+      pipes.push(
+        new FilterPipe({
+          options,
+          customFields
+        })
+      )
+    }
+
     Args(
       {
         name: options?.name || 'where',
         nullable: true,
         type: () => filterFullType,
       }, 
-      new FilterPipe({
-        options,
-        customFields
-      })
+      ...pipes
     )(target, propertyName, paramIndex);
   }
 }

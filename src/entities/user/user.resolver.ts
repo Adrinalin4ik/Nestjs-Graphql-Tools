@@ -2,6 +2,8 @@ import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Filter, FilterArgs, GraphqlLoader, Loader, LoaderData, Paginator, PaginatorArgs, SelectedFields, SelectedFieldsResult, SelectedUnionTypes, SortArgs, Sorting } from '../../../lib';
+import { RawFilterArgs } from '../../../lib/filters/input-type-generator';
+import { RawSortingArgs } from '../../../lib/sorting/input-type-generator';
 import { StoryModel } from '../story/story.entity';
 import { TaskObjectType } from '../task/task.dto';
 import { Task } from '../task/task.entity';
@@ -22,7 +24,7 @@ export class UserResolver {
   @Query(() => [UserObjectType])
   async users(
     @Filter(() => [UserObjectType, UserFilterInputType], {sqlAlias: 'u'}) filter: FilterArgs,
-    @Sorting(() => [UserObjectType, UserSortingInputType], { sqlAlias: 'u' }) sorting: SortArgs<UserObjectType>,
+    @Sorting(() => [UserObjectType, UserSortingInputType], { sqlAlias: 'u'}) sorting: SortArgs<UserObjectType>,
     @Paginator() paginator: PaginatorArgs
   ) {
     const qb = this.userRepository.createQueryBuilder('u')
@@ -120,6 +122,16 @@ export class UserResolver {
       id: user.id
     }, user)
 
-    return this.userRepository.findOne({where: {id: user.id}})
+    return this.userRepository.findOne({where: {id: user.id}});
+  }
+
+  @Query(() => [UserObjectType])
+  async usersRaw(
+    @Filter(() => [UserObjectType, UserFilterInputType], {sqlAlias: 'u', raw: true}) filter: RawFilterArgs<UserObjectType & UserFilterInputType>,
+    @Sorting(() => [UserObjectType], { sqlAlias: 'u', raw: true}) sorting: RawSortingArgs<UserObjectType>,
+    @Paginator() paginator: PaginatorArgs
+  ) {
+    // Your customer filter logic..
+    return [];
   }
 }
