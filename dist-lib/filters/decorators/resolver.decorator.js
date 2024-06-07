@@ -40,14 +40,18 @@ const Filter = (baseEntity, options) => {
             return acc;
         }, new Map());
         Reflect.defineMetadata(constants_1.FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, customFields, target, propertyName);
+        const pipes = [];
+        if (!(options === null || options === void 0 ? void 0 : options.raw)) {
+            pipes.push(new FilterPipe({
+                options,
+                customFields
+            }));
+        }
         (0, graphql_1.Args)({
             name: (options === null || options === void 0 ? void 0 : options.name) || 'where',
             nullable: true,
             type: () => filterFullType,
-        }, new FilterPipe({
-            options,
-            customFields
-        }))(target, propertyName, paramIndex);
+        }, ...pipes)(target, propertyName, paramIndex);
     };
 };
 exports.Filter = Filter;

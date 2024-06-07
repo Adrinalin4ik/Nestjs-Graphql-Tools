@@ -15,18 +15,6 @@ export declare enum OperationQuery {
     notbetween = "notbetween",
     null = "null"
 }
-export declare enum InputMapPrefixes {
-    PropertyFilterInputType = "PropertyFilterInputType",
-    FilterInputType = "FilterInputType"
-}
-export interface FilterFieldDefinition {
-    name: string;
-    typeFn: ReturnTypeFunc;
-}
-export declare enum EObjectResolveType {
-    Full = 0,
-    Enum = 1
-}
 export type IFilterField<T> = {
     [K in keyof T]: {
         eq: T[K];
@@ -46,5 +34,18 @@ export type IFilterField<T> = {
 export interface IFilter<T> {
     and: IFilterField<T>[];
     or: IFilterField<T>[];
+}
+export type RawFilterArgs<T> = IFilter<T> & IFilterField<T>;
+export declare enum InputMapPrefixes {
+    PropertyFilterInputType = "PropertyFilterInputType",
+    FilterInputType = "FilterInputType"
+}
+export interface FilterFieldDefinition {
+    name: string;
+    typeFn: ReturnTypeFunc;
+}
+export declare enum EObjectResolveType {
+    Full = 0,
+    Enum = 1
 }
 export declare const getFilterFullInputType: (classes: BaseEntity[], name: string) => any;

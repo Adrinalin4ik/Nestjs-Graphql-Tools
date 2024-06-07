@@ -8,6 +8,10 @@ export declare enum SortType {
     DESC_NULLS_LAST = "DESC NULLS LAST",
     DESC_NULLS_FIRST = "DESC NULLS FIRST"
 }
+export type ISortingField<T> = {
+    [K in keyof T]: SortType;
+};
+export type RawSortingArgs<T> = ISortingField<T>;
 export declare enum SortInputMapPrefixes {
     SortingInputType = "SortingInputType"
 }
