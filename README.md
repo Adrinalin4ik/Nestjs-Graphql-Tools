@@ -413,13 +413,15 @@ How to use raw filters:
 2. `@Filter()` will return raw filter data.
 
 ```typesript
-@Query(() => [UserObjectType])
-async usersRaw(
-  @Filter(() => [UserObjectType, UserFilterInputType], {sqlAlias: 'u', raw: true}) filter: RawFilterArgs<UserObjectType & UserFilterInputType>,
-  @Paginator() paginator: PaginatorArgs
-) {
-  // Your customer filter logic..
-  return [];
+export class UserResolver {
+  @Query(() => [UserObjectType])
+  async usersRaw(
+    @Filter(() => [UserObjectType, UserFilterInputType], {sqlAlias: 'u', raw: true}) filter: RawFilterArgs<UserObjectType & UserFilterInputType>,
+    @Paginator() paginator: PaginatorArgs
+  ) {
+    // Your customer filter logic..
+    return [];
+  }
 }
 ```
 
@@ -496,18 +498,20 @@ You can also exclude some fields from the sorting DTO. Read [Exclusions](#exclus
 #### Raw sorting
 Raw sorting allows to get access to the user provided raw value right from the code. This feature allows to build your own sorting interpreters.
 
-How to use raw filters:
-1. Add `@Sorting({ raw: true })` parameter with type of `RawSortingArgs<T>` where `T` is your filter type
+How to use raw sorting:
+1. Add `@Sorting({ raw: true })` parameter with type of `RawSortingArgs<T>` where `T` is your sorting type
 2. `@Sorting()` will return raw sorting data.
 
 ```typesript
-@Query(() => [UserObjectType])
-async usersRaw(
-  @Sorting(() => [UserObjectType], { sqlAlias: 'u', raw: true}) sorting: RawSortingArgs<UserObjectType>,
-  @Paginator() paginator: PaginatorArgs
-) {
-  // Your customer filter logic..
-  return [];
+export class UserResolver {
+  @Query(() => [UserObjectType])
+  async usersRaw(
+    @Sorting(() => [UserObjectType], { sqlAlias: 'u', raw: true}) sorting: RawSortingArgs<UserObjectType>,
+    @Paginator() paginator: PaginatorArgs
+  ) {
+    // Your customer filter logic..
+    return [];
+  }
 }
 ```
 
