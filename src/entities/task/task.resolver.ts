@@ -46,7 +46,7 @@ export class TaskResolver {
 
   @ResolveField(() => UserObjectType, {nullable: true})
   @GraphqlLoader({
-    foreignKey: 'assignee_id'
+    foreignKey: 'assignee_id',
   })
   async assignee(
     @Loader() loader: LoaderData<TaskObjectType, number>,

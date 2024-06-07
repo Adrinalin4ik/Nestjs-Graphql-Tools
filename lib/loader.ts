@@ -60,9 +60,9 @@ export interface ILoaderInstance<DtoType, IdType> {
   _loader: { [key: string]: any};
 }
 
-export interface LoaderData<DtoType, IdType> {
+export interface LoaderData<DtoType, IdType, ParentType extends object = any> {
   name: string,
-  parent: any;
+  parent: ParentType;
   ids: IdType[];
   polimorphicTypes: IdType[];
   ctx: ExecutionContext;
@@ -71,9 +71,9 @@ export interface LoaderData<DtoType, IdType> {
   helpers: LoaderHelper<DtoType>;
 }
 
-export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType> {
+export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType, ParentType extends object = any> {
   name: string,
-  parent: any;
+  parent: ParentType;
   ids: { descriminator: DescriminatorType, id: IdType };
   polimorphicTypes: { descriminator: DescriminatorType, ids: IdType[] }[];
   ctx: ExecutionContext;
@@ -83,13 +83,13 @@ export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType> {
   selectedUnions: SelectedUnionTypesResult;
 }
 
-export interface GraphqlLoaderOptions {
+export interface GraphqlLoaderOptions<ParentType extends object = any> {
   /** Parent ID. It works pretty straightforward. It takes parent[foreignKey] and accumulates in loader.ids */
   foreignKey?: string | ((parent: any) => (any));
   polymorphic?: ({
     id:  string;
     descriminator:  string;
-  }) | ((parent: any) => ({ id: any; descriminator: any }))
+  }) | ((parent: ParentType) => ({ id: any; descriminator: any }))
 }
 
 export const Loader = createParamDecorator((_data: unknown, ctx: ExecutionContext) => {
