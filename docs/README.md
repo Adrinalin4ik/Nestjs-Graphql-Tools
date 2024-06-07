@@ -708,7 +708,7 @@ You can find more examples in the src folder
 1. **Q**: Let's say you have many joins and some tables has duplicated fields like name or title. **A**: In order not to break filters you need to provide sqlAlias that matches alias of the main model of the query. There plenty examples in the code in in readme.
 2. **Q**:The same example where you have a model with many joins and you want to provide ability to sort or filter by joined field. **A**: you can create custom filter with ability to provide sql alias that they will use. Check out filtering section, there a couple examples with custom fields.
 3. **Q**: The error: `QueryFailedError: for SELECT DISTINCT, ORDER BY expressions must appear in select list`. **A** To avoid this error add sorted field to selected fields. In most of the time it might happen in case you're using custom fields for sorting.
-
+4. **Q**: How can I make resolver for Many to Many relation. **A** Many to Many relation is the same as One to Many. Basically, it requres one additional resolver that resolves the intermediary table between two main entitites. Let's say we have Roles and Users with M to M relation. The implementation from the database perspective would be Users <> UsersRoles <> Roles. UserRole is the intermediary table. You would need to implement a resolver for UsersRoles. In this resolver you need to resolve users and roles fields like it described [here](#many-to-one-relation).
 
 ## Contribution
 If you want to contribute please create new PR with good description.
