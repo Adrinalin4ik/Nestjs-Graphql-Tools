@@ -5,7 +5,12 @@ import { GraphqlFilterFieldMetadata } from "./decorators/field.decorator";
 import { IFilterDecoratorParams } from "./decorators/resolver.decorator";
 import { IFilter, OperationQuery } from "./input-type-generator";
 
-export const convertFilterParameters = <T>(parameters?: IFilter<T>, customFields?: Map<string, GraphqlFilterFieldMetadata>, options?: IFilterDecoratorParams) => {
+export enum EOperationType {
+  AND,
+  OR
+}
+
+export const convertFilterParameters = <T>(parameters?: IFilter<T>[], opType: EOperationType = EOperationType.AND, customFields?: Map<string, GraphqlFilterFieldMetadata>, options?: IFilterDecoratorParams) => {
   // For tests purposes and GlobalPipes like ValidationPipe that uses class-transformer to transform object to the class. 
   // If you provide Brackets instead of object to the decorator, it will use your brackets without processing it.
   if ((parameters as any)?.whereFactory) return parameters;
@@ -15,48 +20,38 @@ export const convertFilterParameters = <T>(parameters?: IFilter<T>, customFields
       return;
     }
 
-    const clonnedParams = {...parameters};
-    
-    delete clonnedParams.and;
-    delete clonnedParams.or;
+    for (const op of parameters) {
+      if (op.and) {
+        const innerBrackets = convertFilterParameters<T>(op.and, EOperationType.AND, customFields, options);
+        if (innerBrackets instanceof Brackets) {
+          qb.andWhere(innerBrackets)
+        }
+      }
 
-    if (parameters?.and) {
-      qb.andWhere(
-        new Brackets((andBracketsQb) => {
-          for (const op of parameters?.and) {
-            const andParameters = recursivelyTransformComparators(op, customFields, options?.sqlAlias);
-            if (andParameters?.length) {
-              for (const query of andParameters) {
-                andBracketsQb.andWhere(query[0], query[1]);
-              }
-            }
+      if (op.or) {
+        const innerBrackets = convertFilterParameters<T>(op.or, EOperationType.OR, customFields, options);
+        if (innerBrackets instanceof Brackets) {
+          qb.orWhere(innerBrackets)
+        }
+      }
+
+
+      const clonnedOp = {...op};
+  
+      delete clonnedOp.and;
+      delete clonnedOp.or;
+
+      const basicParameters = recursivelyTransformComparators(clonnedOp, customFields, options?.sqlAlias);
+      if (basicParameters) {
+        for (const query of basicParameters) {
+          if (opType === EOperationType.AND) {
+            qb.andWhere(query[0], query[1]);
+          } else {
+            qb.orWhere(query[0], query[1]);
           }
-        })
-      )
-    }
-    if (parameters?.or) {
-      qb.orWhere(
-        new Brackets((orBracketsQb) => {
-          for (const op of parameters?.or) {
-            const orParameters = recursivelyTransformComparators(op, customFields, options?.sqlAlias);
-            if (orParameters?.length) {
-              for (const query of orParameters) {
-                orBracketsQb.orWhere(query[0], query[1]);
-              }
-            }
-          }
-        })
-      )
-    }
-    const basicParameters = recursivelyTransformComparators(clonnedParams, customFields, options?.sqlAlias);
-    if (basicParameters) {
-      qb.andWhere(
-        new Brackets((basicParametersQb) => {
-          for (const query of basicParameters) {
-            basicParametersQb.andWhere(query[0], query[1]);
-          }
-        })
-      )
+        }
+      }
+      
     }
   });
 }
@@ -90,7 +85,7 @@ const recursivelyTransformComparators = (object: Record<string, any>, extendedPa
 
 const buildSqlArgument = (operatorKey: string, field: string, value: any) => {
   let result = [];
-  const argName = `arg_${convertArrayOfStringIntoStringNumber([field])}`
+  const argName = `arg_${convertArrayOfStringIntoStringNumber([field])}_${Math.floor(Math.random() * 1e6)}`
   if (operatorKey === OperationQuery.eq) {
     if (value === null || value === 'null') {
       result = [`${field} is null`];

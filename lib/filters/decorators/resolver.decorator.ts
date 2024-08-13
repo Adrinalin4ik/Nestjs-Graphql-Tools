@@ -5,7 +5,7 @@ import { BaseEntity } from "../../common";
 import { standardize } from "../../utils/functions";
 import { FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY } from "../constants";
 import { getFilterFullInputType } from "../input-type-generator";
-import { convertFilterParameters } from "../query.builder";
+import { EOperationType, convertFilterParameters } from "../query.builder";
 import { GraphqlFilterFieldMetadata, GraphqlFilterTypeDecoratorMetadata } from "./field.decorator";
 
 export interface IFilterDecoratorParams {
@@ -89,6 +89,10 @@ export interface FilterArgs extends Brackets {}
 export class FilterPipe implements PipeTransform {
   constructor(public readonly args: IFilterPipeArgs) {}
   transform(value: any, _metadata: ArgumentMetadata) {
-    return convertFilterParameters(value, this.args.customFields, this.args.options);
+    let params = value;
+    if (!Array.isArray(value)) {
+      params = [value]
+    }
+    return convertFilterParameters(params, EOperationType.AND, this.args.customFields, this.args.options);
   }
 }
