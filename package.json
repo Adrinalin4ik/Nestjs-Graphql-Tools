@@ -1,6 +1,6 @@
 {
   "name": "nestjs-graphql-tools",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "description": "Nestjs Graphql automation library for building performant API",
   "author": "Alexey Panfilkin",
   "private": false,
