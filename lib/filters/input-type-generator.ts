@@ -37,10 +37,10 @@ export type IFilterField<T> = {
   };
 }
 
-export interface IFilter<T> {
-  and: IFilterField<T>[];
-  or: IFilterField<T>[];
-}
+export type IFilter<T>  = {
+  and?: IFilter<T>[];
+  or?: IFilter<T>[];
+} & IFilterField<T>;
 
 export type RawFilterArgs<T> = IFilter<T> & IFilterField<T>;
 
@@ -109,7 +109,7 @@ const generateFilterPropertyType = (field) => {
   })
 
   availableOperations.forEach(operationName => {
-    field.typeFn();
+    field.typeFn(); // needs to be called to be compiled
     Field(() => {
       if (arrayLikeOperations.has(OperationQuery[operationName])) {
         return [field.typeFn()];
@@ -209,15 +209,25 @@ function generateFilterInputType<T extends BaseEntity>(classes: T[], name: strin
 
 export const getFilterFullInputType = (classes: BaseEntity[], name: string) => {
   const key = `${name}_FilterInputType`; 
+  const baseKey = `${name}_BaseFilterInputType`; 
   if (filterFullTypes.get(key)) {
     return filterFullTypes.get(key);
   }
   const FilterInputType = generateFilterInputType(classes, name);
+
+  @InputType(baseKey)
+  class BaseEntityInput extends FilterInputType {
+    @Field(() => [BaseEntityInput], {nullable: true})
+    and: BaseEntity[];
+    @Field(() => [BaseEntityInput], {nullable: true})
+    or: BaseEntity[];
+  }
+
   @InputType(key)
   class EntityWhereInput extends FilterInputType {
-    @Field(() => [FilterInputType], {nullable: true})
+    @Field(() => [BaseEntityInput], {nullable: true})
     and: BaseEntity[];
-    @Field(() => [FilterInputType], {nullable: true})
+    @Field(() => [BaseEntityInput], {nullable: true})
     or: BaseEntity[];
   }
   filterFullTypes.set(key, EntityWhereInput);

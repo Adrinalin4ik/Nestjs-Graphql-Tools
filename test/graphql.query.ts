@@ -110,3 +110,46 @@ export const QUERY5 = `
 }
 
 `;
+
+
+export const QUERY6 = `
+{
+  users(where: {
+    and: {
+      id: {eq: 1}
+      or: {
+        and: {
+          id: {eq: 2}
+          is_active: { eq: true }
+        }
+        is_active: { eq: true }
+        id: { eq: 3 }
+      }
+    }
+  }) {
+    id
+  }
+}
+`;
+
+export const QUERY7 = `
+{
+  users(where: {
+    and: [
+      {
+        id: {eq: 1}
+        or: [
+          {
+            and: {
+              id: {eq: 2}
+            }
+            id: { eq: 3 }
+          }
+        ]
+      }
+    ]
+  }) {
+    id
+  }
+}
+`;
