@@ -60,7 +60,11 @@ let FilterPipe = class FilterPipe {
         this.args = args;
     }
     transform(value, _metadata) {
-        return (0, query_builder_1.convertFilterParameters)(value, this.args.customFields, this.args.options);
+        let params = value;
+        if (!Array.isArray(value)) {
+            params = [value];
+        }
+        return (0, query_builder_1.convertFilterParameters)(params, query_builder_1.EOperationType.AND, this.args.customFields, this.args.options);
     }
 };
 exports.FilterPipe = FilterPipe;

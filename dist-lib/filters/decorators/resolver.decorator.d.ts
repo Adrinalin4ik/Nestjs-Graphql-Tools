@@ -18,5 +18,5 @@ export interface FilterArgs extends Brackets {
 export declare class FilterPipe implements PipeTransform {
     readonly args: IFilterPipeArgs;
     constructor(args: IFilterPipeArgs);
-    transform(value: any, _metadata: ArgumentMetadata): Brackets | import("../input-type-generator").IFilter<unknown>;
+    transform(value: any, _metadata: ArgumentMetadata): Brackets | import("../input-type-generator").IFilter<unknown>[];
 }

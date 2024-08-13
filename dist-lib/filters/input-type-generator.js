@@ -155,18 +155,32 @@ function generateFilterInputType(classes, name) {
 }
 const getFilterFullInputType = (classes, name) => {
     const key = `${name}_FilterInputType`;
+    const baseKey = `${name}_BaseFilterInputType`;
     if (filterFullTypes.get(key)) {
         return filterFullTypes.get(key);
     }
     const FilterInputType = generateFilterInputType(classes, name);
+    let BaseEntityInput = class BaseEntityInput extends FilterInputType {
+    };
+    __decorate([
+        (0, graphql_1.Field)(() => [BaseEntityInput], { nullable: true }),
+        __metadata("design:type", Array)
+    ], BaseEntityInput.prototype, "and", void 0);
+    __decorate([
+        (0, graphql_1.Field)(() => [BaseEntityInput], { nullable: true }),
+        __metadata("design:type", Array)
+    ], BaseEntityInput.prototype, "or", void 0);
+    BaseEntityInput = __decorate([
+        (0, graphql_1.InputType)(baseKey)
+    ], BaseEntityInput);
     let EntityWhereInput = class EntityWhereInput extends FilterInputType {
     };
     __decorate([
-        (0, graphql_1.Field)(() => [FilterInputType], { nullable: true }),
+        (0, graphql_1.Field)(() => [BaseEntityInput], { nullable: true }),
         __metadata("design:type", Array)
     ], EntityWhereInput.prototype, "and", void 0);
     __decorate([
-        (0, graphql_1.Field)(() => [FilterInputType], { nullable: true }),
+        (0, graphql_1.Field)(() => [BaseEntityInput], { nullable: true }),
         __metadata("design:type", Array)
     ], EntityWhereInput.prototype, "or", void 0);
     EntityWhereInput = __decorate([

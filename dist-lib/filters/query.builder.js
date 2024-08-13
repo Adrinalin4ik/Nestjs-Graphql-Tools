@@ -1,51 +1,49 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertFilterParameters = void 0;
+exports.convertFilterParameters = exports.EOperationType = void 0;
 const typeorm_1 = require("typeorm");
 const functions_1 = require("../utils/functions");
 const constants_1 = require("./constants");
 const input_type_generator_1 = require("./input-type-generator");
-const convertFilterParameters = (parameters, customFields, options) => {
+var EOperationType;
+(function (EOperationType) {
+    EOperationType[EOperationType["AND"] = 0] = "AND";
+    EOperationType[EOperationType["OR"] = 1] = "OR";
+})(EOperationType || (exports.EOperationType = EOperationType = {}));
+const convertFilterParameters = (parameters, opType = EOperationType.AND, customFields, options) => {
     if (parameters === null || parameters === void 0 ? void 0 : parameters.whereFactory)
         return parameters;
     return new typeorm_1.Brackets((qb) => {
         if (parameters == null) {
             return;
         }
-        const clonnedParams = Object.assign({}, parameters);
-        delete clonnedParams.and;
-        delete clonnedParams.or;
-        if (parameters === null || parameters === void 0 ? void 0 : parameters.and) {
-            qb.andWhere(new typeorm_1.Brackets((andBracketsQb) => {
-                for (const op of parameters === null || parameters === void 0 ? void 0 : parameters.and) {
-                    const andParameters = recursivelyTransformComparators(op, customFields, options === null || options === void 0 ? void 0 : options.sqlAlias);
-                    if (andParameters === null || andParameters === void 0 ? void 0 : andParameters.length) {
-                        for (const query of andParameters) {
-                            andBracketsQb.andWhere(query[0], query[1]);
-                        }
-                    }
+        for (const op of parameters) {
+            if (op.and) {
+                const innerBrackets = (0, exports.convertFilterParameters)(op.and, EOperationType.AND, customFields, options);
+                if (innerBrackets instanceof typeorm_1.Brackets) {
+                    qb.andWhere(innerBrackets);
                 }
-            }));
-        }
-        if (parameters === null || parameters === void 0 ? void 0 : parameters.or) {
-            qb.orWhere(new typeorm_1.Brackets((orBracketsQb) => {
-                for (const op of parameters === null || parameters === void 0 ? void 0 : parameters.or) {
-                    const orParameters = recursivelyTransformComparators(op, customFields, options === null || options === void 0 ? void 0 : options.sqlAlias);
-                    if (orParameters === null || orParameters === void 0 ? void 0 : orParameters.length) {
-                        for (const query of orParameters) {
-                            orBracketsQb.orWhere(query[0], query[1]);
-                        }
-                    }
+            }
+            if (op.or) {
+                const innerBrackets = (0, exports.convertFilterParameters)(op.or, EOperationType.OR, customFields, options);
+                if (innerBrackets instanceof typeorm_1.Brackets) {
+                    qb.orWhere(innerBrackets);
                 }
-            }));
-        }
-        const basicParameters = recursivelyTransformComparators(clonnedParams, customFields, options === null || options === void 0 ? void 0 : options.sqlAlias);
-        if (basicParameters) {
-            qb.andWhere(new typeorm_1.Brackets((basicParametersQb) => {
+            }
+            const clonnedOp = Object.assign({}, op);
+            delete clonnedOp.and;
+            delete clonnedOp.or;
+            const basicParameters = recursivelyTransformComparators(clonnedOp, customFields, options === null || options === void 0 ? void 0 : options.sqlAlias);
+            if (basicParameters) {
                 for (const query of basicParameters) {
-                    basicParametersQb.andWhere(query[0], query[1]);
+                    if (opType === EOperationType.AND) {
+                        qb.andWhere(query[0], query[1]);
+                    }
+                    else {
+                        qb.orWhere(query[0], query[1]);
+                    }
                 }
-            }));
+            }
         }
     });
 };
@@ -78,7 +76,7 @@ const recursivelyTransformComparators = (object, extendedParams, sqlAlias) => {
 };
 const buildSqlArgument = (operatorKey, field, value) => {
     let result = [];
-    const argName = `arg_${(0, functions_1.convertArrayOfStringIntoStringNumber)([field])}`;
+    const argName = `arg_${(0, functions_1.convertArrayOfStringIntoStringNumber)([field])}_${Math.floor(Math.random() * 1e6)}`;
     if (operatorKey === input_type_generator_1.OperationQuery.eq) {
         if (value === null || value === 'null') {
             result = [`${field} is null`];

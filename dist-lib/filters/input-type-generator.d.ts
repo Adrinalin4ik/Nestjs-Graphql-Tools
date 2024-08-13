@@ -31,10 +31,10 @@ export type IFilterField<T> = {
         null: T[K];
     };
 };
-export interface IFilter<T> {
-    and: IFilterField<T>[];
-    or: IFilterField<T>[];
-}
+export type IFilter<T> = {
+    and?: IFilter<T>[];
+    or?: IFilter<T>[];
+} & IFilterField<T>;
 export type RawFilterArgs<T> = IFilter<T> & IFilterField<T>;
 export declare enum InputMapPrefixes {
     PropertyFilterInputType = "PropertyFilterInputType",
