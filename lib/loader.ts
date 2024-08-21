@@ -94,14 +94,14 @@ export interface GraphqlLoaderOptions<ParentType extends object = any> {
 
 export const Loader = createParamDecorator((_data: unknown, ctx: ExecutionContext) => {
   const args = ctx.getArgs();
-  const { req } = args.find(x => x.req);;
+  const context = args.find(x => x.req);
   const info = args.find(x => x.fieldName);
   return {
     _name_: LOADER_DECORATOR_NAME_METADATA_KEY,
     parent: args[0],
     ctx,
     info,
-    req,
+    req: context?.req,
     helpers: {
       mapOneToManyRelation,
       mapOneToManyPolymorphicRelation,
