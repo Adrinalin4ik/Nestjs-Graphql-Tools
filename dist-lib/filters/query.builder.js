@@ -13,6 +13,7 @@ var EOperationType;
 const convertFilterParameters = (parameters, opType = EOperationType.AND, customFields, options) => {
     if (parameters === null || parameters === void 0 ? void 0 : parameters.whereFactory)
         return parameters;
+    parameters = parameters.filter(x => x !== undefined);
     return new typeorm_1.Brackets((qb) => {
         if (parameters == null) {
             return;
