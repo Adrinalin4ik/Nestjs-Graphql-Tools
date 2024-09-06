@@ -54,7 +54,7 @@
     "typeorm": ">0.3.0"
   },
   "devDependencies": {
-    "@apollo/gateway": "^2.8.0",
+    "@apollo/gateway": "^2.9.0",
     "@apollo/server": "^4.10.4",
     "@nestjs/apollo": "^12.2.0",
     "@nestjs/cli": "^10.4.4",
@@ -72,7 +72,7 @@
     "@typescript-eslint/eslint-plugin": "^7.12.0",
     "@typescript-eslint/parser": "^6.21.0",
     "apollo-server-express": "^3.13.0",
-    "axios": "^1.7.3",
+    "axios": "^1.7.7",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "config": "^3.3.11",
