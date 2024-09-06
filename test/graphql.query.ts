@@ -153,3 +153,11 @@ export const QUERY7 = `
   }
 }
 `;
+
+export const QUERY8 = `
+{
+  users {
+    id
+  }
+}
+`;

@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { QUERY1, QUERY2, QUERY3, QUERY4, QUERY5, QUERY6, QUERY7 } from './graphql.query';
+import { QUERY1, QUERY2, QUERY3, QUERY4, QUERY5, QUERY6, QUERY7, QUERY8 } from './graphql.query';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -75,6 +75,15 @@ describe('AppController (e2e)', () => {
       .post('/graphql')
       .send({
         query: QUERY7,
+        variables: {},
+      })
+      .expect(200);
+  });
+  it('Query 8', () => {
+    return request(app.getHttpServer())
+      .post('/graphql')
+      .send({
+        query: QUERY8,
         variables: {},
       })
       .expect(200);

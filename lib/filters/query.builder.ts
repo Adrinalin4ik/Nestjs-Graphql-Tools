@@ -15,6 +15,8 @@ export const convertFilterParameters = <T>(parameters?: IFilter<T>[], opType: EO
   // If you provide Brackets instead of object to the decorator, it will use your brackets without processing it.
   if ((parameters as any)?.whereFactory) return parameters;
 
+  parameters = parameters.filter(x => x !== undefined); // if filters are not provided
+
   return new Brackets((qb) => {
     if (parameters == null) {
       return;
