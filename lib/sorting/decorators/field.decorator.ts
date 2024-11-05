@@ -22,13 +22,14 @@ export interface GraphqlSortingFieldMetadata extends SortingFieldOptions {
 
 export class GraphqlSortingTypeDecoratorMetadata {
   fields: Map<string, GraphqlSortingFieldMetadata> = new Map()
-  excludedFilterFields = new Set<string>();
+  excludedSortingFields = new Set<string>();
 
   constructor(private target) {
     const meta: GraphqlSortingTypeDecoratorMetadata = Reflect.getMetadata(SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, target);
 
     if (meta) {
       this.fields = meta.fields;
+      this.excludedSortingFields = meta.excludedSortingFields;
     }
   }
   
@@ -44,7 +45,7 @@ export const SortingField = (options: SortingFieldOptions | SortingFieldExcludeO
 
     if (options.hasOwnProperty('exclude')) {
       options = options as SortingFieldExcludeOptions;
-      metadataObject.excludedFilterFields.add(property);
+      metadataObject.excludedSortingFields.add(property);
     } else {
       options = options as SortingFieldOptions;
       if (options && !options.sqlExp) {
