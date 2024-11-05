@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.extractUnionsData = exports.getSelectedUnionTypes = exports.SelectedUnionTypes = void 0;
+exports.SelectedUnionTypes = void 0;
+exports.getSelectedUnionTypes = getSelectedUnionTypes;
+exports.extractUnionsData = extractUnionsData;
 const common_1 = require("@nestjs/common");
 const field_extractor_1 = require("./field-extractor");
 exports.SelectedUnionTypes = (0, common_1.createParamDecorator)((data, ctx) => {
@@ -38,7 +40,6 @@ function getSelectedUnionTypes(info, options) {
     });
     return returnObj;
 }
-exports.getSelectedUnionTypes = getSelectedUnionTypes;
 function extractUnionsData(resolvers, field, fragments) {
     let results = new Map([]);
     function process(resolvers, field, fragments) {
@@ -73,5 +74,4 @@ function extractUnionsData(resolvers, field, fragments) {
     process(resolvers, field, fragments);
     return results;
 }
-exports.extractUnionsData = extractUnionsData;
 //# sourceMappingURL=union-type-extractor.js.map

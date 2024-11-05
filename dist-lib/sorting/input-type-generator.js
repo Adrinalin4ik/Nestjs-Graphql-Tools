@@ -43,7 +43,7 @@ function generateSortingInputType(classes, name) {
     for (const typeFn of classes) {
         const customSortingData = Reflect.getMetadata(constants_1.SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, typeFn.prototype);
         if (customSortingData) {
-            properties.push(...Array.from(customSortingData.fields.values()).filter(x => !(customSortingData === null || customSortingData === void 0 ? void 0 : customSortingData.excludedFilterFields.has(x.name))));
+            properties.push(...Array.from(customSortingData.fields.values()).filter(x => !(customSortingData === null || customSortingData === void 0 ? void 0 : customSortingData.excludedSortingFields.has(x.name))));
         }
         const classMetadata = graphql_1.TypeMetadataStorage.getObjectTypeMetadataByTarget(typeFn);
         if (classMetadata) {
@@ -61,7 +61,7 @@ function generateSortingInputType(classes, name) {
             }
             let classMetaProps = classMetadata.properties;
             if (customSortingData) {
-                classMetaProps = classMetadata.properties.filter(x => !(customSortingData === null || customSortingData === void 0 ? void 0 : customSortingData.excludedFilterFields.has(x.name)));
+                classMetaProps = classMetadata.properties.filter(x => !(customSortingData === null || customSortingData === void 0 ? void 0 : customSortingData.excludedSortingFields.has(x.name)));
             }
             properties.push(...((inheritedType === null || inheritedType === void 0 ? void 0 : inheritedType.properties) || []), ...classMetaProps);
         }

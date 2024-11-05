@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { ExecutionContext } from '@nestjs/common';
 import { GraphQLResolveInfo } from 'graphql';
 import { IncomingMessage } from 'http';

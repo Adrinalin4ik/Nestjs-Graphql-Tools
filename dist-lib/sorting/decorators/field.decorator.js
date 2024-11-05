@@ -6,10 +6,11 @@ class GraphqlSortingTypeDecoratorMetadata {
     constructor(target) {
         this.target = target;
         this.fields = new Map();
-        this.excludedFilterFields = new Set();
+        this.excludedSortingFields = new Set();
         const meta = Reflect.getMetadata(constants_1.SORTING_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, target);
         if (meta) {
             this.fields = meta.fields;
+            this.excludedSortingFields = meta.excludedSortingFields;
         }
     }
     save() {
@@ -22,7 +23,7 @@ const SortingField = (options = {}) => {
         const metadataObject = new GraphqlSortingTypeDecoratorMetadata(target);
         if (options.hasOwnProperty('exclude')) {
             options = options;
-            metadataObject.excludedFilterFields.add(property);
+            metadataObject.excludedSortingFields.add(property);
         }
         else {
             options = options;

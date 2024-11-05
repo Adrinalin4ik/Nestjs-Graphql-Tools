@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.extractFieldsData = exports.SelectedFields = exports.GraphqlFieldMetadataKey = void 0;
+exports.SelectedFields = exports.GraphqlFieldMetadataKey = void 0;
+exports.extractFieldsData = extractFieldsData;
 const common_1 = require("@nestjs/common");
 exports.GraphqlFieldMetadataKey = 'graphql:fieldsData';
 exports.SelectedFields = (0, common_1.createParamDecorator)((data, ctx) => {
@@ -86,5 +87,4 @@ function extractFieldsData(resolvers, field, fragments, from_fragment = false) {
     }
     return results;
 }
-exports.extractFieldsData = extractFieldsData;
 //# sourceMappingURL=field-extractor.js.map

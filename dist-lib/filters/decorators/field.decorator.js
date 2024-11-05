@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FilterField = exports.GraphqlFilterTypeDecoratorMetadata = void 0;
+exports.GraphqlFilterTypeDecoratorMetadata = void 0;
+exports.FilterField = FilterField;
 const constants_1 = require("../constants");
 class GraphqlFilterTypeDecoratorMetadata {
     constructor(target) {
@@ -10,6 +11,7 @@ class GraphqlFilterTypeDecoratorMetadata {
         const meta = Reflect.getMetadata(constants_1.FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, target);
         if (meta) {
             this.fields = meta.fields;
+            this.excludedFilterFields = meta.excludedFilterFields;
         }
     }
     save() {
@@ -38,5 +40,4 @@ function FilterField(typeFn, options = {}) {
         metadataObject.save();
     };
 }
-exports.FilterField = FilterField;
 //# sourceMappingURL=field.decorator.js.map

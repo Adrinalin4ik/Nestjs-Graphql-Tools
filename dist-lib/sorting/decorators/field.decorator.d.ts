@@ -13,7 +13,7 @@ export interface GraphqlSortingFieldMetadata extends SortingFieldOptions {
 export declare class GraphqlSortingTypeDecoratorMetadata {
     private target;
     fields: Map<string, GraphqlSortingFieldMetadata>;
-    excludedFilterFields: Set<string>;
+    excludedSortingFields: Set<string>;
     constructor(target: any);
     save(): void;
 }
