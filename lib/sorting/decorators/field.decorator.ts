@@ -29,6 +29,7 @@ export class GraphqlSortingTypeDecoratorMetadata {
 
     if (meta) {
       this.fields = meta.fields;
+      this.excludedFilterFields = meta.excludedFilterFields;
     }
   }
   
