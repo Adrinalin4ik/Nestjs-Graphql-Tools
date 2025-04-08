@@ -8,6 +8,9 @@ import { groupBy } from 'lodash';
 import { SelectedUnionTypesResult } from './union-type-extractor';
 const DataLoader = require('dataloader');
 
+/**
+ * Metadata key used for identifying loader property decorators
+ */
 export const LOADER_DECORATOR_NAME_METADATA_KEY = 'LoaderPropertyDecorator';
 
 /*
@@ -38,17 +41,45 @@ export const LOADER_DECORATOR_NAME_METADATA_KEY = 'LoaderPropertyDecorator';
 }
 */
 
+/**
+ * Helper methods for mapping different types of relations in GraphQL loaders
+ * @interface LoaderHelper
+ * @template DtoType - The DTO type being loaded
+ */
 export interface LoaderHelper<DtoType> {
+  /**
+   * Maps a one-to-many relationship between entities
+   * @param {object[]} entities - Array of entity objects
+   * @param {any[]} ids - Array of IDs to map
+   * @param {string} foreignKey - The foreign key field name
+   * @returns {[DtoType[]]} Array containing mapped DTOs
+   */
   mapOneToManyRelation: (
     entities: object[],
     ids: any[],
     foreignKey: string
   ) => [DtoType[]];
+
+  /**
+   * Maps a polymorphic one-to-many relationship
+   * @param {{descriminator: string, entities: object[]}[]} entities - Array of entities with discriminators
+   * @param {{descriminator: string | any, id: any}} typeIds - Type IDs to map
+   * @param {string} [foreignKey] - Optional foreign key field name
+   * @returns {[DtoType[]]} Array containing mapped DTOs
+   */
   mapOneToManyPolymorphicRelation: (
     entities: {descriminator: string, entities: object[]}[],
     typeIds: {descriminator: string | any, id: any},
     foreignKey?: string
   ) => [DtoType[]];
+
+  /**
+   * Maps a many-to-one relationship between entities
+   * @param {object[]} entities - Array of entity objects
+   * @param {any[]} ids - Array of IDs to map
+   * @param {string} [foreignKey] - Optional foreign key field name
+   * @returns {[DtoType[]]} Array containing mapped DTOs
+   */
   mapManyToOneRelation: (
     entities: object[],
     ids: any[],
@@ -56,10 +87,23 @@ export interface LoaderHelper<DtoType> {
   ) => [DtoType[]];
 }
 
+/**
+ * Interface for loader instances
+ * @interface ILoaderInstance
+ * @template DtoType - The DTO type being loaded
+ * @template IdType - The type of IDs being used
+ */
 export interface ILoaderInstance<DtoType, IdType> {
   _loader: { [key: string]: any};
 }
 
+/**
+ * Data structure containing loader information and helper methods
+ * @interface LoaderData
+ * @template DtoType - The DTO type being loaded
+ * @template IdType - The type of IDs being used
+ * @template ParentType - The type of the parent entity
+ */
 export interface LoaderData<DtoType, IdType, ParentType extends object = any> {
   name: string,
   parent: ParentType;
@@ -71,6 +115,14 @@ export interface LoaderData<DtoType, IdType, ParentType extends object = any> {
   helpers: LoaderHelper<DtoType>;
 }
 
+/**
+ * Data structure for polymorphic loader operations
+ * @interface PolymorphicLoaderData
+ * @template DtoType - The DTO type being loaded
+ * @template IdType - The type of IDs being used
+ * @template DescriminatorType - The type of discriminator values
+ * @template ParentType - The type of the parent entity
+ */
 export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType, ParentType extends object = any> {
   name: string,
   parent: ParentType;
@@ -83,6 +135,11 @@ export interface PolymorphicLoaderData<DtoType, IdType, DescriminatorType, Paren
   selectedUnions: SelectedUnionTypesResult;
 }
 
+/**
+ * Options for configuring GraphQL loaders
+ * @interface GraphqlLoaderOptions
+ * @template ParentType - The type of the parent entity
+ */
 export interface GraphqlLoaderOptions<ParentType extends object = any> {
   /** Parent ID. It works pretty straightforward. It takes parent[foreignKey] and accumulates in loader.ids */
   foreignKey?: string | ((parent: any) => (any));
@@ -110,6 +167,28 @@ export const Loader = createParamDecorator((_data: unknown, ctx: ExecutionContex
   };
 });
 
+/**
+ * Decorator for implementing GraphQL data loaders
+ * This decorator enables efficient batch loading of related data in GraphQL queries
+ * 
+ * @param {GraphqlLoaderOptions} [args] - Optional configuration for the loader
+ * @returns {MethodDecorator} A method decorator that implements the loader functionality
+ * 
+ * @example
+ * ```typescript
+ * @Resolver(() => UserObjectType)
+ * export class UserResolver {
+ *   @ResolveField(() => TaskObjectType)
+ *   @GraphqlLoader()
+ *   async tasks(
+ *     @Loader() loader: LoaderData<TaskObjectType, number>,
+ *     @Args('story_points') story_points: number,
+ *   ) {
+ *     // Implementation here
+ *   }
+ * }
+ * ```
+ */
 export const GraphqlLoader = (
   args?: GraphqlLoaderOptions
 ) => {

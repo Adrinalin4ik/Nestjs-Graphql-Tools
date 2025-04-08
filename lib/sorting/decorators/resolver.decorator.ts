@@ -7,7 +7,24 @@ import { getSortingFullInputType } from "../input-type-generator";
 import { convertSortingParameters } from "../query.builder";
 import { GraphqlSortingFieldMetadata, GraphqlSortingTypeDecoratorMetadata } from "./field.decorator";
 
+/**
+ * Interface defining parameters for sorting decorators
+ * Used to configure sorting behavior at the resolver level
+ */
 export interface ISortingDecoratorParams {
+  /** 
+   * Custom field mappings for sorting
+   * Allows mapping GraphQL field names to database column names
+   * 
+   * @example
+   * ```typescript
+   * {
+   *   'userName': 'u.username',
+   *   'fullName': 'concat(u.first_name, ' ', u.last_name)'
+   * }
+   * ```
+   */
+  customFieldMapping?: Record<string, string>;
   name?: string;
   sqlAlias?: string;
   raw?: boolean;
@@ -28,7 +45,33 @@ export const GraphqlSorting = () => {
 };
 
 
-// @Sorting decorator
+/**
+ * Decorator for enabling sorting on GraphQL resolvers
+ * This decorator:
+ * 1. Enables sorting functionality on the resolver method
+ * 2. Configures custom field mappings for sorting
+ * 3. Works in conjunction with the SortingPipe to transform sorting parameters
+ * 
+ * @param params - Sorting configuration parameters
+ * @returns MethodDecorator - A decorator that enables sorting on the resolver method
+ * 
+ * @example
+ * ```typescript
+ * @Resolver()
+ * class UserResolver {
+ *   @Query()
+ *   @Sorting({
+ *     customFieldMapping: {
+ *       'userName': 'u.username',
+ *       'fullName': 'concat(u.first_name, ' ', u.last_name)'
+ *     }
+ *   })
+ *   async users(@Args() args: UserArgs) {
+ *     // Implementation
+ *   }
+ * }
+ * ```
+ */
 export const Sorting = (baseEntity: () => BaseEntity | BaseEntity[], options?: ISortingDecoratorParams) => {
   return (target, propertyName, paramIndex) => {
     const name = `${standardize(target.constructor.name)}_${standardize(propertyName)}`;

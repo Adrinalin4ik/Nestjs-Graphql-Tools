@@ -1,4 +1,14 @@
-
+/**
+ * Converts an array of strings into a unique string number representation
+ * This function is used to generate unique identifiers for sorting operations
+ * by combining the character codes of the input strings
+ * 
+ * @param {string[]} array - Array of strings to convert
+ * @returns {string} A unique string number representation
+ * 
+ * @example
+ * convertArrayOfStringIntoStringNumber(['name', 'age']) // returns something like '12345678'
+ */
 export const convertArrayOfStringIntoStringNumber = (array: string[]) => {
   if (!array.length) return '';
 

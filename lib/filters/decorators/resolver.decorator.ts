@@ -19,12 +19,6 @@ export interface IFilterDecoratorParams {
 // @deprecated
 export const GraphqlFilter = () => {
   return (target, property, descriptor) => {
-    // const actualDescriptor = descriptor.value;
-    // descriptor.value = function(...args) {
-    //   applyFilterParameter(args, target, property);
-    //   return actualDescriptor.call(this, ...args);
-    // };
-    // Reflect.defineMetadata(GRAPHQL_FILTER_DECORATOR_METADATA_KEY, '', target, property); // for graphql loader
   };
 };
 
@@ -40,6 +34,7 @@ export const Filter = (baseEntity: () => BaseEntity | BaseEntity[], options?: IF
     if (!Array.isArray(extractedResults)) {
       typeFunctions = [extractedResults];
     }
+    // Generate input type for filter
     const filterFullType = getFilterFullInputType(typeFunctions, name);
     
 
@@ -54,6 +49,7 @@ export const Filter = (baseEntity: () => BaseEntity | BaseEntity[], options?: IF
       return acc;
     }, new Map<string, GraphqlFilterFieldMetadata>());
 
+    // Store custom fields metadata
     Reflect.defineMetadata(FILTER_DECORATOR_CUSTOM_FIELDS_METADATA_KEY, customFields, target, propertyName);
 
     const pipes: PipeTransform[] = [];
@@ -67,6 +63,7 @@ export const Filter = (baseEntity: () => BaseEntity | BaseEntity[], options?: IF
       )
     }
 
+    // Add filter input type to resolver
     Args(
       {
         name: options?.name || 'where',
@@ -93,6 +90,7 @@ export class FilterPipe implements PipeTransform {
     if (!Array.isArray(value)) {
       params = [value]
     }
+    // Convert filter parameters from json to typeorm query where statement
     return convertFilterParameters(params, EOperationType.AND, this.args.customFields, this.args.options);
   }
 }

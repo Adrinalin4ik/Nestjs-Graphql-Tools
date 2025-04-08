@@ -1,12 +1,28 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { FragmentDefinitionNode, SelectionNode } from 'graphql';
 
+/**
+ * Metadata key used for storing GraphQL field information in decorators
+ */
 export const GraphqlFieldMetadataKey = 'graphql:fieldsData';
 
+/**
+ * Parameters for the SelectedFields decorator
+ * @interface SelectedFieldsDecoratorParams
+ * @property {string} [sqlAlias] - Optional SQL alias for the field, used in database queries
+ */
 export interface SelectedFieldsDecoratorParams {
   sqlAlias?: string;
 }
 
+/**
+ * Result structure for selected fields extraction
+ * @interface SelectedFieldsResult
+ * @property {ExecutionContext} ctx - The execution context containing request information
+ * @property {Object} fieldsData - Contains the extracted field information
+ * @property {Set<string>} fieldsData.rowFieldsData - Set of selected field names from the GraphQL query
+ * @property {string[]} fieldsData.fieldsString - Array of field names as strings, optionally prefixed with SQL alias
+ */
 export interface SelectedFieldsResult {
   ctx: ExecutionContext;
   fieldsData: {
@@ -15,6 +31,23 @@ export interface SelectedFieldsResult {
   };
 }
 
+/**
+ * Decorator for extracting selected fields from GraphQL queries
+ * This decorator is used to automatically extract the fields requested in a GraphQL query
+ * and make them available in the resolver method.
+ * 
+ * @param {SelectedFieldsDecoratorParams} data - Configuration parameters including optional SQL alias
+ * @param {ExecutionContext} ctx - The execution context containing the GraphQL request info
+ * @returns {SelectedFieldsResult} Object containing the extracted field information
+ * 
+ * @example
+ * ```typescript
+ * @Query(() => [User])
+ * async getUsers(@SelectedFields() fields: SelectedFieldsResult) {
+ *   // fields.fieldsData contains the requested fields
+ * }
+ * ```
+ */
 export const SelectedFields = createParamDecorator(
   (data: SelectedFieldsDecoratorParams, ctx: ExecutionContext) => {
     const args = ctx.getArgs();
@@ -52,6 +85,17 @@ export const SelectedFields = createParamDecorator(
   }
 );
 
+/**
+ * Extracts field data from GraphQL selection nodes
+ * This function recursively traverses the GraphQL query AST to extract all requested fields,
+ * including those from fragments and nested selections.
+ * 
+ * @param {ReadonlyArray<SelectionNode>} resolvers - Array of GraphQL selection nodes from the query
+ * @param {string} field - The current field name being processed
+ * @param {{ [key: string]: FragmentDefinitionNode }} fragments - Map of fragment definitions from the query
+ * @param {boolean} [from_fragment=false] - Whether the extraction is from a fragment definition
+ * @returns {Set<string>} Set of extracted field names
+ */
 export function extractFieldsData(
   resolvers: ReadonlyArray<SelectionNode>,
   field: string,
